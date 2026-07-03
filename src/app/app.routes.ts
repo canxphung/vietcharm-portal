@@ -1,67 +1,132 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './services/auth.guard';
-import {
-  HomePageComponent,
-  NearbyPlacesPageComponent,
-  NotFoundPageComponent,
-  ProvincesPageComponent,
-  RecentlyViewedPageComponent,
-  ServiceProvincesPageComponent,
-  ServicesPageComponent,
-} from './pages/discovery.pages';
-import { ProvinceDetailPageComponent } from './pages/province-detail.page';
-import {
-  AdminPageComponent,
-  AuthPageComponent,
-  CartPageComponent,
-  ProfilePageComponent,
-} from './pages/account.pages';
-import {
-  AiExplorerPageComponent,
-  BlindTravelPageComponent,
-  HandbookPageComponent,
-  PartnershipPageComponent,
-  TaxiPageComponent,
-  ToursPageComponent,
-  TripRoomPageComponent,
-} from './pages/trip.pages';
 
 export const routes: Routes = [
-  { path: '', component: HomePageComponent },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/discovery.pages').then((m) => m.HomePageComponent),
+  },
   { path: 'home', redirectTo: '', pathMatch: 'full' },
   { path: 'regions', redirectTo: '', pathMatch: 'full' },
-  { path: 'discover', component: ProvincesPageComponent },
+  {
+    path: 'discover',
+    loadComponent: () =>
+      import('./pages/discovery.pages').then((m) => m.ProvincesPageComponent),
+  },
   { path: 'provinces', redirectTo: 'discover', pathMatch: 'full' },
-  { path: 'province/:provinceId', component: ProvinceDetailPageComponent },
-  { path: 'services', component: ServicesPageComponent },
+  {
+    path: 'province/:provinceId',
+    loadComponent: () =>
+      import('./pages/province-detail.page').then((m) => m.ProvinceDetailPageComponent),
+  },
+  {
+    path: 'services',
+    loadComponent: () =>
+      import('./pages/discovery.pages').then((m) => m.ServicesPageComponent),
+  },
   { path: 'services/all', redirectTo: 'services', pathMatch: 'full' },
-  { path: 'services/provinces', component: ServiceProvincesPageComponent },
-  { path: 'cart', component: CartPageComponent },
+  {
+    path: 'services/provinces',
+    loadComponent: () =>
+      import('./pages/discovery.pages').then((m) => m.ServiceProvincesPageComponent),
+  },
+  {
+    path: 'cart',
+    loadComponent: () =>
+      import('./pages/account.pages').then((m) => m.CartPageComponent),
+  },
   { path: 'basket', redirectTo: 'cart', pathMatch: 'full' },
   { path: 'checkout', redirectTo: 'cart', pathMatch: 'full' },
-  { path: 'login', component: AuthPageComponent },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/account.pages').then((m) => m.AuthPageComponent),
+  },
   { path: 'signin', redirectTo: 'login', pathMatch: 'full' },
   { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'register', component: AuthPageComponent },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/account.pages').then((m) => m.AuthPageComponent),
+  },
   { path: 'signup', redirectTo: 'register', pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
-  { path: 'forgot-password', component: AuthPageComponent },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./pages/account.pages').then((m) => m.AuthPageComponent),
+  },
   { path: 'forgot', redirectTo: 'forgot-password', pathMatch: 'full' },
   { path: 'auth/forgot-password', redirectTo: 'forgot-password', pathMatch: 'full' },
-  { path: 'profile', component: ProfilePageComponent },
-  { path: 'admin', component: AdminPageComponent },
-  { path: 'ai-explorer', component: AiExplorerPageComponent },
-  { path: 'blind-travel', component: BlindTravelPageComponent },
-  { path: 'trip-room', component: TripRoomPageComponent, canActivate: [authGuard] },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./pages/account.pages').then((m) => m.ProfilePageComponent),
+  },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./pages/account.pages').then((m) => m.AdminPageComponent),
+  },
+  {
+    path: 'ai-explorer',
+    loadComponent: () =>
+      import('./pages/trip.pages').then((m) => m.AiExplorerPageComponent),
+  },
+  {
+    path: 'blind-travel',
+    loadComponent: () =>
+      import('./pages/trip.pages').then((m) => m.BlindTravelPageComponent),
+  },
+  {
+    path: 'trip-room',
+    loadComponent: () =>
+      import('./pages/trip.pages').then((m) => m.TripRoomPageComponent),
+    canActivate: [authGuard],
+  },
   { path: 'group-trip', redirectTo: 'trip-room', pathMatch: 'full' },
-  { path: 'taxi', component: TaxiPageComponent },
-  { path: 'tours', component: ToursPageComponent },
-  { path: 'handbook', component: HandbookPageComponent },
-  { path: 'partnership', component: PartnershipPageComponent, canActivate: [authGuard] },
+  {
+    path: 'taxi',
+    loadComponent: () =>
+      import('./pages/trip.pages').then((m) => m.TaxiPageComponent),
+  },
+  {
+    path: 'tours',
+    loadComponent: () =>
+      import('./pages/trip.pages').then((m) => m.ToursPageComponent),
+  },
+  {
+    path: 'handbook',
+    loadComponent: () =>
+      import('./pages/trip.pages').then((m) => m.HandbookPageComponent),
+  },
+  {
+    path: 'partnership',
+    loadComponent: () =>
+      import('./pages/trip.pages').then((m) => m.PartnershipPageComponent),
+    canActivate: [authGuard],
+  },
   { path: 'partner', redirectTo: 'partnership', pathMatch: 'full' },
   { path: 'partnership-register', redirectTo: 'partnership', pathMatch: 'full' },
-  { path: 'recently-viewed', component: RecentlyViewedPageComponent },
-  { path: 'nearby-places', component: NearbyPlacesPageComponent },
-  { path: '404', component: NotFoundPageComponent },
-  { path: '**', component: NotFoundPageComponent },
+  {
+    path: 'recently-viewed',
+    loadComponent: () =>
+      import('./pages/discovery.pages').then((m) => m.RecentlyViewedPageComponent),
+  },
+  {
+    path: 'nearby-places',
+    loadComponent: () =>
+      import('./pages/discovery.pages').then((m) => m.NearbyPlacesPageComponent),
+  },
+  {
+    path: '404',
+    loadComponent: () =>
+      import('./pages/discovery.pages').then((m) => m.NotFoundPageComponent),
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./pages/discovery.pages').then((m) => m.NotFoundPageComponent),
+  },
 ];

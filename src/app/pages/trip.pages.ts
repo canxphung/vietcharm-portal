@@ -224,7 +224,7 @@ interface AIResponse {
                       </div>
                     }
                   </div>
-                  @if (plan.savingTips?.length) {
+                  @if (plan.savingTips.length) {
                     <div class="mt-4 rounded-2xl border border-natural-border bg-natural-beige-light p-4">
                       <h5 class="mb-2 flex items-center gap-1.5 font-serif text-[10px] font-bold uppercase tracking-wider text-natural-accent"><svg lucideHelpCircle class="h-3.5 w-3.5"></svg>{{ isVi() ? 'Khuyến nghị mộc mạc từ AI' : 'Expert Local Insights' }}</h5>
                       <ul class="list-disc space-y-1.5 pl-4 text-[11px] leading-relaxed text-natural-text/85">
