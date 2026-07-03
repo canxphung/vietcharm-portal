@@ -1,0 +1,43 @@
+{
+  "name": "vietcharm-angular",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "dev": "ng serve --proxy-config proxy.conf.json",
+    "api": "node --import tsx server.ts",
+    "start": "node dist/server.cjs",
+    "build": "node scripts/build-angular.mjs && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "packageManager": "pnpm@10.32.1",
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@google/genai": "^2.10.0",
+    "@lucide/angular": "^1.22.0",
+    "@tailwindcss/postcss": "^4.3.2",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "rxjs": "~7.8.0",
+    "tailwindcss": "^4.3.2",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.17",
+    "@angular/cli": "^21.2.17",
+    "@angular/compiler-cli": "^21.2.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.0.1",
+    "esbuild": "^0.28.1",
+    "prettier": "^3.8.1",
+    "puppeteer": "^25.2.1",
+    "tsx": "^4.22.4",
+    "typescript": "~5.9.2"
+  }
+}

@@ -1,0 +1,14 @@
+<div class="min-h-screen bg-natural-bg text-natural-text antialiased">
+  <app-header />
+  <main>
+    <router-outlet />
+  </main>
+  @if (!hideFloatingHelp()) {
+    <app-help-promo />
+  }
+  <app-footer />
+  <app-details-overlay />
+  <app-payment-modal />
+  <app-auth-modal />
+  <app-toast-outlet />
+</div>

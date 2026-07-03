@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@source "./app/**/*.{html,ts}";
+
+@theme {
+  /* Font Family Overrides */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+
+  /* Custom Palette for Natural Tones theme */
+  --color-natural-bg: #FDFCF8;
+  --color-natural-text: #4A4A35;
+  --color-natural-accent: #8C7A5B;
+  --color-natural-accent-light: #C4A484;
+  --color-natural-olive: #5A5A40;
+  --color-natural-border: #E6E2D3;
+  --color-natural-beige: #F5F2ED;
+  --color-natural-beige-light: #F9F7F2;
+  --color-natural-gold: #E3B04B;
+
+  /* Extended palette (covers previously hardcoded hex values) */
+  --color-natural-cream: #FAF8F5;
+  --color-natural-sand: #FAF6ED;
+  --color-natural-border-light: #EAE5D5;
+  --color-natural-bronze: #9E763A;
+  --color-natural-gold-dark: #C99030;
+  --color-natural-gold-deep: #D9A040;
+  --color-natural-ink: #1E1D15;
+  --color-natural-ink-soft: #3A3845;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-natural-bg);
+  color: var(--color-natural-text);
+}
+
+.text-\[9px\],
+.text-\[10px\] {
+  font-size: 0.75rem;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-natural-gold) 80%, white);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   Motion — entrance, scroll-reveal, page transitions
+   ============================================================ */
+
+@keyframes anim-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes anim-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes anim-pop {
+  0%   { opacity: 0; transform: scale(0.96) translateY(12px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* On-mount rise (staggerable via inline animation-delay) */
+.anim-rise { animation: anim-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-fade { animation: anim-fade 0.5s ease both; }
+.anim-pop  { animation: anim-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Hero stagger: children rise in sequence */
+.hero-stagger > * { animation: anim-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.hero-stagger > *:nth-child(2) { animation-delay: 0.19s; }
+.hero-stagger > *:nth-child(3) { animation-delay: 0.33s; }
+.hero-stagger > *:nth-child(4) { animation-delay: 0.47s; }
+.hero-stagger > *:nth-child(5) { animation-delay: 0.61s; }
+.hero-stagger > *:nth-child(6) { animation-delay: 0.75s; }
+
+/* Scroll reveal (toggled by RevealDirective when the element enters the viewport) */
+.reveal { opacity: 0; transform: translateY(28px); will-change: opacity, transform; }
+.reveal.is-visible { animation: anim-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+/* Page-enter fade for routed views */
+main > *:not(router-outlet) { animation: anim-fade 0.45s ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-rise, .anim-fade, .anim-pop, .hero-stagger > *, .reveal.is-visible, main > *:not(router-outlet) { animation: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   Luxe heritage polish — reusable visual primitives
+   (keep on-brand: cream / gold / bronze / olive earth tones)
+   ============================================================ */
+
+/* Slow cinematic zoom + drift for hero imagery */
+@keyframes kenburns {
+  0%   { transform: scale(1) translate3d(0, 0, 0); }
+  100% { transform: scale(1.12) translate3d(-1.5%, -1.5%, 0); }
+}
+
+/* Light sweep that glides across gold buttons on hover */
+@keyframes sheen-sweep {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(220%) skewX(-18deg); }
+}
+
+/* Gentle shimmer for the gold gradient text */
+@keyframes gold-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+/* Soft bob for the "scroll to explore" cue at the bottom of the hero */
+@keyframes scroll-cue {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50%      { transform: translateY(7px); opacity: 1; }
+}
+
+/* Slow vertical drift for ambient floating orbs / motes */
+@keyframes float-soft {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -16px, 0); }
+}
+
+.animate-kenburns {
+  animation: kenburns 22s ease-out forwards;
+  will-change: transform;
+}
+
+.animate-scroll-cue { animation: scroll-cue 1.8s ease-in-out infinite; }
+.animate-float-soft { animation: float-soft 9s ease-in-out infinite; will-change: transform; }
+
+/* Editorial film grain — a faint texture that lifts flat hero imagery into
+   something that feels shot, not stock. Pair with low opacity + overlay blend. */
+.grain-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Luminous gold gradient text (use on display headings / eyebrows) */
+.text-gold-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-natural-gold-dark) 0%,
+    var(--color-natural-gold) 35%,
+    #f4d98a 50%,
+    var(--color-natural-gold) 65%,
+    var(--color-natural-bronze) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gold-pan 6s ease-in-out infinite;
+}
+
+/* Frosted-glass surface — translucent panel over imagery */
+.glass-panel {
+  background-color: color-mix(in srgb, white 78%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid color-mix(in srgb, white 60%, var(--color-natural-gold) 22%);
+}
+
+/* Warm, brand-tinted elevation — softer & more premium than plain black shadow */
+.shadow-luxe {
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-natural-bronze) 12%, transparent),
+    0 18px 40px -18px color-mix(in srgb, var(--color-natural-bronze) 45%, transparent);
+}
+.shadow-luxe-lg {
+  box-shadow:
+    0 2px 6px color-mix(in srgb, var(--color-natural-bronze) 14%, transparent),
+    0 30px 60px -22px color-mix(in srgb, var(--color-natural-bronze) 55%, transparent);
+}
+
+/* Gold sheen overlay for buttons. Add `.btn-sheen` to a relative, overflow-hidden el. */
+.btn-sheen { position: relative; overflow: hidden; }
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, white 65%, transparent),
+    transparent
+  );
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+.btn-sheen:hover::after {
+  animation: sheen-sweep 0.85s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-kenburns,
+  .animate-scroll-cue,
+  .animate-float-soft,
+  .text-gold-gradient { animation: none; }
+  .btn-sheen:hover::after { animation: none; }
+}

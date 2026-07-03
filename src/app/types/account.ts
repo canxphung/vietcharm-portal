@@ -1,0 +1,53 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type { BookingCartItem } from './domain';
+
+export interface UserAccount {
+  id: string;
+  username: string;
+  /** Demo/local auth password. Existing saved demo users may not have this yet. */
+  password?: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  bio: string;
+  role: 'user' | 'admin';
+  avatar: string;
+  createdAt: string;
+}
+
+export interface PartnershipApplication {
+  id: string;
+  brandName: string;
+  contactName: string;
+  type: 'hotel' | 'taxi' | 'experience' | 'artisan' | 'guide' | 'vehicle';
+  phone: string;
+  email: string;
+  description: string;
+  status: 'pending' | 'approved' | 'rejected';
+  date: string;
+}
+
+export interface PromoVoucher {
+  code: string;
+  description: string;
+  discountType: 'percentage' | 'fixed';
+  value: number;
+  minSpend: number;
+  active: boolean;
+}
+
+export interface SystemBooking {
+  id: string;
+  userEmail: string;
+  userName: string;
+  items: BookingCartItem[];
+  total: number;
+  discountApplied: number;
+  finalTotal: number;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  date: string;
+}

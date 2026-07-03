@@ -1,0 +1,67 @@
+import { Routes } from '@angular/router';
+import { authGuard } from './services/auth.guard';
+import {
+  HomePageComponent,
+  NearbyPlacesPageComponent,
+  NotFoundPageComponent,
+  ProvincesPageComponent,
+  RecentlyViewedPageComponent,
+  ServiceProvincesPageComponent,
+  ServicesPageComponent,
+} from './pages/discovery.pages';
+import { ProvinceDetailPageComponent } from './pages/province-detail.page';
+import {
+  AdminPageComponent,
+  AuthPageComponent,
+  CartPageComponent,
+  ProfilePageComponent,
+} from './pages/account.pages';
+import {
+  AiExplorerPageComponent,
+  BlindTravelPageComponent,
+  HandbookPageComponent,
+  PartnershipPageComponent,
+  TaxiPageComponent,
+  ToursPageComponent,
+  TripRoomPageComponent,
+} from './pages/trip.pages';
+
+export const routes: Routes = [
+  { path: '', component: HomePageComponent },
+  { path: 'home', redirectTo: '', pathMatch: 'full' },
+  { path: 'regions', redirectTo: '', pathMatch: 'full' },
+  { path: 'discover', component: ProvincesPageComponent },
+  { path: 'provinces', redirectTo: 'discover', pathMatch: 'full' },
+  { path: 'province/:provinceId', component: ProvinceDetailPageComponent },
+  { path: 'services', component: ServicesPageComponent },
+  { path: 'services/all', redirectTo: 'services', pathMatch: 'full' },
+  { path: 'services/provinces', component: ServiceProvincesPageComponent },
+  { path: 'cart', component: CartPageComponent },
+  { path: 'basket', redirectTo: 'cart', pathMatch: 'full' },
+  { path: 'checkout', redirectTo: 'cart', pathMatch: 'full' },
+  { path: 'login', component: AuthPageComponent },
+  { path: 'signin', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'register', component: AuthPageComponent },
+  { path: 'signup', redirectTo: 'register', pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
+  { path: 'forgot-password', component: AuthPageComponent },
+  { path: 'forgot', redirectTo: 'forgot-password', pathMatch: 'full' },
+  { path: 'auth/forgot-password', redirectTo: 'forgot-password', pathMatch: 'full' },
+  { path: 'profile', component: ProfilePageComponent },
+  { path: 'admin', component: AdminPageComponent },
+  { path: 'ai-explorer', component: AiExplorerPageComponent },
+  { path: 'blind-travel', component: BlindTravelPageComponent },
+  { path: 'trip-room', component: TripRoomPageComponent, canActivate: [authGuard] },
+  { path: 'group-trip', redirectTo: 'trip-room', pathMatch: 'full' },
+  { path: 'taxi', component: TaxiPageComponent },
+  { path: 'tours', component: ToursPageComponent },
+  { path: 'handbook', component: HandbookPageComponent },
+  { path: 'partnership', component: PartnershipPageComponent, canActivate: [authGuard] },
+  { path: 'partner', redirectTo: 'partnership', pathMatch: 'full' },
+  { path: 'partnership-register', redirectTo: 'partnership', pathMatch: 'full' },
+  { path: 'recently-viewed', component: RecentlyViewedPageComponent },
+  { path: 'nearby-places', component: NearbyPlacesPageComponent },
+  { path: '404', component: NotFoundPageComponent },
+  { path: '**', component: NotFoundPageComponent },
+];
