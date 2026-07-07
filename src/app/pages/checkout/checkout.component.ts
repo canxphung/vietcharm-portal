@@ -1,40 +1,43 @@
-import { Component, computed, effect, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import {
+  LucideArrowLeft,
   LucideCheckCircle2,
   LucideCreditCard,
   LucideLock,
   LucideQrCode,
   LucideSmartphone,
   LucideTicket,
-  LucideTrash2,
 } from '@lucide/angular';
+import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
+import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
 
-type Step = 'cart' | 'checkout' | 'success';
 type Gateway = 'vnpay' | 'momo' | 'visa';
 
 @Component({
-  selector: 'app-payment-modal',
+  selector: 'app-checkout-page',
   standalone: true,
   imports: [
     DecimalPipe,
     FormsModule,
+    RouterLink,
+    LucideArrowLeft,
     LucideCheckCircle2,
     LucideCreditCard,
     LucideLock,
     LucideQrCode,
     LucideSmartphone,
     LucideTicket,
-    LucideTrash2,
   ],
-  templateUrl: './payment-modal.component.html',
-  styleUrl: './payment-modal.component.css',
+  templateUrl: './checkout.component.html',
+  styleUrl: './checkout.component.css',
 })
-export class PaymentModalComponent {
-  readonly step = signal<Step>('cart');
+export class CheckoutComponent {
+  readonly step = signal<'review' | 'success'>('review');
   readonly gateway = signal<Gateway>('visa');
   readonly cardNo = signal('');
   readonly cardHolder = signal('');
@@ -44,8 +47,8 @@ export class PaymentModalComponent {
   readonly voucherDiscount = signal(0);
   readonly appliedVoucher = signal<string | null>(null);
   readonly voucherError = signal('');
-  readonly confirmClearOpen = signal(false);
   readonly timestamp = new Date().toLocaleDateString('en-CA');
+  readonly bookingRef = signal('');
 
   readonly isVi = computed(() => this.i18n.isVi());
   readonly t = computed(() => this.i18n.dictionary());
@@ -64,18 +67,21 @@ export class PaymentModalComponent {
   constructor(
     readonly cart: CartService,
     readonly i18n: I18nService,
+    private readonly auth: AuthService,
+    private readonly catalog: CatalogService,
+    private readonly router: Router,
   ) {
-    // Sync to the requested initial step each time the modal opens.
-    effect(() => {
-      if (this.cart.isPaymentOpen()) {
-        this.step.set(this.cart.paymentInitialStep());
-      }
-    });
+    if (this.items().length === 0) {
+      void this.router.navigateByUrl('/cart');
+    }
   }
 
   gatewayClass(g: Gateway): string {
     const active = this.gateway() === g;
-    return 'flex flex-col items-center justify-center gap-1.5 rounded-xl border p-3 transition ' + (active ? 'border-natural-gold-deep bg-amber-500/5 text-stone-900' : 'border-stone-200 hover:bg-stone-50');
+    return (
+      'flex flex-col items-center justify-center gap-1.5 rounded-xl border p-3 transition ' +
+      (active ? 'border-natural-gold-deep bg-amber-500/5 text-stone-900' : 'border-stone-200 hover:bg-stone-50')
+    );
   }
 
   onVoucherInput(value: string): void {
@@ -89,24 +95,28 @@ export class PaymentModalComponent {
 
   applyVoucher(): void {
     const trimmed = this.voucherCode().trim().toUpperCase();
-    const base = this.basePayableAmount();
-    if (trimmed === 'VIETCHARM15') {
-      this.voucherDiscount.set(Math.round(base * 0.15));
-      this.appliedVoucher.set('VIETCHARM15');
-      this.voucherError.set('');
-    } else if (trimmed === 'HOIANWELCOME') {
-      this.voucherDiscount.set(100000);
-      this.appliedVoucher.set('HOIANWELCOME');
-      this.voucherError.set('');
-    } else if (trimmed === 'GENZTRAVEL') {
-      this.voucherDiscount.set(Math.round(base * 0.2));
-      this.appliedVoucher.set('GENZTRAVEL');
-      this.voucherError.set('');
-    } else if (trimmed === '') {
+    if (!trimmed) {
       this.voucherError.set(this.isVi() ? 'Vui lòng nhập mã giảm giá!' : 'Please enter a promo code!');
-    } else {
-      this.voucherError.set(this.isVi() ? 'Mã giảm giá này không hợp lệ hoặc đã hết hạn!' : 'Invalid voucher code or expired!');
+      return;
     }
+    const base = this.basePayableAmount();
+    const voucher = this.catalog.vouchers().find((v) => v.code === trimmed && v.active);
+    if (!voucher) {
+      this.voucherError.set(this.isVi() ? 'Mã giảm giá này không hợp lệ hoặc đã hết hạn!' : 'Invalid voucher code or expired!');
+      return;
+    }
+    if (base < voucher.minSpend) {
+      this.voucherError.set(
+        this.isVi()
+          ? `Đơn hàng cần tối thiểu ${voucher.minSpend.toLocaleString('vi-VN')}đ để dùng mã này.`
+          : `This code requires a minimum order of ${voucher.minSpend.toLocaleString('en-US')}đ.`,
+      );
+      return;
+    }
+    const discount = voucher.discountType === 'percentage' ? Math.round((base * voucher.value) / 100) : voucher.value;
+    this.voucherDiscount.set(discount);
+    this.appliedVoucher.set(voucher.code);
+    this.voucherError.set('');
   }
 
   removeVoucher(): void {
@@ -118,8 +128,20 @@ export class PaymentModalComponent {
   submitPayment(): void {
     this.paymentLoading.set(true);
     const steps = this.isVi()
-      ? ['Đang xác nhận phương thức thanh toán...', 'Kiểm tra thông tin đặt chỗ...', 'Xác nhận số tiền cần thanh toán...', 'Gửi yêu cầu giữ chỗ đến đối tác dịch vụ...', 'Tạo phiếu xác nhận VietCharm QR...']
-      : ['Confirming payment method...', 'Checking booking details...', 'Confirming payable amount...', 'Sending reservation request to service partners...', 'Issuing your VietCharm QR confirmation...'];
+      ? [
+          'Đang xác nhận phương thức thanh toán...',
+          'Kiểm tra thông tin đặt chỗ...',
+          'Xác nhận số tiền cần thanh toán...',
+          'Gửi yêu cầu giữ chỗ đến đối tác dịch vụ...',
+          'Tạo phiếu xác nhận VietCharm QR...',
+        ]
+      : [
+          'Confirming payment method...',
+          'Checking booking details...',
+          'Confirming payable amount...',
+          'Sending reservation request to service partners...',
+          'Issuing your VietCharm QR confirmation...',
+        ];
     let idx = 0;
     this.loadingText.set(steps[0]);
     this.loadingTimer = setInterval(() => {
@@ -129,38 +151,31 @@ export class PaymentModalComponent {
     setTimeout(() => {
       if (this.loadingTimer) clearInterval(this.loadingTimer);
       this.paymentLoading.set(false);
+      this.finalizeBooking();
       this.step.set('success');
     }, 4500);
+  }
+
+  private finalizeBooking(): void {
+    const user = this.auth.currentUser();
+    const items = this.items();
+    const booking = this.catalog.createBookingFromCart(
+      user?.email ?? '',
+      user?.fullName ?? '',
+      items,
+      this.totalCost(),
+      this.discountAmount() + this.voucherDiscount(),
+      this.payableAmount(),
+    );
+    this.bookingRef.set(booking.id);
   }
 
   print(): void {
     if (typeof window !== 'undefined') window.print();
   }
 
-  close(): void {
-    if (this.step() === 'success') this.cart.clearSelectedItems();
-    this.cart.closePayment();
-    this.reset();
-  }
-
   finish(): void {
     this.cart.clearSelectedItems();
-    this.cart.closePayment();
-    this.reset();
-  }
-
-  doClear(): void {
-    this.cart.clearSelectedItems();
-    this.confirmClearOpen.set(false);
-  }
-
-  private reset(): void {
-    this.voucherCode.set('');
-    this.voucherDiscount.set(0);
-    this.appliedVoucher.set(null);
-    this.voucherError.set('');
-    this.gateway.set('visa');
-    this.cardNo.set('');
-    this.cardHolder.set('');
+    void this.router.navigateByUrl('/profile');
   }
 }

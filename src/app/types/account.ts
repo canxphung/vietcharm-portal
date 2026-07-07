@@ -51,3 +51,15 @@ export interface SystemBooking {
   status: 'pending' | 'confirmed' | 'cancelled';
   date: string;
 }
+
+/** A customer review tied to a specific bookable service and its author. */
+export interface ServiceReview {
+  id: string;
+  itemId: string;
+  userEmail: string;
+  author: string;
+  avatar: string;
+  rating: number;
+  date: string;
+  comment: string;
+}

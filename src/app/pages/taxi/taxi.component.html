@@ -5,10 +5,6 @@
         <p class="mx-auto max-w-lg text-xs leading-relaxed text-stone-500">{{ i18n.isVi() ? 'Cổng tính phí tự động chuẩn xác theo km. Xe sạch sẽ, máy lạnh mát rượi, tài xế bản địa cực am hiểu Hội An và Đà Nẵng.' : 'Get instant exact distance calculations and flat-rate transparent billing with polite multilingual drivers.' }}</p>
       </div>
 
-      @if (bookedMsg()) {
-        <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center text-xs font-bold text-emerald-800">✓ {{ i18n.isVi() ? 'Đã thêm dịch vụ đưa đón vào giỏ hàng! Vui lòng mở giỏ hàng để tiếp tục thanh toán.' : 'Taxi ride added to cart. Open your cart to continue checkout.' }}</div>
-      }
-
       <div class="grid grid-cols-1 items-stretch gap-8 md:grid-cols-2">
         <form class="space-y-5 rounded-3xl border border-natural-border bg-white p-6 shadow-xs" (ngSubmit)="book()">
           <h3 class="flex items-center gap-1.5 border-b border-natural-border pb-2 font-serif text-base font-bold uppercase text-natural-accent"><svg lucideCar class="h-5 w-5 text-amber-500"></svg><span>{{ i18n.isVi() ? 'Thông tin lộ trình' : 'Route Details' }}</span></h3>

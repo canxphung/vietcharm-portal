@@ -10,6 +10,7 @@ import {
   LucideCar,
   LucideCheckCircle2,
   LucideChevronDown,
+  LucideChevronLeft,
   LucideChevronRight,
   LucideCompass,
   LucideHeadset,
@@ -22,8 +23,11 @@ import {
 import { activitiesByProvince, attractionsByProvince, hotelsByProvince, provinces, vehicles } from '@/data';
 import { getProvinceHero } from '@/constants/provinceHero';
 import type { ViewableItem } from '@/types';
+import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
+import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
+import { ToastService } from '@/services/toast.service';
 import { UiStateService } from '@/services/ui-state.service';
 import { RevealDirective } from '@/directives/reveal.directive';
 
@@ -59,6 +63,7 @@ const SEED_REVIEWS: DetailReview[] = [
     LucideCar,
     LucideCheckCircle2,
     LucideChevronDown,
+    LucideChevronLeft,
     LucideChevronRight,
     LucideCompass,
     LucideHeadset,
@@ -76,12 +81,25 @@ export class ProvinceDetailComponent {
   readonly i18n = inject(I18nService);
   readonly ui = inject(UiStateService);
   readonly cart = inject(CartService);
+  readonly auth = inject(AuthService);
+  readonly catalog = inject(CatalogService);
+  private readonly toast = inject(ToastService);
 
   private readonly params = toSignal(this.route.paramMap);
   readonly provinceId = computed(() => this.params()?.get('provinceId') ?? 'quang-nam');
   readonly province = computed(() => provinces.find((p) => p.id === this.provinceId()));
   readonly hero = computed(() => getProvinceHero(this.provinceId()));
   readonly t = computed(() => this.i18n.dictionary());
+
+  readonly activeSlide = signal(0);
+  readonly heroSlides = computed(() => {
+    const gallery = [
+      this.hero().image,
+      ...this.attractions().map((a) => a.image),
+      ...this.hotels().map((h) => h.image),
+    ];
+    return Array.from(new Set(gallery)).slice(0, 4);
+  });
 
   readonly today = new Date().toISOString().split('T')[0];
   readonly searchInput = signal('');
@@ -100,8 +118,6 @@ export class ProvinceDetailComponent {
   readonly category = signal<ActivityCategory>('all');
   readonly priceTier = signal<PriceTier>('all');
 
-  readonly reviews = signal<DetailReview[]>([...SEED_REVIEWS]);
-  readonly revAuthor = signal('');
   readonly revRating = signal(5);
   readonly revComment = signal('');
   readonly subEmail = signal('');
@@ -110,6 +126,25 @@ export class ProvinceDetailComponent {
   readonly attractions = computed(() => attractionsByProvince[this.provinceId()] ?? []);
   readonly hotels = computed(() => hotelsByProvince[this.provinceId()] ?? []);
   readonly activities = computed(() => activitiesByProvince[this.provinceId()] ?? []);
+
+  readonly provinceReviewId = computed(() => `province-${this.provinceId()}`);
+  readonly reviews = computed<DetailReview[]>(() => {
+    const submitted = this.catalog.reviewsForItem(this.provinceReviewId()).map((r) => ({
+      id: r.id,
+      author: r.author,
+      avatar: r.avatar,
+      rating: r.rating,
+      date: r.date,
+      comment: r.comment,
+    }));
+    return [...submitted, ...SEED_REVIEWS];
+  });
+  readonly canReview = computed(() => {
+    const user = this.auth.currentUser();
+    if (!user) return false;
+    const ids = [...this.attractions().map((a) => a.id), ...this.hotels().map((h) => h.id), ...this.activities().map((a) => a.id)];
+    return this.catalog.canReviewAny(ids, user.email);
+  });
 
   readonly filteredHotels = computed(() => {
     const q = this.query();
@@ -142,6 +177,22 @@ export class ProvinceDetailComponent {
 
   constructor() {
     effect(() => this.ui.selectedProvinceId.set(this.provinceId()));
+    effect(() => {
+      this.provinceId();
+      this.activeSlide.set(0);
+    });
+  }
+
+  nextSlide(): void {
+    this.activeSlide.update((i) => (i + 1) % this.heroSlides().length);
+  }
+
+  prevSlide(): void {
+    this.activeSlide.update((i) => (i - 1 + this.heroSlides().length) % this.heroSlides().length);
+  }
+
+  goToSlide(index: number): void {
+    this.activeSlide.set(index);
   }
 
   private offset(days: number): string {
@@ -224,14 +275,33 @@ export class ProvinceDetailComponent {
   }
 
   addReview(): void {
-    if (!this.revAuthor().trim() || !this.revComment().trim()) return;
-    this.reviews.update((list) => [
-      { id: `rev-${Date.now()}`, author: this.revAuthor().trim(), avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80', rating: this.revRating(), date: new Date().toISOString().split('T')[0], comment: this.revComment().trim() },
-      ...list,
-    ]);
-    this.revAuthor.set('');
-    this.revComment.set('');
-    this.revRating.set(5);
+    const comment = this.revComment().trim();
+    if (!comment) return;
+    this.ui.requireAuth(() => {
+      const user = this.auth.currentUser()!;
+      if (!this.canReview()) {
+        this.toast.showToast({
+          type: 'info',
+          title: this.i18n.isVi() ? 'Chưa thể đánh giá' : 'Review not available yet',
+          message: this.i18n.isVi()
+            ? 'Bạn cần đặt và thanh toán thành công một dịch vụ tại đây trước khi viết đánh giá.'
+            : 'You need a confirmed booking for a service here before you can leave a review.',
+        });
+        return;
+      }
+      this.catalog.addReview({
+        id: `rev-${Date.now()}`,
+        itemId: this.provinceReviewId(),
+        userEmail: user.email,
+        author: user.fullName,
+        avatar: user.avatar,
+        rating: this.revRating(),
+        date: new Date().toISOString().split('T')[0],
+        comment,
+      });
+      this.revComment.set('');
+      this.revRating.set(5);
+    }, this.i18n.isVi() ? 'Đăng nhập để viết đánh giá.' : 'Sign in to write a review.');
   }
 
   subscribe(): void {

@@ -3,8 +3,6 @@ import type { BookingCartItem } from '@/types';
 import { I18nService } from './i18n.service';
 import { ToastService } from './toast.service';
 
-export type PaymentInitialStep = 'cart' | 'checkout';
-
 function cartKey(item: BookingCartItem): string {
   return item.cartKey ?? item.id;
 }
@@ -13,8 +11,6 @@ function cartKey(item: BookingCartItem): string {
 export class CartService {
   private readonly deselectedKeys = signal<string[]>([]);
   readonly items = signal<BookingCartItem[]>([]);
-  readonly isPaymentOpen = signal(false);
-  readonly paymentInitialStep = signal<PaymentInitialStep>('checkout');
   readonly cartCount = computed(() => this.items().reduce((sum, item) => sum + item.quantity, 0));
   readonly selectedItems = computed(() => this.items().filter((item) => !this.deselectedKeys().includes(cartKey(item))));
   readonly selectedCount = computed(() => this.selectedItems().reduce((sum, item) => sum + item.quantity, 0));
@@ -42,15 +38,6 @@ export class CartService {
   clearSelectedItems(): void {
     this.items.update((items) => items.filter((item) => this.deselectedKeys().includes(cartKey(item))));
     this.deselectedKeys.set([]);
-  }
-
-  openPayment(step: PaymentInitialStep = 'checkout'): void {
-    this.paymentInitialStep.set(step);
-    this.isPaymentOpen.set(true);
-  }
-
-  closePayment(): void {
-    this.isPaymentOpen.set(false);
   }
 
   addItem(item: BookingCartItem): void {

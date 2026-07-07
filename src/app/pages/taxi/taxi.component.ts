@@ -2,7 +2,7 @@ import { Component, computed, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   LucideAlertCircle,
   LucideArrowRight,
@@ -89,7 +89,6 @@ export class TaxiComponent {
   readonly bookingDate = signal(new Date().toISOString().split('T')[0]);
   readonly bookingTime = signal('14:00');
   readonly specialNote = signal('');
-  readonly bookedMsg = signal(false);
 
   readonly pickupLoc = computed(() => this.locations.find((l) => l.id === this.pickup()) ?? this.locations[0]);
   readonly dropoffLoc = computed(() => this.locations.find((l) => l.id === this.dropoff()) ?? this.locations[2]);
@@ -106,6 +105,7 @@ export class TaxiComponent {
     readonly i18n: I18nService,
     private readonly cart: CartService,
     private readonly ui: UiStateService,
+    private readonly router: Router,
   ) {}
 
   vehClass(v: 'vios-4' | 'xpander-7' | 'sirius-moto'): string {
@@ -127,9 +127,7 @@ export class TaxiComponent {
     };
     this.ui.requireAuth(() => {
       this.cart.addItem(item);
-      this.cart.openPayment();
-      this.bookedMsg.set(true);
-      setTimeout(() => this.bookedMsg.set(false), 3000);
+      void this.router.navigateByUrl('/checkout');
     }, this.i18n.isVi() ? 'Đăng nhập để đặt và thanh toán.' : 'Sign in to book and pay.');
   }
 }

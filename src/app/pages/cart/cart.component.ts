@@ -87,6 +87,7 @@ export class CartComponent {
     readonly cart: CartService,
     readonly i18n: I18nService,
     private readonly ui: UiStateService,
+    private readonly router: Router,
   ) {}
 
   typeLabel(type: BookingCartItem['type']): string {
@@ -119,6 +120,9 @@ export class CartComponent {
   }
 
   checkout(): void {
-    this.ui.requireAuth(() => this.cart.openPayment('checkout'), this.isVi() ? 'Đăng nhập để thanh toán.' : 'Sign in to checkout.');
+    this.ui.requireAuth(
+      () => void this.router.navigateByUrl('/checkout'),
+      this.isVi() ? 'Đăng nhập để thanh toán.' : 'Sign in to checkout.',
+    );
   }
 }

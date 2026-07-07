@@ -142,10 +142,9 @@
                   </div>
                 }
               </div>
-              <form class="space-y-3 rounded-2xl border border-natural-border bg-natural-cream p-5" (ngSubmit)="addReview()">
-                <h4 class="text-xs font-black uppercase tracking-wider text-stone-500">✍️ {{ isVi() ? 'Viết đánh giá của riêng bạn' : 'Leave your feedback' }}</h4>
-                <div class="grid grid-cols-2 gap-3">
-                  <input type="text" required [(ngModel)]="reviewerName" name="reviewerName" [placeholder]="isVi() ? 'Tên của bạn...' : 'Your name...'" class="rounded-xl border border-natural-border bg-white px-3 py-2.5 text-xs focus:border-natural-accent focus:outline-none" />
+              @if (canReview()) {
+                <form class="space-y-3 rounded-2xl border border-natural-border bg-natural-cream p-5" (ngSubmit)="addReview(item)">
+                  <h4 class="text-xs font-black uppercase tracking-wider text-stone-500">✍️ {{ isVi() ? 'Viết đánh giá của riêng bạn' : 'Leave your feedback' }}</h4>
                   <div class="flex items-center gap-2 rounded-xl border border-natural-border bg-white px-3 py-2.5">
                     <span class="text-[10px] font-bold uppercase text-stone-400">{{ isVi() ? 'Điểm:' : 'Stars:' }}</span>
                     <div class="flex gap-0.5">
@@ -154,10 +153,15 @@
                       }
                     </div>
                   </div>
+                  <textarea required rows="2" [(ngModel)]="reviewComment" name="reviewComment" [placeholder]="isVi() ? 'Chia sẻ trải nghiệm khách quan của bạn về dịch vụ...' : 'Write an honest feedback on how we can improve...'" class="w-full resize-none rounded-xl border border-natural-border bg-white p-3 text-xs leading-relaxed focus:border-natural-accent focus:outline-none"></textarea>
+                  <button type="submit" class="w-full rounded-xl bg-natural-accent py-2.5 text-xs font-black uppercase tracking-widest text-white transition hover:bg-natural-olive">{{ isVi() ? 'Đăng đánh giá' : 'Submit Review' }}</button>
+                </form>
+              } @else {
+                <div class="flex items-start gap-3 rounded-2xl border border-dashed border-natural-border bg-natural-cream p-5 text-xs leading-relaxed text-stone-600">
+                  <svg lucideInfo class="mt-0.5 h-4 w-4 shrink-0 text-natural-accent"></svg>
+                  <p>{{ isVi() ? 'Bạn cần đặt và thanh toán thành công dịch vụ này trước khi có thể viết đánh giá, để đảm bảo mọi đánh giá đến từ khách đã trải nghiệm thật.' : 'You need a confirmed booking for this service before you can leave a review, so every review comes from a real guest.' }}</p>
                 </div>
-                <textarea required rows="2" [(ngModel)]="reviewComment" name="reviewComment" [placeholder]="isVi() ? 'Chia sẻ trải nghiệm khách quan của bạn về dịch vụ...' : 'Write an honest feedback on how we can improve...'" class="w-full resize-none rounded-xl border border-natural-border bg-white p-3 text-xs leading-relaxed focus:border-natural-accent focus:outline-none"></textarea>
-                <button type="submit" class="w-full rounded-xl bg-natural-accent py-2.5 text-xs font-black uppercase tracking-widest text-white transition hover:bg-natural-olive">{{ isVi() ? 'Đăng đánh giá' : 'Submit Review' }}</button>
-              </form>
+              }
             </div>
           </div>
 

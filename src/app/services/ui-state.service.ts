@@ -85,6 +85,10 @@ export class UiStateService {
     this.recentlyViewed.set([]);
   }
 
+  removeRecentlyViewed(id: string): void {
+    this.recentlyViewed.update((items) => items.filter((item) => item.id !== id));
+  }
+
   toggleFavorite(item: ViewableItem): void {
     this.favorites.update((items) =>
       items.some((favorite) => favorite.id === item.id)

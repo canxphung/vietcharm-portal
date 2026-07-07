@@ -37,7 +37,12 @@ export const routes: Routes = [
       import('./pages/cart/cart.component').then((m) => m.CartComponent),
   },
   { path: 'basket', redirectTo: 'cart', pathMatch: 'full' },
-  { path: 'checkout', redirectTo: 'cart', pathMatch: 'full' },
+  {
+    path: 'checkout',
+    loadComponent: () =>
+      import('./pages/checkout/checkout.component').then((m) => m.CheckoutComponent),
+    canActivate: [authGuard],
+  },
   {
     path: 'login',
     loadComponent: () =>
@@ -118,6 +123,11 @@ export const routes: Routes = [
     path: 'nearby-places',
     loadComponent: () =>
       import('./pages/nearby-places/nearby-places.component').then((m) => m.NearbyPlacesComponent),
+  },
+  {
+    path: 'support/:topic',
+    loadComponent: () =>
+      import('./pages/support/support.component').then((m) => m.SupportComponent),
   },
   {
     path: '404',

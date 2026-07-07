@@ -23,7 +23,9 @@ import {
   LucideShare2,
 } from '@lucide/angular';
 import type { BookingCartItem, ViewableItem } from '@/types';
+import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
+import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
 import { ToastService } from '@/services/toast.service';
 import { UiStateService } from '@/services/ui-state.service';
@@ -118,12 +120,29 @@ export class DetailsOverlayComponent {
   readonly roomsCount = signal(1);
   readonly successMsg = signal(false);
 
-  readonly reviews = signal<UserReview[]>([...MOCK_REVIEWS]);
-  readonly reviewerName = signal('');
   readonly reviewRating = signal(5);
   readonly reviewComment = signal('');
 
   readonly isVi = computed(() => this.i18n.isVi());
+  readonly reviews = computed<UserReview[]>(() => {
+    const item = this.ui.selectedItem();
+    if (!item) return [...MOCK_REVIEWS];
+    const submitted = this.catalog.reviewsForItem(item.id).map((r) => ({
+      id: r.id,
+      author: r.author,
+      avatar: r.avatar,
+      rating: r.rating,
+      date: r.date,
+      comment: r.comment,
+    }));
+    return [...submitted, ...MOCK_REVIEWS];
+  });
+  readonly canReview = computed(() => {
+    const item = this.ui.selectedItem();
+    const user = this.auth.currentUser();
+    if (!item || !user) return false;
+    return this.catalog.canReview(item.id, user.email);
+  });
   readonly minCheckout = computed(() => {
     const d = new Date(this.checkInDate());
     d.setDate(d.getDate() + 1);
@@ -136,6 +155,8 @@ export class DetailsOverlayComponent {
     readonly ui: UiStateService,
     readonly i18n: I18nService,
     readonly cart: CartService,
+    private readonly auth: AuthService,
+    private readonly catalog: CatalogService,
     private readonly toast: ToastService,
     private readonly router: Router,
   ) {
@@ -291,7 +312,7 @@ export class DetailsOverlayComponent {
     this.ui.requireAuth(() => {
       if (!this.cart.isInCart(this.cartKey(item))) this.addSelection(item);
       this.ui.clearSelectedItem();
-      void this.router.navigateByUrl('/cart');
+      void this.router.navigateByUrl('/checkout');
     }, this.isVi() ? 'Đăng nhập để thanh toán.' : 'Sign in to checkout.');
   }
 
@@ -322,22 +343,34 @@ export class DetailsOverlayComponent {
     }
   }
 
-  addReview(): void {
-    if (!this.reviewerName().trim() || !this.reviewComment().trim()) return;
-    this.reviews.update((list) => [
-      {
+  addReview(item: ViewableItem): void {
+    const comment = this.reviewComment().trim();
+    if (!comment) return;
+    this.ui.requireAuth(() => {
+      const user = this.auth.currentUser()!;
+      if (!this.catalog.canReview(item.id, user.email)) {
+        this.toast.showToast({
+          type: 'info',
+          title: this.isVi() ? 'Chưa thể đánh giá' : 'Review not available yet',
+          message: this.isVi()
+            ? 'Bạn cần đặt và thanh toán thành công dịch vụ này trước khi viết đánh giá.'
+            : 'You need a confirmed booking for this service before you can leave a review.',
+        });
+        return;
+      }
+      this.catalog.addReview({
         id: `review-details-${Date.now()}`,
-        author: this.reviewerName(),
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+        itemId: item.id,
+        userEmail: user.email,
+        author: user.fullName,
+        avatar: user.avatar,
         rating: this.reviewRating(),
         date: new Date().toISOString().split('T')[0],
-        comment: this.reviewComment(),
-      },
-      ...list,
-    ]);
-    this.reviewerName.set('');
-    this.reviewComment.set('');
-    this.reviewRating.set(5);
+        comment,
+      });
+      this.reviewComment.set('');
+      this.reviewRating.set(5);
+    }, this.isVi() ? 'Đăng nhập để viết đánh giá.' : 'Sign in to write a review.');
   }
 
   gallery(item: ViewableItem): Array<{ src: string; label: string }> {

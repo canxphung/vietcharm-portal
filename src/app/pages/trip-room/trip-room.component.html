@@ -188,7 +188,7 @@
                     </div>
                     <div class="flex flex-wrap justify-end gap-2">
                       <a routerLink="/" class="rounded-xl border border-natural-border bg-white px-6 py-3 text-xs font-bold text-natural-accent transition hover:bg-natural-sand">{{ isVi() ? 'Quay lại Trang Chủ' : 'Back to Home' }}</a>
-                      <button type="button" class="rounded-xl bg-natural-accent px-6 py-3 font-serif text-xs font-bold text-white transition hover:bg-natural-olive" (click)="alert(isVi() ? '✓ Đã mở bước thanh toán đặt cọc nhóm!' : '✓ Opening group deposit checkout!')">{{ isVi() ? 'Thanh toán đặt cọc trọn gói' : 'Pay Group Deposit' }}</button>
+                      <button type="button" class="rounded-xl bg-natural-accent px-6 py-3 font-serif text-xs font-bold text-white transition hover:bg-natural-olive" (click)="payGroupDeposit()">{{ isVi() ? 'Thanh toán đặt cọc trọn gói' : 'Pay Group Deposit' }}</button>
                     </div>
                   </div>
                 }
