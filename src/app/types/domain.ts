@@ -67,6 +67,14 @@ export interface BookingCartItem {
   quantity: number;
   image: string;
   details?: string;
+  /** ISO date (check-in / pickup / activity date) marking when the service is actually used. */
+  serviceDate?: string;
+  /** Selected package tier, when the source item offers standard/premium/luxury packages. */
+  packageKey?: 'standard' | 'premium' | 'luxury';
+  /** Total price at the 'standard' package tier, used to rescale price when the tier changes in-cart. */
+  basePrice?: number;
+  /** Customer-confirmed receipt (check-in done / vehicle picked up / activity attended). Required before review. */
+  receivedConfirmed?: boolean;
 }
 
 export interface BookingSearchCriteria {

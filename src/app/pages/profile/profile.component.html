@@ -98,18 +98,46 @@
                         @for (b of userBookings(user); track b.id) {
                           <div class="space-y-3 rounded-2xl border border-stone-200 p-4 transition hover:shadow-md">
                             <div class="flex flex-wrap items-start justify-between gap-2"><div><span class="font-mono text-[10px] font-bold text-stone-500">MÃ ĐƠN: {{ b.id }}</span><h4 class="mt-0.5 text-xs font-bold text-stone-800">{{ b.date }}</h4></div><span [class]="'rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ' + (b.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' : b.status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800')">{{ b.status === 'confirmed' ? 'Đã thanh toán (Thẻ vé hợp lệ)' : b.status === 'pending' ? 'Chờ xử lý' : 'Đã hủy' }}</span></div>
-                            <div class="space-y-2 rounded-xl bg-stone-50 p-3 text-xs">
+                            <div class="space-y-2.5 rounded-xl bg-stone-50 p-3 text-xs">
                               @for (it of b.items; track it.cartKey || it.id) {
-                                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-2 last:border-0 last:pb-0">
-                                  <button type="button" class="min-w-0 flex-1 text-left text-stone-600 transition hover:text-natural-accent" (click)="viewBookingItem(it)">
-                                    <span class="line-clamp-1">{{ it.name }} <strong class="text-stone-800">x{{ it.quantity }}</strong></span>
-                                  </button>
-                                  <span class="font-mono text-stone-800">{{ it.price * it.quantity | number : '1.0-0' }}đ</span>
+                                <div class="border-b border-stone-100 pb-2.5 last:border-0 last:pb-0">
+                                  <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <button type="button" class="min-w-0 flex-1 text-left text-stone-600 transition hover:text-natural-accent" (click)="viewBookingItem(it)">
+                                      <span class="line-clamp-1">{{ it.name }} <strong class="text-stone-800">x{{ it.quantity }}</strong></span>
+                                    </button>
+                                    <span class="font-mono text-stone-800">{{ it.price * it.quantity | number : '1.0-0' }}đ</span>
+                                  </div>
+                                  @if (it.details) { <p class="mt-1 line-clamp-1 text-[10px] text-stone-400">{{ it.details }}</p> }
                                   @if (b.status === 'confirmed') {
-                                    @if (hasUserReviewed(user, it.id)) {
-                                      <span class="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold uppercase text-emerald-700">✓ {{ i18n.isVi() ? 'Đã đánh giá' : 'Reviewed' }}</span>
-                                    } @else {
-                                      <button type="button" class="shrink-0 rounded-full bg-natural-accent px-2.5 py-1 text-[9px] font-bold uppercase text-white transition hover:bg-natural-olive" (click)="viewBookingItem(it, true)">{{ i18n.isVi() ? 'Viết đánh giá' : 'Write review' }}</button>
+                                    <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                      @if (hasUserReviewed(user, it.id)) {
+                                        <span class="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold uppercase text-emerald-700">✓ {{ i18n.isVi() ? 'Đã đánh giá' : 'Reviewed' }}</span>
+                                      } @else if (!isItemUsable(it)) {
+                                        <span class="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-bold uppercase text-amber-700">⏳ {{ serviceDateLabel(it) || (i18n.isVi() ? 'Chưa đến ngày sử dụng' : 'Not used yet') }}</span>
+                                      } @else if (!catalog.isReceivedConfirmed(it)) {
+                                        <button type="button" class="shrink-0 rounded-full bg-stone-800 px-2.5 py-1 text-[9px] font-bold uppercase text-white transition hover:bg-stone-900" (click)="confirmReceived(b, it)">{{ i18n.isVi() ? 'Xác nhận đã nhận' : 'Confirm received' }}</button>
+                                      } @else if (catalog.isWithinReviewWindow(it)) {
+                                        <button type="button" class="shrink-0 rounded-full bg-natural-accent px-2.5 py-1 text-[9px] font-bold uppercase text-white transition hover:bg-natural-olive" (click)="viewBookingItem(it, true)">{{ i18n.isVi() ? 'Viết đánh giá' : 'Write review' }}</button>
+                                      } @else {
+                                        <span class="shrink-0 rounded-full bg-stone-200 px-2 py-0.5 text-[9px] font-bold uppercase text-stone-500">{{ i18n.isVi() ? 'Đã hết hạn đánh giá' : 'Review window closed' }}</span>
+                                      }
+                                      @if (!hasReported(b, it)) {
+                                        <button type="button" class="shrink-0 rounded-full border border-red-200 px-2.5 py-1 text-[9px] font-bold uppercase text-red-600 transition hover:bg-red-50" (click)="openReport(b, it)">{{ i18n.isVi() ? 'Báo cáo vấn đề' : 'Report an issue' }}</button>
+                                      } @else {
+                                        <span class="shrink-0 rounded-full bg-red-50 px-2 py-0.5 text-[9px] font-bold uppercase text-red-500">{{ i18n.isVi() ? 'Đã gửi khiếu nại' : 'Report sent' }}</span>
+                                      }
+                                    </div>
+                                    @if (isReporting(b, it)) {
+                                      <div class="mt-2 space-y-2 rounded-xl border border-red-100 bg-red-50/50 p-3">
+                                        <select [ngModel]="reportReason()" (ngModelChange)="reportReason.set($event)" name="reportReason" class="w-full rounded-lg border border-red-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-stone-700 outline-none">
+                                          @for (reason of reportReasons(); track reason) { <option [value]="reason">{{ reason }}</option> }
+                                        </select>
+                                        <textarea [ngModel]="reportMessage()" (ngModelChange)="reportMessage.set($event)" name="reportMessage" rows="2" [placeholder]="i18n.isVi() ? 'Mô tả cụ thể trải nghiệm không tốt của bạn...' : 'Describe what went wrong...'" class="w-full resize-none rounded-lg border border-red-200 bg-white p-2 text-[11px] leading-relaxed outline-none"></textarea>
+                                        <div class="flex justify-end gap-2">
+                                          <button type="button" class="rounded-lg px-2.5 py-1 text-[10px] font-bold uppercase text-stone-500 transition hover:bg-stone-100" (click)="closeReport()">{{ i18n.isVi() ? 'Hủy' : 'Cancel' }}</button>
+                                          <button type="button" class="rounded-lg bg-red-600 px-3 py-1 text-[10px] font-bold uppercase text-white transition hover:bg-red-700" (click)="submitReport(user, b, it)">{{ i18n.isVi() ? 'Gửi khiếu nại' : 'Submit report' }}</button>
+                                        </div>
+                                      </div>
                                     }
                                   }
                                 </div>
@@ -161,6 +189,37 @@
                 }
                 @case ('reviews') {
                   <div class="space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-natural-gold/40 bg-gradient-to-br from-amber-50 to-natural-cream p-5 shadow-sm">
+                      <div class="flex items-center gap-3">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-natural-gold/25 text-natural-bronze"><svg lucideAward class="h-5 w-5"></svg></div>
+                        <div>
+                          <p class="text-[10px] font-black uppercase tracking-wider text-stone-500">{{ i18n.isVi() ? 'Điểm tích lũy đánh giá' : 'Review loyalty points' }}</p>
+                          <p class="font-serif text-xl font-black text-natural-ink">{{ loyaltyPoints(user) }} {{ i18n.isVi() ? 'điểm' : 'pts' }}</p>
+                        </div>
+                      </div>
+                      <p class="max-w-xs text-[11px] leading-relaxed text-stone-600">{{ i18n.isVi() ? 'Viết thêm ' + reviewsUntilNextMilestone(user) + ' đánh giá nữa để nhận một mã giảm giá tri ân dành riêng cho bạn!' : 'Write ' + reviewsUntilNextMilestone(user) + ' more review(s) to unlock a thank-you discount code just for you!' }}</p>
+                    </div>
+
+                    <div class="space-y-4 rounded-3xl border border-natural-border bg-white p-6 shadow-sm">
+                      <h3 class="flex items-center gap-2 border-b border-natural-border pb-3 font-serif text-base font-bold text-stone-800"><svg lucideBadgeCheck class="h-5 w-5 text-stone-700"></svg><span>{{ i18n.isVi() ? 'Chờ xác nhận đã nhận dịch vụ' : 'Awaiting Receipt Confirmation' }}</span>@if (awaitingConfirmation(user).length > 0) { <span class="rounded-full bg-stone-200 px-1.5 py-0.5 text-[9px] font-black text-stone-700">{{ awaitingConfirmation(user).length }}</span> }</h3>
+                      @if (awaitingConfirmation(user).length === 0) {
+                        <p class="py-4 text-center text-xs text-stone-400">{{ i18n.isVi() ? 'Không có dịch vụ nào cần xác nhận.' : 'Nothing needs confirming right now.' }}</p>
+                      } @else {
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          @for (r of awaitingConfirmation(user); track r.item.cartKey || r.item.id) {
+                            <div class="flex items-center gap-3 rounded-2xl border border-stone-150 bg-stone-50 p-3">
+                              <img [src]="r.item.image" [alt]="r.item.name" class="h-12 w-12 shrink-0 rounded-xl object-cover" />
+                              <div class="min-w-0 flex-1">
+                                <h4 class="truncate text-xs font-bold text-stone-800">{{ r.item.name }}</h4>
+                                <span class="font-mono text-[11px] text-natural-accent">{{ r.item.price | number : '1.0-0' }}đ</span>
+                              </div>
+                              <button type="button" class="shrink-0 rounded-full bg-stone-800 px-3 py-1.5 text-[10px] font-bold uppercase text-white transition hover:bg-stone-900" (click)="confirmReceived(r.booking, r.item)">{{ i18n.isVi() ? 'Xác nhận' : 'Confirm' }}</button>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+
                     <div class="space-y-4 rounded-3xl border border-natural-border bg-white p-6 shadow-sm">
                       <h3 class="flex items-center gap-2 border-b border-natural-border pb-3 font-serif text-base font-bold text-stone-800"><svg lucideStar class="h-5 w-5 text-amber-500"></svg><span>{{ i18n.isVi() ? 'Dịch vụ chưa đánh giá' : 'Not Yet Reviewed' }}</span>@if (pendingReviewItems(user).length > 0) { <span class="rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-black text-amber-700">{{ pendingReviewItems(user).length }}</span> }</h3>
                       @if (pendingReviewItems(user).length === 0) {
@@ -175,6 +234,25 @@
                                 <span class="font-mono text-[11px] text-natural-accent">{{ it.price | number : '1.0-0' }}đ</span>
                               </div>
                               <button type="button" class="shrink-0 rounded-full bg-natural-accent px-3 py-1.5 text-[10px] font-bold uppercase text-white transition hover:bg-natural-olive" (click)="viewBookingItem(it, true)">{{ i18n.isVi() ? 'Đánh giá' : 'Review' }}</button>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+
+                    <div class="space-y-4 rounded-3xl border border-natural-border bg-white p-6 shadow-sm">
+                      <h3 class="flex items-center gap-2 border-b border-natural-border pb-3 font-serif text-base font-bold text-stone-800"><svg lucideClock3 class="h-5 w-5 text-stone-400"></svg><span>{{ i18n.isVi() ? 'Đã đặt - Chưa đến ngày sử dụng' : 'Booked - Not Used Yet' }}</span>@if (upcomingItems(user).length > 0) { <span class="rounded-full bg-stone-200 px-1.5 py-0.5 text-[9px] font-black text-stone-600">{{ upcomingItems(user).length }}</span> }</h3>
+                      @if (upcomingItems(user).length === 0) {
+                        <p class="py-4 text-center text-xs text-stone-400">{{ i18n.isVi() ? 'Không có dịch vụ nào đang chờ tới ngày sử dụng.' : 'Nothing waiting on its service date.' }}</p>
+                      } @else {
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          @for (it of upcomingItems(user); track it.cartKey || it.id) {
+                            <div class="flex items-center gap-3 rounded-2xl border border-dashed border-stone-200 bg-stone-50 p-3">
+                              <img [src]="it.image" [alt]="it.name" class="h-12 w-12 shrink-0 rounded-xl object-cover" />
+                              <div class="min-w-0 flex-1">
+                                <h4 class="truncate text-xs font-bold text-stone-800">{{ it.name }}</h4>
+                                <span class="text-[10px] font-semibold text-stone-500">{{ serviceDateLabel(it) }}</span>
+                              </div>
                             </div>
                           }
                         </div>

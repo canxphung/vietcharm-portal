@@ -65,3 +65,17 @@ export interface ServiceReview {
   date: string;
   comment: string;
 }
+
+/** A customer complaint reported straight to VietCharm about a bad experience. */
+export interface ServiceComplaint {
+  id: string;
+  bookingId: string;
+  itemId: string;
+  itemName: string;
+  userEmail: string;
+  userName: string;
+  reason: string;
+  message: string;
+  status: 'pending' | 'reviewing' | 'resolved';
+  date: string;
+}

@@ -102,6 +102,15 @@
                   </div>
                 }
 
+                @if (hasVehicleItem()) {
+                  <div class="space-y-1.5 rounded-xl border border-amber-200 bg-amber-50/50 p-3">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-700">{{ isVi() ? 'Số CCCD/CMND (bắt buộc để thuê xe)' : 'ID Card Number (required to rent a vehicle)' }}</label>
+                    <input type="text" [ngModel]="vehicleIdNumber()" (ngModelChange)="onVehicleIdInput($event)" name="vehicleId" [placeholder]="isVi() ? 'VD: 012345678901' : 'e.g. 012345678901'" class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-bold text-stone-700 outline-none focus:border-natural-accent" />
+                    <p class="text-[10px] leading-relaxed text-amber-800">{{ isVi() ? 'VietCharm giữ thông tin CCCD làm căn cứ giao nhận xe, không dùng cho mục đích khác.' : 'VietCharm keeps your ID on file only to verify vehicle hand-over, never for other purposes.' }}</p>
+                    @if (vehicleIdError()) { <p class="text-[10px] font-bold text-red-600">{{ vehicleIdError() }}</p> }
+                  </div>
+                }
+
                 <button type="submit" [disabled]="items().length === 0" class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-center text-xs font-black text-white shadow-md transition hover:bg-emerald-600 disabled:opacity-50"><svg lucideLock class="h-4 w-4"></svg><span>{{ (isVi() ? 'XÁC NHẬN THANH TOÁN ' : 'CONFIRM PAYMENT ') + (payableAmount() | number : '1.0-0') + ' đ' }}</span></button>
               </form>
             </aside>
