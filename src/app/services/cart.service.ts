@@ -8,6 +8,12 @@ function cartKey(item: BookingCartItem): string {
   return item.cartKey ?? item.id;
 }
 
+const PACKAGE_MODIFIERS: Record<NonNullable<BookingCartItem['packageKey']>, number> = {
+  standard: 1,
+  premium: 1.3,
+  luxury: 1.6,
+};
+
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly deselectedKeys = signal<string[]>([]);
@@ -181,5 +187,47 @@ export class CartService {
 
   isInCart(id: string): boolean {
     return this.items().some((item) => cartKey(item) === id || item.id === id);
+  }
+
+  incrementQuantity(key: string): void {
+    this.items.update((items) => items.map((item) => (cartKey(item) === key ? { ...item, quantity: item.quantity + 1 } : item)));
+  }
+
+  decrementQuantity(key: string): void {
+    const target = this.items().find((item) => cartKey(item) === key);
+    if (!target) return;
+    if (target.quantity <= 1) {
+      this.removeItem(key);
+      return;
+    }
+    this.items.update((items) => items.map((item) => (cartKey(item) === key ? { ...item, quantity: item.quantity - 1 } : item)));
+  }
+
+  packageLabel(key: NonNullable<BookingCartItem['packageKey']>): string {
+    const vi = this.i18n.isVi();
+    if (key === 'premium') return vi ? 'Gói Cao Cấp (Premium VIP)' : 'Premium VIP Experience';
+    if (key === 'luxury') return vi ? 'Gói Sang Trọng (All-Inclusive)' : 'Luxury All-Inclusive';
+    return vi ? 'Gói Tiêu Chuẩn (Cơ bản)' : 'Standard Package';
+  }
+
+  /** Switches the package tier for a cart item in place, rescaling its price from the stored base price. */
+  setItemPackage(key: string, packageKey: NonNullable<BookingCartItem['packageKey']>): void {
+    this.items.update((items) =>
+      items.map((item) => {
+        if (cartKey(item) !== key || item.basePrice == null) return item;
+        const price = Math.round(item.basePrice * PACKAGE_MODIFIERS[packageKey]);
+        const details = this.withPackageLabel(item.details, packageKey);
+        return { ...item, packageKey, price, details };
+      }),
+    );
+  }
+
+  private withPackageLabel(details: string | undefined, packageKey: NonNullable<BookingCartItem['packageKey']>): string | undefined {
+    if (!details) return details;
+    const segments = details.split(' | ');
+    const prefixMatch = segments[0].match(/^[^:]*:\s*/);
+    if (!prefixMatch) return details;
+    segments[0] = prefixMatch[0] + this.packageLabel(packageKey);
+    return segments.join(' | ');
   }
 }

@@ -81,6 +81,7 @@ export class CartComponent {
 
   readonly confirmClearOpen = signal(false);
   readonly isVi = computed(() => this.i18n.isVi());
+  readonly packageKeys: Array<NonNullable<BookingCartItem['packageKey']>> = ['standard', 'premium', 'luxury'];
 
   // Shared with the checkout page so both agree on totals and any applied voucher.
   readonly totalCost = this.cart.totalCost;

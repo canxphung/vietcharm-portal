@@ -53,10 +53,13 @@ export class CheckoutComponent {
   readonly loadingText = signal('');
   readonly timestamp = new Date().toLocaleDateString('en-CA');
   readonly bookingRef = signal('');
+  readonly vehicleIdNumber = signal('');
+  readonly vehicleIdError = signal('');
 
   readonly isVi = computed(() => this.i18n.isVi());
   readonly t = computed(() => this.i18n.dictionary());
   readonly items = computed(() => this.cart.selectedItems());
+  readonly hasVehicleItem = computed(() => this.items().some((item) => item.type === 'vehicle'));
 
   // Delegate to the shared cart pricing/voucher state so cart and checkout always agree.
   readonly totalCost = this.cart.totalCost;
@@ -85,7 +88,16 @@ export class CheckoutComponent {
     this.cardNo.set(value.replace(/\D/g, '').substring(0, 16));
   }
 
+  onVehicleIdInput(value: string): void {
+    this.vehicleIdNumber.set(value);
+    this.vehicleIdError.set('');
+  }
+
   submitPayment(): void {
+    if (this.hasVehicleItem() && this.vehicleIdNumber().trim().length < 9) {
+      this.vehicleIdError.set(this.isVi() ? 'Vui lòng nhập số CCCD/CMND hợp lệ để thuê xe.' : 'Please enter a valid ID card number to rent a vehicle.');
+      return;
+    }
     this.paymentLoading.set(true);
     const steps = this.isVi()
       ? [
@@ -118,7 +130,13 @@ export class CheckoutComponent {
 
   private finalizeBooking(): void {
     const user = this.auth.currentUser();
-    const items = this.items();
+    const idLabel = this.isVi() ? 'CCCD thuê xe' : 'Rental ID';
+    const idValue = this.vehicleIdNumber().trim();
+    const items = this.items().map((item) =>
+      item.type === 'vehicle' && idValue
+        ? { ...item, details: item.details ? `${item.details} | ${idLabel}: ${idValue}` : `${idLabel}: ${idValue}` }
+        : item,
+    );
     const booking = this.catalog.createBookingFromCart(
       user?.email ?? '',
       user?.fullName ?? '',

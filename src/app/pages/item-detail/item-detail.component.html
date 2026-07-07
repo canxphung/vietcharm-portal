@@ -159,7 +159,7 @@
               } @else {
                 <div id="write-review-block" class="flex items-start gap-3 rounded-2xl border border-dashed border-natural-border bg-natural-cream p-5 text-xs leading-relaxed text-stone-600">
                   <svg lucideInfo class="mt-0.5 h-4 w-4 shrink-0 text-natural-accent"></svg>
-                  <p>{{ isVi() ? 'Bạn cần đặt và thanh toán thành công dịch vụ này trước khi có thể viết đánh giá, để đảm bảo mọi đánh giá đến từ khách đã trải nghiệm thật.' : 'You need a confirmed booking for this service before you can leave a review, so every review comes from a real guest.' }}</p>
+                  <p>{{ isVi() ? 'Bạn cần đặt, thanh toán và xác nhận đã nhận dịch vụ (trong hồ sơ cá nhân) trước khi có thể viết đánh giá, để đảm bảo mọi đánh giá đến từ khách đã trải nghiệm thật. Lưu ý đánh giá chỉ mở trong một thời gian nhất định sau khi sử dụng dịch vụ.' : 'You need a confirmed booking, and to confirm receipt in your profile, before you can leave a review, so every review comes from a real guest. Note that reviewing is only open for a limited time after the service date.' }}</p>
                 </div>
               }
             </div>
@@ -204,6 +204,23 @@
                     <div class="space-y-2">
                       <label class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-stone-500"><svg lucideCalendar class="h-3.5 w-3.5 text-natural-accent"></svg><span>{{ isVi() ? 'Vui lòng chọn ngày khởi hành:' : 'Please Select Departure Date:' }}</span></label>
                       <input type="date" [min]="today" [(ngModel)]="selectedDate" name="selectedDate" class="w-full rounded-2xl border border-natural-border bg-natural-cream p-3 text-xs font-bold text-stone-700" />
+                    </div>
+                  }
+
+                  @if (item.type === 'vehicle') {
+                    <div class="grid grid-cols-2 gap-3 rounded-3xl border border-natural-border bg-natural-cream p-3">
+                      <div class="space-y-1.5">
+                        <label class="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-stone-500"><svg lucideMapPin class="h-3 w-3 text-natural-accent"></svg><span>{{ isVi() ? 'Điểm nhận xe:' : 'Pickup Location:' }}</span></label>
+                        <select [ngModel]="pickupLocationId()" (ngModelChange)="pickupLocationId.set($event)" name="pickupLocation" class="w-full rounded-xl border border-natural-border bg-white p-2.5 text-xs font-bold text-stone-700 outline-none">
+                          @for (loc of rentalLocations; track loc.id) { <option [value]="loc.id">{{ loc.name }}</option> }
+                        </select>
+                      </div>
+                      <div class="space-y-1.5">
+                        <label class="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-stone-500"><svg lucideMapPin class="h-3 w-3 text-natural-accent"></svg><span>{{ isVi() ? 'Điểm trả xe:' : 'Return Location:' }}</span></label>
+                        <select [ngModel]="returnLocationId()" (ngModelChange)="returnLocationId.set($event)" name="returnLocation" class="w-full rounded-xl border border-natural-border bg-white p-2.5 text-xs font-bold text-stone-700 outline-none">
+                          @for (loc of rentalLocations; track loc.id) { <option [value]="loc.id">{{ loc.name }}</option> }
+                        </select>
+                      </div>
                     </div>
                   }
 

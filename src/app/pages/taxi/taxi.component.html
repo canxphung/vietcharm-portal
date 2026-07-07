@@ -34,6 +34,12 @@
               </div>
             </div>
             <div>
+              <label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Số điện thoại liên hệ chuyến đi' : 'Contact Phone for This Ride' }}</label>
+              <input type="tel" class="w-full rounded-xl border border-natural-border bg-natural-cream px-3 py-2 outline-none" [ngModel]="contactPhone()" (ngModelChange)="onContactPhone($event)" name="contactPhone" placeholder="0987654321" required />
+              <p class="mt-1 text-[10px] leading-relaxed text-stone-400">{{ i18n.isVi() ? 'Mặc định lấy theo hồ sơ của bạn, nhưng bạn có thể đổi sang số khác chỉ dùng cho chuyến này.' : 'Defaults to your profile phone, but you can use a different number just for this ride.' }}</p>
+              @if (contactPhoneError()) { <p class="mt-1 text-[10px] font-bold text-red-600">{{ contactPhoneError() }}</p> }
+            </div>
+            <div>
               <label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Ghi chú cho tài xế (VD: Sân bay ga quốc tế...)' : 'Driver Notes' }}</label>
               <input type="text" class="w-full rounded-xl border border-natural-border bg-natural-cream px-3 py-2 outline-none" [ngModel]="specialNote()" (ngModelChange)="specialNote.set($event)" name="note" placeholder="Ex: Đón tôi ở cột số 5, ga đến quốc nội Đà Nẵng..." />
             </div>

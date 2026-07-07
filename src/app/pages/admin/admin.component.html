@@ -4,10 +4,11 @@
           <p class="text-xs font-black uppercase tracking-[0.25em] text-natural-accent">Admin</p>
           <h1 class="font-serif text-4xl font-black text-natural-ink">{{ i18n.isVi() ? 'Bảng điều khiển VietCharm' : 'VietCharm dashboard' }}</h1>
         </div>
-        <div class="grid gap-5 md:grid-cols-3">
+        <div class="grid gap-5 md:grid-cols-4">
           <div class="stat"><span>{{ auth.users().length }}</span>{{ i18n.isVi() ? 'Người dùng' : 'Users' }}</div>
           <div class="stat"><span>{{ catalog.applications().length }}</span>{{ i18n.isVi() ? 'Đối tác' : 'Partners' }}</div>
           <div class="stat"><span>{{ catalog.bookings().length }}</span>{{ i18n.isVi() ? 'Booking' : 'Bookings' }}</div>
+          <div class="stat"><span>{{ catalog.complaints().length }}</span>{{ i18n.isVi() ? 'Khiếu nại' : 'Reports' }}</div>
         </div>
         <div class="mt-8 grid gap-6 lg:grid-cols-2">
           <section class="panel">
@@ -31,6 +32,26 @@
                   <option value="pending">pending</option>
                   <option value="approved">approved</option>
                   <option value="rejected">rejected</option>
+                </select>
+              </div>
+            }
+          </section>
+          <section class="panel lg:col-span-2">
+            <h2 class="panel-title">{{ i18n.isVi() ? 'Khiếu nại từ khách hàng' : 'Customer reports' }}</h2>
+            @if (catalog.complaints().length === 0) {
+              <p class="text-xs text-stone-400">{{ i18n.isVi() ? 'Chưa có khiếu nại nào.' : 'No reports yet.' }}</p>
+            }
+            @for (c of catalog.complaints(); track c.id) {
+              <div class="row items-start">
+                <div>
+                  <b>{{ c.itemName }}</b>
+                  <small>{{ c.userName }} ({{ c.userEmail }}) - {{ c.reason }} - {{ c.date }}</small>
+                  <p class="mt-1 max-w-xl text-xs text-stone-600">{{ c.message }}</p>
+                </div>
+                <select class="select" [ngModel]="c.status" (ngModelChange)="catalog.setComplaintStatus(c.id, $event)">
+                  <option value="pending">pending</option>
+                  <option value="reviewing">reviewing</option>
+                  <option value="resolved">resolved</option>
                 </select>
               </div>
             }

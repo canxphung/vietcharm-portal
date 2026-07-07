@@ -39,7 +39,7 @@ import {
   LucideUserPlus,
   LucideUsersRound,
 } from '@lucide/angular';
-import type { BookingCartItem, UserAccount } from '@/types';
+import type { BookingCartItem, SystemBooking, UserAccount } from '@/types';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';
@@ -47,6 +47,11 @@ import { I18nService } from '@/services/i18n.service';
 import { ToastService } from '@/services/toast.service';
 import { UiStateService } from '@/services/ui-state.service';
 import { LogoComponent } from '@/components/logo/logo.component';
+
+interface BookingItemRef {
+  booking: SystemBooking;
+  item: BookingCartItem;
+}
 
 @Component({
   selector: 'app-profile-page',
@@ -56,8 +61,10 @@ import { LogoComponent } from '@/components/logo/logo.component';
     FormsModule,
     RouterLink,
     LucideAward,
+    LucideBadgeCheck,
     LucideCalendar,
     LucideClipboardList,
+    LucideClock3,
     LucideFileText,
     LucideGift,
     LucideHeart,
@@ -82,12 +89,16 @@ export class ProfileComponent {
   readonly draftBio = signal('');
   readonly draftAvatar = signal('');
   readonly usernameError = signal('');
+  readonly reportingKey = signal<string | null>(null);
+  readonly reportReason = signal('');
+  readonly reportMessage = signal('');
 
   constructor(
     readonly auth: AuthService,
     readonly i18n: I18nService,
     readonly ui: UiStateService,
     readonly catalog: CatalogService,
+    private readonly toast: ToastService,
   ) {}
 
   tabBtn(name: string, color: 'accent' | 'rose'): string {
@@ -108,19 +119,56 @@ export class ProfileComponent {
     return this.userReviews(user).some((r) => r.itemId === itemId);
   }
 
-  pendingReviewItems(user: UserAccount): BookingCartItem[] {
+  private itemKey(it: BookingCartItem): string {
+    return it.cartKey ?? it.id;
+  }
+
+  private unreviewedConfirmedRefs(user: UserAccount): BookingItemRef[] {
     const reviewedIds = new Set(this.userReviews(user).map((r) => r.itemId));
     const seenIds = new Set<string>();
-    const items: BookingCartItem[] = [];
+    const refs: BookingItemRef[] = [];
     for (const booking of this.userBookings(user)) {
       if (booking.status !== 'confirmed') continue;
-      for (const it of booking.items) {
-        if (reviewedIds.has(it.id) || seenIds.has(it.id)) continue;
-        seenIds.add(it.id);
-        items.push(it);
+      for (const item of booking.items) {
+        if (reviewedIds.has(item.id) || seenIds.has(item.id)) continue;
+        seenIds.add(item.id);
+        refs.push({ booking, item });
       }
     }
-    return items;
+    return refs;
+  }
+
+  /** Confirmed and unreviewed, but the service date hasn't arrived yet. */
+  upcomingItems(user: UserAccount): BookingCartItem[] {
+    return this.unreviewedConfirmedRefs(user)
+      .filter((r) => !this.catalog.isItemUsable(r.item))
+      .map((r) => r.item);
+  }
+
+  /** Usable now, but the customer hasn't confirmed they actually received the service yet. */
+  awaitingConfirmation(user: UserAccount): BookingItemRef[] {
+    return this.unreviewedConfirmedRefs(user).filter(
+      (r) => this.catalog.isItemUsable(r.item) && !this.catalog.isReceivedConfirmed(r.item),
+    );
+  }
+
+  /** Received and unreviewed, still inside the review window — ready to review now. */
+  pendingReviewItems(user: UserAccount): BookingCartItem[] {
+    return this.unreviewedConfirmedRefs(user)
+      .filter((r) => this.catalog.isItemReviewReady(r.item))
+      .map((r) => r.item);
+  }
+
+  isItemUsable(it: BookingCartItem): boolean {
+    return this.catalog.isItemUsable(it);
+  }
+
+  serviceDateLabel(it: BookingCartItem): string {
+    if (!it.serviceDate) return '';
+    const vi = this.i18n.isVi();
+    return this.catalog.isItemUsable(it)
+      ? (vi ? 'Đã sử dụng ' : 'Used ') + it.serviceDate
+      : (vi ? 'Sử dụng từ ' : 'Usable from ') + it.serviceDate;
   }
 
   viewBookingItem(it: BookingCartItem, scrollToReview = false): void {
@@ -128,6 +176,69 @@ export class ProfileComponent {
       { id: it.id, type: it.type, name: it.name, image: it.image, price: it.price, description: it.details },
       { scrollToReview },
     );
+  }
+
+  confirmReceived(booking: SystemBooking, it: BookingCartItem): void {
+    this.catalog.confirmItemReceived(booking.id, this.itemKey(it));
+    this.toast.showToast({
+      type: 'success',
+      title: this.i18n.isVi() ? 'Đã xác nhận nhận dịch vụ' : 'Receipt confirmed',
+      message: this.i18n.isVi() ? 'Giờ bạn có thể viết đánh giá cho dịch vụ này.' : 'You can now write a review for this service.',
+    });
+  }
+
+  reportReasons(): string[] {
+    return this.i18n.isVi()
+      ? ['Chất lượng dịch vụ kém', 'Không đúng như mô tả', 'Thái độ phục vụ', 'Vấn đề thanh toán', 'Khác']
+      : ['Poor service quality', 'Not as described', 'Staff attitude', 'Payment issue', 'Other'];
+  }
+
+  hasReported(booking: SystemBooking, it: BookingCartItem): boolean {
+    return this.catalog.complaints().some((c) => c.bookingId === booking.id && c.itemId === it.id);
+  }
+
+  isReporting(booking: SystemBooking, it: BookingCartItem): boolean {
+    return this.reportingKey() === `${booking.id}::${this.itemKey(it)}`;
+  }
+
+  openReport(booking: SystemBooking, it: BookingCartItem): void {
+    this.reportingKey.set(`${booking.id}::${this.itemKey(it)}`);
+    this.reportReason.set(this.reportReasons()[0]);
+    this.reportMessage.set('');
+  }
+
+  closeReport(): void {
+    this.reportingKey.set(null);
+  }
+
+  submitReport(user: UserAccount, booking: SystemBooking, it: BookingCartItem): void {
+    if (!this.reportMessage().trim()) return;
+    this.catalog.addComplaint({
+      id: `cmp-${Date.now()}`,
+      bookingId: booking.id,
+      itemId: it.id,
+      itemName: it.name,
+      userEmail: user.email,
+      userName: user.fullName,
+      reason: this.reportReason(),
+      message: this.reportMessage().trim(),
+      status: 'pending',
+      date: new Date().toISOString().split('T')[0],
+    });
+    this.closeReport();
+    this.toast.showToast({
+      type: 'success',
+      title: this.i18n.isVi() ? 'Đã gửi khiếu nại' : 'Report submitted',
+      message: this.i18n.isVi() ? 'VietCharm sẽ xem xét và phản hồi sớm nhất.' : 'VietCharm will review and respond soon.',
+    });
+  }
+
+  loyaltyPoints(user: UserAccount): number {
+    return this.catalog.loyaltyPoints(user.email);
+  }
+
+  reviewsUntilNextMilestone(user: UserAccount): number {
+    return this.catalog.reviewsUntilNextMilestone(user.email);
   }
 
   toggleEdit(user: UserAccount): void {

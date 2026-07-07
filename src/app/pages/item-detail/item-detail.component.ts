@@ -23,6 +23,7 @@ import {
   LucideShare2,
 } from '@lucide/angular';
 import type { BookingCartItem, ViewableItem } from '@/types';
+import { TOURIST_LOCATIONS } from '@/constants/seed/touristLocations';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';
@@ -119,6 +120,9 @@ export class ItemDetailComponent {
   readonly childrenCount = signal(0);
   readonly roomsCount = signal(1);
   readonly successMsg = signal(false);
+  readonly rentalLocations = TOURIST_LOCATIONS;
+  readonly pickupLocationId = signal(TOURIST_LOCATIONS[0].id);
+  readonly returnLocationId = signal(TOURIST_LOCATIONS[0].id);
 
   readonly reviewRating = signal(5);
   readonly reviewComment = signal('');
@@ -180,6 +184,8 @@ export class ItemDetailComponent {
         this.childrenCount.set(0);
         this.roomsCount.set(1);
         this.successMsg.set(false);
+        this.pickupLocationId.set(TOURIST_LOCATIONS[0].id);
+        this.returnLocationId.set(TOURIST_LOCATIONS[0].id);
       }
     });
 
@@ -282,6 +288,10 @@ export class ItemDetailComponent {
     ].join('__');
   }
 
+  locationName(id: string): string {
+    return this.rentalLocations.find((l) => l.id === id)?.name ?? id;
+  }
+
   private detailsStr(item: ViewableItem): string {
     const vi = this.isVi();
     const pkg = this.packages().find((p) => p.key === this.selectedPackage())!.name;
@@ -289,7 +299,14 @@ export class ItemDetailComponent {
     if (this.isActivityLike(item)) {
       return vi ? `Gói: ${pkg} | Ngày: ${dateStr} | Vé: ${this.adultsCount()} Người lớn, ${this.childrenCount()} Trẻ em` : `Package: ${pkg} | Date: ${dateStr} | Tickets: ${this.adultsCount()} Adults, ${this.childrenCount()} Children`;
     }
-    const tail = item.type === 'hotel' ? (vi ? `Phòng: ${this.roomsCount()} | Đêm: ${this.nights()}` : `Rooms: ${this.roomsCount()} | Nights: ${this.nights()}`) : vi ? `Số ngày thuê: ${this.nights()}` : `Rental days: ${this.nights()}`;
+    if (item.type === 'vehicle') {
+      const pickupName = this.locationName(this.pickupLocationId());
+      const returnName = this.locationName(this.returnLocationId());
+      return vi
+        ? `Gói: ${pkg} | Ngày: ${dateStr} | Số ngày thuê: ${this.nights()} | Nhận xe: ${pickupName} | Trả xe: ${returnName}`
+        : `Package: ${pkg} | Date: ${dateStr} | Rental days: ${this.nights()} | Pickup: ${pickupName} | Return: ${returnName}`;
+    }
+    const tail = vi ? `Phòng: ${this.roomsCount()} | Đêm: ${this.nights()}` : `Rooms: ${this.roomsCount()} | Nights: ${this.nights()}`;
     return vi ? `Gói: ${pkg} | Ngày: ${dateStr} | ${tail}` : `Package: ${pkg} | Date: ${dateStr} | ${tail}`;
   }
 
@@ -307,6 +324,7 @@ export class ItemDetailComponent {
 
   private addSelection(item: ViewableItem): void {
     const cartType: BookingCartItem['type'] = item.type === 'hotel' || item.type === 'vehicle' ? item.type : 'activity';
+    const serviceDate = item.type === 'hotel' || item.type === 'vehicle' ? this.checkInDate() : this.selectedDate();
     this.cart.addItem({
       cartKey: this.cartKey(item),
       id: item.id,
@@ -316,6 +334,9 @@ export class ItemDetailComponent {
       quantity: 1,
       image: item.image,
       details: this.detailsStr(item),
+      serviceDate,
+      packageKey: this.selectedPackage(),
+      basePrice: Math.round(this.total(item) / this.modifier()),
     });
     this.successMsg.set(true);
     setTimeout(() => this.successMsg.set(false), 3000);
@@ -375,7 +396,7 @@ export class ItemDetailComponent {
         });
         return;
       }
-      this.catalog.addReview({
+      const milestoneVoucher = this.catalog.addReview({
         id: `review-details-${Date.now()}`,
         itemId: item.id,
         itemName: item.name,
@@ -389,6 +410,16 @@ export class ItemDetailComponent {
       });
       this.reviewComment.set('');
       this.reviewRating.set(5);
+      if (milestoneVoucher) {
+        this.toast.showToast({
+          type: 'success',
+          title: this.isVi() ? '🎉 Cảm ơn bạn đã tích cực đánh giá!' : '🎉 Thanks for being an active reviewer!',
+          message: this.isVi()
+            ? `Bạn nhận được mã ${milestoneVoucher.code} giảm ${milestoneVoucher.value}% cho lần đặt tiếp theo.`
+            : `You earned code ${milestoneVoucher.code} for ${milestoneVoucher.value}% off your next booking.`,
+          durationMs: 10000,
+        });
+      }
     }, this.isVi() ? 'Đăng nhập để viết đánh giá.' : 'Sign in to write a review.');
   }
 

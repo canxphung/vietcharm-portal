@@ -112,11 +112,23 @@
                           }
                           {{ typeLabel(item.type) }}
                         </span>
-                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700"><svg lucideUsersRound class="h-3.5 w-3.5"></svg>x{{ item.quantity }}</span>
+                        <div class="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 pl-2 pr-1 text-emerald-700">
+                          <svg lucideUsersRound class="h-3.5 w-3.5"></svg>
+                          <button type="button" class="flex h-5 w-5 items-center justify-center rounded-full text-xs font-black transition hover:bg-emerald-100" (click)="cart.decrementQuantity(item.cartKey || item.id)">−</button>
+                          <span class="min-w-[1.1rem] text-center text-[10px] font-black">x{{ item.quantity }}</span>
+                          <button type="button" class="flex h-5 w-5 items-center justify-center rounded-full text-xs font-black transition hover:bg-emerald-100" (click)="cart.incrementQuantity(item.cartKey || item.id)">+</button>
+                        </div>
                       </div>
                       <h3 class="line-clamp-2 text-base font-black leading-snug text-stone-950">{{ item.name }}</h3>
                       <p class="text-[11px] font-bold text-natural-accent">{{ stepTitle(item) }}</p>
                       @if (item.details) { <p class="line-clamp-2 text-xs leading-relaxed text-stone-500">{{ item.details }}</p> }
+                      @if (item.packageKey) {
+                        <div class="flex flex-wrap gap-1.5 pt-0.5">
+                          @for (pkg of packageKeys; track pkg) {
+                            <button type="button" [class]="'rounded-lg border px-2 py-1 text-[10px] font-bold transition ' + (item.packageKey === pkg ? 'border-natural-accent bg-natural-accent text-white' : 'border-stone-200 bg-white text-stone-600 hover:border-natural-accent/50')" (click)="cart.setItemPackage(item.cartKey || item.id, pkg)">{{ cart.packageLabel(pkg) }}</button>
+                          }
+                        </div>
+                      }
                     </div>
                     <div class="flex items-center justify-between gap-4 border-t border-natural-border pt-3 sm:flex-col sm:items-end sm:border-t-0 sm:pt-0">
                       <div class="text-left sm:text-right">

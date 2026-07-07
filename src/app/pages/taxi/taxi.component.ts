@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -38,6 +38,7 @@ import { provinces } from '@/data';
 import { PREDEFINED_COMBOS } from '@/constants/seed/tourCombos';
 import { TOURIST_LOCATIONS } from '@/constants/seed/touristLocations';
 import type { BookingCartItem, PartnershipApplication, ViewableItem } from '@/types';
+import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
@@ -89,6 +90,8 @@ export class TaxiComponent {
   readonly bookingDate = signal(new Date().toISOString().split('T')[0]);
   readonly bookingTime = signal('14:00');
   readonly specialNote = signal('');
+  readonly contactPhone = signal('');
+  private contactPhoneEdited = false;
 
   readonly pickupLoc = computed(() => this.locations.find((l) => l.id === this.pickup()) ?? this.locations[0]);
   readonly dropoffLoc = computed(() => this.locations.find((l) => l.id === this.dropoff()) ?? this.locations[2]);
@@ -101,19 +104,38 @@ export class TaxiComponent {
   readonly pricePerKm = computed(() => (this.vehicleType() === 'vios-4' ? 12000 : this.vehicleType() === 'xpander-7' ? 16000 : 6000));
   readonly totalCost = computed(() => Math.round(this.distance() * this.pricePerKm()));
 
+  readonly contactPhoneError = signal('');
+
   constructor(
     readonly i18n: I18nService,
+    private readonly auth: AuthService,
     private readonly cart: CartService,
     private readonly ui: UiStateService,
     private readonly router: Router,
-  ) {}
+  ) {
+    // Prefill from the profile phone, but never overwrite what the customer typed for this booking.
+    effect(() => {
+      const user = this.auth.currentUser();
+      if (user && !this.contactPhoneEdited) this.contactPhone.set(user.phone);
+    });
+  }
 
   vehClass(v: 'vios-4' | 'xpander-7' | 'sirius-moto'): string {
     return 'space-y-1 rounded-xl border p-2.5 text-center transition ' + (this.vehicleType() === v ? 'bg-natural-accent text-white border-natural-accent' : 'bg-white border-natural-border hover:bg-stone-50');
   }
 
+  onContactPhone(value: string): void {
+    this.contactPhoneEdited = true;
+    this.contactPhone.set(value);
+    this.contactPhoneError.set('');
+  }
+
   book(): void {
     if (this.pickup() === this.dropoff()) return;
+    if (this.contactPhone().trim().length < 9) {
+      this.contactPhoneError.set(this.i18n.isVi() ? 'Vui lòng nhập số điện thoại liên hệ cho chuyến đi này.' : 'Please enter a contact phone number for this ride.');
+      return;
+    }
     const veh = this.vehicleType();
     const vehicleName = veh === 'vios-4' ? 'Taxi 4 Chỗ Toyota Vios (VietCharm Transfer)' : veh === 'xpander-7' ? 'Taxi 7 Chỗ Mitsubishi Xpander (VietCharm Transfer)' : 'Xe Ôm Công Nghệ Sirius/Vision (VietCharm Transfer)';
     const item: BookingCartItem = {
@@ -123,7 +145,8 @@ export class TaxiComponent {
       price: this.totalCost(),
       quantity: 1,
       image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=400&q=80',
-      details: `${this.i18n.isVi() ? 'Ngày đưa đón' : 'Scheduled at'}: ${this.bookingDate()} ${this.bookingTime()}. ${this.i18n.isVi() ? 'Quãng đường:' : 'Dist:'} ${this.distance()}km.`,
+      details: `${this.i18n.isVi() ? 'Ngày đưa đón' : 'Scheduled at'}: ${this.bookingDate()} ${this.bookingTime()}. ${this.i18n.isVi() ? 'Quãng đường:' : 'Dist:'} ${this.distance()}km. ${this.i18n.isVi() ? 'SĐT liên hệ:' : 'Contact phone:'} ${this.contactPhone().trim()}.`,
+      serviceDate: this.bookingDate(),
     };
     this.ui.requireAuth(() => {
       this.cart.addItem(item);

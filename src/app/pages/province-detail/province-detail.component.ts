@@ -289,7 +289,7 @@ export class ProvinceDetailComponent {
         });
         return;
       }
-      this.catalog.addReview({
+      const milestoneVoucher = this.catalog.addReview({
         id: `rev-${Date.now()}`,
         itemId: this.provinceReviewId(),
         itemName: this.province()?.name ?? this.provinceId(),
@@ -303,6 +303,16 @@ export class ProvinceDetailComponent {
       });
       this.revComment.set('');
       this.revRating.set(5);
+      if (milestoneVoucher) {
+        this.toast.showToast({
+          type: 'success',
+          title: this.i18n.isVi() ? '🎉 Cảm ơn bạn đã tích cực đánh giá!' : '🎉 Thanks for being an active reviewer!',
+          message: this.i18n.isVi()
+            ? `Bạn nhận được mã ${milestoneVoucher.code} giảm ${milestoneVoucher.value}% cho lần đặt tiếp theo.`
+            : `You earned code ${milestoneVoucher.code} for ${milestoneVoucher.value}% off your next booking.`,
+          durationMs: 10000,
+        });
+      }
     }, this.i18n.isVi() ? 'Đăng nhập để viết đánh giá.' : 'Sign in to write a review.');
   }
 
