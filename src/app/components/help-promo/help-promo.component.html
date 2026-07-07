@@ -2,7 +2,7 @@
     <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
       <button type="button" id="help-promo-center-trigger" class="flex items-center gap-2 rounded-full border border-amber-100 bg-natural-accent px-5 py-3.5 text-xs font-serif font-black uppercase tracking-wider text-white shadow-2xl transition-all hover:scale-105 hover:bg-natural-olive active:scale-95" (click)="open.set(true)">
         <svg lucideHelpCircle class="h-4 w-4 text-natural-gold"></svg>
-        <span>{{ i18n.isVi() ? 'Hỗ trợ & Ưu đãi' : 'Help & Promos' }}</span>
+        <span>{{ i18n.isVi() ? 'Hướng dẫn & Mã giảm giá' : 'Guide & Vouchers' }}</span>
         <span class="relative flex h-2 w-2">
           <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-natural-gold opacity-75"></span>
           <span class="relative inline-flex h-2 w-2 rounded-full bg-natural-gold"></span>
@@ -20,10 +20,10 @@
               <div class="rounded-lg bg-natural-accent p-1.5"><svg lucideBookOpen class="h-5 w-5 text-natural-bg"></svg></div>
               <div>
                 <h3 class="flex items-center gap-1.5 font-serif text-base font-black uppercase tracking-wide">
-                  {{ i18n.isVi() ? 'TRUNG TÂM TRỢ GIÚP & QUÀ TẶNG' : 'GUEST HELP & PROMOTIONS' }}
+                  {{ i18n.isVi() ? 'HƯỚNG DẪN SỬ DỤNG & MÃ GIẢM GIÁ' : 'USAGE GUIDE & VOUCHER CODES' }}
                   <svg lucideSparkles class="h-4 w-4 animate-pulse text-natural-gold"></svg>
                 </h3>
-                <p class="font-sans text-[10px] tracking-wide text-stone-300">{{ i18n.isVi() ? 'Hướng dẫn làm chủ VietCharm & Săn Deal hời lữ hành' : 'Learn how to book, customize and capture discounts' }}</p>
+                <p class="font-sans text-[10px] tracking-wide text-stone-300">{{ i18n.isVi() ? 'Cách đặt dịch vụ trên VietCharm & kho mã giảm giá hiện có' : 'How booking works on VietCharm, plus current voucher codes' }}</p>
               </div>
             </div>
             <button type="button" class="rounded-full p-1 text-white transition hover:bg-white/10" (click)="open.set(false)"><svg lucideX class="h-5 w-5"></svg></button>
@@ -80,7 +80,7 @@
               <div class="space-y-4">
                 <div class="rounded-2xl border border-stone-200 bg-natural-cream p-4 text-center text-xs">
                   <p class="font-serif text-sm font-black uppercase tracking-tight text-stone-800">{{ i18n.isVi() ? '🔥 KHO VOUCHER KHUYẾN MÃI ĐỘC QUYỀN VIETCHARM' : 'EXCLUSIVE TRAVEL BUNDLED DISCOUNTS' }}</p>
-                  <p class="mt-1 text-stone-500">{{ i18n.isVi() ? 'Nhấp chọn mã giảm giá để sao chép trực tiếp, áp dụng ngay ở Giỏ hàng thanh toán!' : 'Click any coupon code to copy it directly, and apply it in the payment checkout cart!' }}</p>
+                  <p class="mt-1 text-stone-500">{{ i18n.isVi() ? 'Nhấp chọn mã giảm giá để sao chép trực tiếp, áp dụng ngay ở trang Thanh toán!' : 'Click any coupon code to copy it directly, and apply it on the Checkout page!' }}</p>
                 </div>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   @for (pr of promos(); track pr.code) {
@@ -112,7 +112,7 @@
 
           <!-- Footer -->
           <div class="flex flex-wrap items-center justify-between gap-2 border-t border-natural-border bg-natural-cream p-4 text-center font-mono text-[10px] text-stone-400">
-            <span>VIETCHARM ONLINE CONCIERGE SUPPORT</span>
+            <button type="button" class="font-sans font-bold uppercase tracking-wide text-natural-accent underline underline-offset-2" (click)="goSupport()">{{ i18n.isVi() ? 'Xem chi tiết hỗ trợ →' : 'View full support details →' }}</button>
             <span>HOTLINE: 1900 5040</span>
           </div>
         </div>

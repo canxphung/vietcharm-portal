@@ -1,7 +1,22 @@
     <div class="space-y-0">
       <!-- HERO -->
       <div class="relative flex h-[340px] w-full items-center overflow-hidden sm:h-[480px] md:h-[600px]">
-        <img [src]="hero().image" alt="Province background" class="animate-kenburns absolute inset-0 h-full w-full select-none object-cover" />
+        @for (slide of heroSlides(); track slide; let i = $index) {
+          <img [src]="slide" alt="Province background" class="animate-kenburns absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-700" [class.opacity-100]="activeSlide() === i" [class.opacity-0]="activeSlide() !== i" />
+        }
+        @if (heroSlides().length > 1) {
+          <button type="button" class="absolute left-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/55 sm:left-6" (click)="prevSlide()" [attr.aria-label]="i18n.isVi() ? 'Ảnh trước' : 'Previous image'">
+            <svg lucideChevronLeft class="h-5 w-5"></svg>
+          </button>
+          <button type="button" class="absolute right-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/55 sm:right-6" (click)="nextSlide()" [attr.aria-label]="i18n.isVi() ? 'Ảnh kế tiếp' : 'Next image'">
+            <svg lucideChevronRight class="h-5 w-5"></svg>
+          </button>
+          <div class="absolute bottom-24 left-1/2 z-20 flex -translate-x-1/2 gap-2 sm:bottom-28">
+            @for (slide of heroSlides(); track slide; let i = $index) {
+              <button type="button" [class]="'h-2 rounded-full transition-all ' + (activeSlide() === i ? 'w-6 bg-natural-gold' : 'w-2 bg-white/60 hover:bg-white/80')" (click)="goToSlide(i)" [attr.aria-label]="(i18n.isVi() ? 'Đi tới ảnh ' : 'Go to image ') + (i + 1)"></button>
+            }
+          </div>
+        }
         <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/35 to-black/15"></div>
         <div class="absolute inset-0 z-10 bg-gradient-to-r from-black/55 via-transparent to-transparent"></div>
         <div class="absolute inset-0 z-10 opacity-60 mix-blend-soft-light" style="background: radial-gradient(120% 90% at 15% 100%, rgba(227,176,75,0.45), transparent 60%);"></div>
@@ -265,16 +280,22 @@
                   </div>
                 }
               </div>
-              <form class="h-fit space-y-3 rounded-2xl border border-natural-border bg-white p-5" (ngSubmit)="addReview()">
-                <h4 class="mb-1 border-b border-natural-border pb-2 font-serif text-sm font-bold uppercase text-natural-text">{{ i18n.isVi() ? 'Viết đánh giá' : 'Write a review' }}</h4>
-                <input type="text" required [ngModel]="revAuthor()" (ngModelChange)="revAuthor.set($event)" name="ra" [placeholder]="i18n.isVi() ? 'Tên của bạn...' : 'Your name...'" class="w-full rounded-xl border border-natural-border bg-natural-beige-light px-3 py-2 text-xs outline-none focus:border-natural-accent" />
-                <div class="flex items-center gap-1.5">
-                  <span class="text-[10px] font-bold uppercase text-stone-400">{{ i18n.isVi() ? 'Điểm:' : 'Rating:' }}</span>
-                  @for (n of [1,2,3,4,5]; track n) { <button type="button" (click)="revRating.set(n)"><svg lucideStar class="h-4 w-4" [class.text-amber-400]="n <= revRating()" [class.fill-amber-400]="n <= revRating()" [class.text-stone-300]="n > revRating()"></svg></button> }
+              @if (canReview()) {
+                <form class="h-fit space-y-3 rounded-2xl border border-natural-border bg-white p-5" (ngSubmit)="addReview()">
+                  <h4 class="mb-1 border-b border-natural-border pb-2 font-serif text-sm font-bold uppercase text-natural-text">{{ i18n.isVi() ? 'Viết đánh giá' : 'Write a review' }}</h4>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-bold uppercase text-stone-400">{{ i18n.isVi() ? 'Điểm:' : 'Rating:' }}</span>
+                    @for (n of [1,2,3,4,5]; track n) { <button type="button" (click)="revRating.set(n)"><svg lucideStar class="h-4 w-4" [class.text-amber-400]="n <= revRating()" [class.fill-amber-400]="n <= revRating()" [class.text-stone-300]="n > revRating()"></svg></button> }
+                  </div>
+                  <textarea required rows="3" [ngModel]="revComment()" (ngModelChange)="revComment.set($event)" name="rc" [placeholder]="i18n.isVi() ? 'Chia sẻ trải nghiệm của bạn...' : 'Share your experience...'" class="w-full resize-none rounded-xl border border-natural-border bg-natural-beige-light p-3 text-xs leading-relaxed outline-none focus:border-natural-accent"></textarea>
+                  <button type="submit" class="w-full rounded-xl bg-natural-accent py-2.5 text-xs font-black uppercase tracking-widest text-white transition hover:bg-natural-olive">{{ i18n.isVi() ? 'Đăng đánh giá' : 'Submit Review' }}</button>
+                </form>
+              } @else {
+                <div class="h-fit space-y-2 rounded-2xl border border-dashed border-natural-border bg-white p-5 text-xs leading-relaxed text-stone-600">
+                  <h4 class="mb-1 border-b border-natural-border pb-2 font-serif text-sm font-bold uppercase text-natural-text">{{ i18n.isVi() ? 'Viết đánh giá' : 'Write a review' }}</h4>
+                  <p>{{ i18n.isVi() ? 'Bạn cần đặt và thanh toán thành công một dịch vụ tại đây trước khi có thể viết đánh giá.' : 'You need a confirmed booking for a service here before you can leave a review.' }}</p>
                 </div>
-                <textarea required rows="3" [ngModel]="revComment()" (ngModelChange)="revComment.set($event)" name="rc" [placeholder]="i18n.isVi() ? 'Chia sẻ trải nghiệm của bạn...' : 'Share your experience...'" class="w-full resize-none rounded-xl border border-natural-border bg-natural-beige-light p-3 text-xs leading-relaxed outline-none focus:border-natural-accent"></textarea>
-                <button type="submit" class="w-full rounded-xl bg-natural-accent py-2.5 text-xs font-black uppercase tracking-widest text-white transition hover:bg-natural-olive">{{ i18n.isVi() ? 'Đăng đánh giá' : 'Submit Review' }}</button>
-              </form>
+              }
             </div>
           </section>
         </div>

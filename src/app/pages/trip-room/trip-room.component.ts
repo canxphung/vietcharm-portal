@@ -2,7 +2,7 @@ import { Component, computed, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   LucideAlertCircle,
   LucideArrowRight,
@@ -128,6 +128,7 @@ export class TripRoomComponent {
   constructor(
     readonly i18n: I18nService,
     private readonly cart: CartService,
+    private readonly router: Router,
   ) {
     const vi = this.i18n.isVi();
     this.members.set([
@@ -239,5 +240,9 @@ export class TripRoomComponent {
     this.cart.addCombo(items);
     this.alert(vi ? '✓ Đã đồng bộ các lựa chọn hàng đầu của nhóm vào Giỏ hành lý!' : '✓ Syncing consensus group selections to Cart!');
     this.tab.set('checkout');
+  }
+
+  payGroupDeposit(): void {
+    void this.router.navigateByUrl('/checkout');
   }
 }

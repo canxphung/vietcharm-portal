@@ -59,7 +59,7 @@ export class HelpPromoComponent {
       { icon: 'hotel', title: vi ? '2. Đặt Khách Sạn & Nghỉ Dưỡng' : '2. Premium Hotel Booking', desc: vi ? 'Duyệt và lựa chọn các cơ sở lưu trú, khách sạn cao cấp, homestay địa phương đã được bảo chứng chất lượng bởi VietCharm.' : 'Browse and select high-quality hotels, luxury resorts, and boutique homestays curated by VietCharm.' },
       { icon: 'bag', title: vi ? '3. Đặt Phòng, Thuê Xe & Hoạt Động' : '3. Customize Bookings', desc: vi ? 'Duyệt danh mục phía dưới để đặt riêng lẻ hoặc tùy chỉnh các dịch vụ khách sạn, xe máy, xe tự lái và tour trải nghiệm địa phương.' : 'Browse lists below the map to add vetted accommodations, local motorbikes, self-drive cars, or immersive tours to your cart.' },
       { icon: 'users', title: vi ? '4. Kết nối Trip Room Ẩn Số' : '4. Group Up & Split Bills', desc: vi ? 'Tạo hoặc tham gia phòng chat ghép đôi dạo chơi ẩn danh, cùng bình chọn lịch trình yêu thích và tính toán chia sẻ tiền phòng.' : 'Create or join a Mystery Room to chat anonymously, vote for favorite spots, and split bills dynamically with group members.' },
-      { icon: 'check', title: vi ? '5. Áp Mã Voucher & Thanh toán' : '5. Apply Vouchers & Book', desc: vi ? 'Vào giỏ hàng, dán mã ưu đãi (Ví dụ: VIETCHARM15), điền Email để nhận hóa đơn bảo chứng di sản có QR hoàn hủy linh hoạt.' : 'Open your cart, apply coupon codes, fill in details, and download your heritage-backed travel voucher with cancellation rights.' },
+      { icon: 'check', title: vi ? '5. Áp Mã Voucher & Thanh toán' : '5. Apply Vouchers & Book', desc: vi ? 'Từ giỏ hàng, bấm Thanh toán để sang trang Checkout riêng, dán mã ưu đãi (Ví dụ: VIETCHARM15) rồi xác nhận để nhận hóa đơn điện tử có mã QR.' : 'From your cart, tap Checkout to open the dedicated checkout page, apply a coupon code (e.g. VIETCHARM15), then confirm to get your QR e-ticket.' },
     ];
   }
 
@@ -89,5 +89,10 @@ export class HelpPromoComponent {
   goHotels(): void {
     this.open.set(false);
     this.ui.openAllServices('hotels');
+  }
+
+  goSupport(): void {
+    this.open.set(false);
+    void this.router.navigateByUrl('/support/help');
   }
 }

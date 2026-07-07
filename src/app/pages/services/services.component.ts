@@ -36,6 +36,13 @@ import { ItemCardComponent } from '@/components/item-card/item-card.component';
 import { JourneyMapComponent } from '@/components/journey-map/journey-map.component';
 import { RevealDirective } from '@/directives/reveal.directive';
 
+function reviewsCountNumber(value: string | undefined): number {
+  if (!value) return 0;
+  const trimmed = value.trim().toLowerCase();
+  if (trimmed.endsWith('k')) return parseFloat(trimmed) * 1000;
+  return parseFloat(trimmed) || 0;
+}
+
 @Component({
   selector: 'app-services-page',
   standalone: true,
@@ -53,8 +60,9 @@ export class ServicesComponent {
   readonly tabs = SERVICE_TABS;
   readonly query = signal('');
   readonly province = signal('all');
-  readonly sortBy = signal<'default' | 'price-asc' | 'price-desc' | 'rating-desc'>('default');
+  readonly sortBy = signal<'default' | 'price-asc' | 'price-desc' | 'rating-desc' | 'reviews-desc'>('default');
   readonly category = signal('all');
+  readonly minRating = signal(0);
   readonly visibleCount = signal(9);
 
   readonly activeTab = computed<ServiceTab>(() => {
@@ -94,14 +102,26 @@ export class ServicesComponent {
       const cat = this.category();
       list = list.filter((item) => `${item.name} ${item.description ?? ''}`.toLowerCase().includes(cat));
     }
+    if (this.minRating() > 0) list = list.filter((item) => (item.rating ?? 0) >= this.minRating());
     const sort = this.sortBy();
     if (sort === 'price-asc') list = [...list].sort((a, b) => a.price - b.price);
     else if (sort === 'price-desc') list = [...list].sort((a, b) => b.price - a.price);
     else if (sort === 'rating-desc') list = [...list].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    else if (sort === 'reviews-desc') list = [...list].sort((a, b) => reviewsCountNumber(b.reviewsCount) - reviewsCountNumber(a.reviewsCount));
     return list;
   });
 
   readonly visibleItems = computed(() => this.filteredItems().slice(0, this.visibleCount()));
+
+  ratingOptions(): Array<{ value: number; label: string }> {
+    const vi = this.i18n.isVi();
+    return [
+      { value: 0, label: vi ? 'Mọi mức đánh giá' : 'Any rating' },
+      { value: 4, label: vi ? '4.0★ trở lên' : '4.0★ & up' },
+      { value: 4.5, label: vi ? '4.5★ trở lên' : '4.5★ & up' },
+      { value: 4.8, label: vi ? '4.8★ trở lên' : '4.8★ & up' },
+    ];
+  }
 
   activityCategories(): Array<{ id: string; label: string }> {
     const vi = this.i18n.isVi();
@@ -129,6 +149,7 @@ export class ServicesComponent {
       this.province();
       this.sortBy();
       this.category();
+      this.minRating();
       this.visibleCount.set(9);
     });
   }
@@ -138,6 +159,7 @@ export class ServicesComponent {
     this.province.set('all');
     this.sortBy.set('default');
     this.category.set('all');
+    this.minRating.set(0);
   }
 
   setTab(tab: ServiceTab): void {

@@ -1,5 +1,5 @@
-import { Component, computed, effect, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { afterNextRender, Component, computed, effect, ElementRef, signal, viewChild } from '@angular/core';
+import { DecimalPipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -23,7 +23,9 @@ import {
   LucideShare2,
 } from '@lucide/angular';
 import type { BookingCartItem, ViewableItem } from '@/types';
+import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
+import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
 import { ToastService } from '@/services/toast.service';
 import { UiStateService } from '@/services/ui-state.service';
@@ -80,7 +82,7 @@ function isoOffset(days: number): string {
 }
 
 @Component({
-  selector: 'app-details-overlay',
+  selector: 'app-item-detail-page',
   standalone: true,
   imports: [
     DecimalPipe,
@@ -104,10 +106,10 @@ function isoOffset(days: number): string {
     LucideStar,
     LucideShare2,
   ],
-  templateUrl: './details-overlay.component.html',
-  styleUrl: './details-overlay.component.css',
+  templateUrl: './item-detail.component.html',
+  styleUrl: './item-detail.component.css',
 })
-export class DetailsOverlayComponent {
+export class ItemDetailComponent {
   readonly today = isoOffset(0);
   readonly selectedDate = signal(isoOffset(1));
   readonly checkInDate = signal(isoOffset(1));
@@ -118,12 +120,29 @@ export class DetailsOverlayComponent {
   readonly roomsCount = signal(1);
   readonly successMsg = signal(false);
 
-  readonly reviews = signal<UserReview[]>([...MOCK_REVIEWS]);
-  readonly reviewerName = signal('');
   readonly reviewRating = signal(5);
   readonly reviewComment = signal('');
 
   readonly isVi = computed(() => this.i18n.isVi());
+  readonly reviews = computed<UserReview[]>(() => {
+    const item = this.ui.selectedItem();
+    if (!item) return [...MOCK_REVIEWS];
+    const submitted = this.catalog.reviewsForItem(item.id).map((r) => ({
+      id: r.id,
+      author: r.author,
+      avatar: r.avatar,
+      rating: r.rating,
+      date: r.date,
+      comment: r.comment,
+    }));
+    return [...submitted, ...MOCK_REVIEWS];
+  });
+  readonly canReview = computed(() => {
+    const item = this.ui.selectedItem();
+    const user = this.auth.currentUser();
+    if (!item || !user) return false;
+    return this.catalog.canReview(item.id, user.email);
+  });
   readonly minCheckout = computed(() => {
     const d = new Date(this.checkInDate());
     d.setDate(d.getDate() + 1);
@@ -131,14 +150,23 @@ export class DetailsOverlayComponent {
   });
 
   private lastItemId: string | null = null;
+  private readonly reviewTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('reviewTextarea');
 
   constructor(
     readonly ui: UiStateService,
     readonly i18n: I18nService,
     readonly cart: CartService,
+    private readonly auth: AuthService,
+    private readonly catalog: CatalogService,
     private readonly toast: ToastService,
     private readonly router: Router,
+    private readonly location: Location,
   ) {
+    // Landed here directly (e.g. page refresh) with no item selected: send back to browsing.
+    if (!this.ui.selectedItem()) {
+      void this.router.navigateByUrl('/discover');
+    }
+
     // Reset booking state whenever a different item is opened.
     effect(() => {
       const item = this.ui.selectedItem();
@@ -154,6 +182,17 @@ export class DetailsOverlayComponent {
         this.successMsg.set(false);
       }
     });
+
+    // Arrived here to write a review: jump straight to the review form instead of making the user scroll.
+    if (this.ui.consumeScrollToReviews()) {
+      afterNextRender(() => {
+        // Run after the router's own "scroll to top" restoration settles, so our scroll wins the race.
+        setTimeout(() => {
+          document.getElementById('write-review-block')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          this.reviewTextarea()?.nativeElement.focus({ preventScroll: true });
+        }, 80);
+      });
+    }
   }
 
   max(a: number, b: number): number {
@@ -165,7 +204,7 @@ export class DetailsOverlayComponent {
   }
 
   back(): void {
-    this.ui.clearSelectedItem();
+    this.location.back();
   }
 
   typeLabel(item: ViewableItem): string {
@@ -290,8 +329,7 @@ export class DetailsOverlayComponent {
   checkout(item: ViewableItem): void {
     this.ui.requireAuth(() => {
       if (!this.cart.isInCart(this.cartKey(item))) this.addSelection(item);
-      this.ui.clearSelectedItem();
-      void this.router.navigateByUrl('/cart');
+      void this.router.navigateByUrl('/checkout');
     }, this.isVi() ? 'Đăng nhập để thanh toán.' : 'Sign in to checkout.');
   }
 
@@ -322,22 +360,36 @@ export class DetailsOverlayComponent {
     }
   }
 
-  addReview(): void {
-    if (!this.reviewerName().trim() || !this.reviewComment().trim()) return;
-    this.reviews.update((list) => [
-      {
+  addReview(item: ViewableItem): void {
+    const comment = this.reviewComment().trim();
+    if (!comment) return;
+    this.ui.requireAuth(() => {
+      const user = this.auth.currentUser()!;
+      if (!this.catalog.canReview(item.id, user.email)) {
+        this.toast.showToast({
+          type: 'info',
+          title: this.isVi() ? 'Chưa thể đánh giá' : 'Review not available yet',
+          message: this.isVi()
+            ? 'Bạn cần đặt và thanh toán thành công dịch vụ này trước khi viết đánh giá.'
+            : 'You need a confirmed booking for this service before you can leave a review.',
+        });
+        return;
+      }
+      this.catalog.addReview({
         id: `review-details-${Date.now()}`,
-        author: this.reviewerName(),
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+        itemId: item.id,
+        itemName: item.name,
+        itemImage: item.image,
+        userEmail: user.email,
+        author: user.fullName,
+        avatar: user.avatar,
         rating: this.reviewRating(),
         date: new Date().toISOString().split('T')[0],
-        comment: this.reviewComment(),
-      },
-      ...list,
-    ]);
-    this.reviewerName.set('');
-    this.reviewComment.set('');
-    this.reviewRating.set(5);
+        comment,
+      });
+      this.reviewComment.set('');
+      this.reviewRating.set(5);
+    }, this.isVi() ? 'Đăng nhập để viết đánh giá.' : 'Sign in to write a review.');
   }
 
   gallery(item: ViewableItem): Array<{ src: string; label: string }> {

@@ -49,12 +49,12 @@
               <span class="mt-2 block h-[2px] w-8 bg-natural-gold"></span>
             </div>
             <ul class="space-y-2.5 text-xs">
-              <li><a href="#help" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Trung tâm hỗ trợ' : 'Help Center' }}</span></a></li>
-              <li><a href="#faq" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Câu hỏi thường gặp' : 'FAQs' }}</span></a></li>
-              <li><a href="#booking-guide" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hướng dẫn đặt dịch vụ' : 'Booking Guide' }}</span></a></li>
-              <li><a href="#refund" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Chính sách hủy & hoàn tiền' : 'Cancellation & Refund' }}</span></a></li>
-              <li><a href="#terms" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Điều khoản sử dụng' : 'Terms of Use' }}</span></a></li>
-              <li><a href="#privacy" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Chính sách bảo mật' : 'Privacy Policy' }}</span></a></li>
+              <li><a routerLink="/support/help" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Trung tâm hỗ trợ' : 'Help Center' }}</span></a></li>
+              <li><a routerLink="/support/faq" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Câu hỏi thường gặp' : 'FAQs' }}</span></a></li>
+              <li><a routerLink="/support/booking-guide" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hướng dẫn đặt dịch vụ' : 'Booking Guide' }}</span></a></li>
+              <li><a routerLink="/support/refund" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Chính sách hủy & hoàn tiền' : 'Cancellation & Refund' }}</span></a></li>
+              <li><a routerLink="/support/terms" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Điều khoản sử dụng' : 'Terms of Use' }}</span></a></li>
+              <li><a routerLink="/support/privacy" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Chính sách bảo mật' : 'Privacy Policy' }}</span></a></li>
             </ul>
           </div>
 
@@ -65,12 +65,12 @@
               <span class="mt-2 block h-[2px] w-8 bg-natural-gold"></span>
             </div>
             <ul class="space-y-2.5 text-xs">
-              <li><a href="#about" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Giới thiệu về chúng tôi' : 'About Us' }}</span></a></li>
+              <li><a routerLink="/support/about" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Giới thiệu về chúng tôi' : 'About Us' }}</span></a></li>
               <li><a routerLink="/partnership" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hợp tác với chúng tôi' : 'Work With Us' }}</span></a></li>
-              <li><a href="#careers" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Tuyển dụng' : 'Careers' }}</span></a></li>
-              <li><a href="#partners" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Đối tác & Liên kết' : 'Partners & Affiliates' }}</span></a></li>
-              <li><a href="#blog" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Tin tức & Blog' : 'News & Blog' }}</span></a></li>
-              <li><a href="#contact" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Liên hệ' : 'Contact' }}</span></a></li>
+              <li><a routerLink="/support/careers" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Tuyển dụng' : 'Careers' }}</span></a></li>
+              <li><a routerLink="/support/partners" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Đối tác & Liên kết' : 'Partners & Affiliates' }}</span></a></li>
+              <li><a routerLink="/support/blog" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Tin tức & Blog' : 'News & Blog' }}</span></a></li>
+              <li><a routerLink="/support/contact" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Liên hệ' : 'Contact' }}</span></a></li>
             </ul>
           </div>
 

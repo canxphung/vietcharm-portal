@@ -139,12 +139,20 @@
                   <p class="text-xs text-stone-500">{{ isBundleEligible() ? (isVi() ? 'Ưu đãi combo được tính tự động.' : 'Bundle discount is applied automatically.') : (isVi() ? 'Cần ít nhất 2 nhóm dịch vụ để nhận combo.' : 'Add at least 2 service types to unlock bundle savings.') }}</p>
                 </div>
               </div>
+              <div class="mb-5">
+                <app-voucher-picker />
+              </div>
               <div class="space-y-3 text-sm">
                 <div class="flex justify-between gap-3"><span class="text-stone-500">{{ isVi() ? 'Tạm tính' : 'Subtotal' }}</span><span class="font-mono font-bold text-stone-900">{{ totalCost() | number : '1.0-0' }} đ</span></div>
-                <div class="flex justify-between gap-3" [class.text-emerald-700]="isBundleEligible()" [class.text-stone-400]="!isBundleEligible()">
-                  <span class="font-semibold">{{ isBundleEligible() ? (isVi() ? 'Giảm combo 15%' : 'Bundle discount 15%') : (isVi() ? 'Combo chưa đủ điều kiện' : 'Bundle not eligible') }}</span>
-                  <span class="font-mono font-bold">{{ isBundleEligible() ? '-' + (bundleDiscount() | number : '1.0-0') + ' đ' : '0 đ' }}</span>
-                </div>
+                @if (isBundleEligible()) {
+                  <div class="flex justify-between gap-3 font-semibold text-emerald-700">
+                    <span>{{ isVi() ? 'Giảm combo 15%' : 'Bundle discount 15%' }}</span>
+                    <span class="font-mono font-bold">-{{ bundleDiscount() | number : '1.0-0' }} đ</span>
+                  </div>
+                }
+                @if (cart.voucherDiscount() > 0) {
+                  <div class="flex justify-between gap-3 font-semibold text-emerald-700"><span>{{ isVi() ? 'Mã voucher' : 'Voucher' }}</span><span class="font-mono font-bold">-{{ cart.voucherDiscount() | number : '1.0-0' }} đ</span></div>
+                }
                 <div class="flex justify-between gap-3 border-t border-natural-border pt-4"><span class="text-xs font-black uppercase tracking-wider text-natural-ink">{{ isVi() ? 'Cần thanh toán' : 'Payable' }}</span><span class="font-mono text-xl font-black text-natural-bronze">{{ payableAmount() | number : '1.0-0' }} đ</span></div>
               </div>
               <div class="mt-5 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-3 text-xs leading-relaxed text-emerald-800">

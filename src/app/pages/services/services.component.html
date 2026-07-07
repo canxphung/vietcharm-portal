@@ -57,6 +57,13 @@
                   </div>
                 </div>
               }
+
+              <div class="space-y-1.5">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Đánh giá tối thiểu' : 'Minimum rating' }}</label>
+                <select [ngModel]="minRating()" (ngModelChange)="minRating.set(+$event)" class="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-natural-text focus:border-natural-accent focus:outline-none">
+                  @for (opt of ratingOptions(); track opt.value) { <option [value]="opt.value">{{ opt.label }}</option> }
+                </select>
+              </div>
             </div>
           </aside>
 
@@ -75,6 +82,7 @@
                       <option value="price-desc">{{ i18n.isVi() ? 'Giá tiền: Cao đến Thấp' : 'Price: High to Low' }}</option>
                     }
                     <option value="rating-desc">{{ i18n.isVi() ? 'Đánh giá: Cao nhất' : 'Rating: Top Rated' }}</option>
+                    <option value="reviews-desc">{{ i18n.isVi() ? 'Phổ biến nhất (Nhiều đánh giá)' : 'Most Reviewed' }}</option>
                   </select>
                 </div>
               </div>

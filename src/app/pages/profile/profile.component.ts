@@ -14,7 +14,6 @@ import {
   LucideCheckSquare,
   LucideClipboardList,
   LucideClock3,
-  LucideCompass,
   LucideCreditCard,
   LucideFileText,
   LucideGift,
@@ -25,6 +24,7 @@ import {
   LucideLockKeyhole,
   LucideMail,
   LucideMapPinned,
+  LucideMessageSquare,
   LucidePackageCheck,
   LucidePhone,
   LucideRoute,
@@ -33,6 +33,7 @@ import {
   LucideShoppingBag,
   LucideSparkles,
   LucideSquare,
+  LucideStar,
   LucideTrash2,
   LucideUser,
   LucideUserPlus,
@@ -57,27 +58,30 @@ import { LogoComponent } from '@/components/logo/logo.component';
     LucideAward,
     LucideCalendar,
     LucideClipboardList,
-    LucideCompass,
     LucideFileText,
     LucideGift,
     LucideHeart,
     LucideKey,
     LucideMail,
+    LucideMessageSquare,
     LucidePhone,
+    LucideStar,
     LucideUser,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css',
 })
 export class ProfileComponent {
-  readonly tab = signal<'bookings' | 'favorites' | 'history' | 'partnerships'>('bookings');
+  readonly tab = signal<'bookings' | 'favorites' | 'history' | 'reviews'>('bookings');
   readonly isEditing = signal(false);
   readonly saveSuccess = signal(false);
   readonly draftFullName = signal('');
   readonly draftEmail = signal('');
+  readonly draftUsername = signal('');
   readonly draftPhone = signal('');
   readonly draftBio = signal('');
   readonly draftAvatar = signal('');
+  readonly usernameError = signal('');
 
   constructor(
     readonly auth: AuthService,
@@ -96,17 +100,45 @@ export class ProfileComponent {
     return this.catalog.bookings().filter((b) => b.userEmail.toLowerCase() === user.email.toLowerCase());
   }
 
-  userPartnerships(user: UserAccount) {
-    return this.catalog.applications().filter((p) => p.email.toLowerCase() === user.email.toLowerCase());
+  userReviews(user: UserAccount) {
+    return this.catalog.reviewsByUser(user.email);
+  }
+
+  hasUserReviewed(user: UserAccount, itemId: string): boolean {
+    return this.userReviews(user).some((r) => r.itemId === itemId);
+  }
+
+  pendingReviewItems(user: UserAccount): BookingCartItem[] {
+    const reviewedIds = new Set(this.userReviews(user).map((r) => r.itemId));
+    const seenIds = new Set<string>();
+    const items: BookingCartItem[] = [];
+    for (const booking of this.userBookings(user)) {
+      if (booking.status !== 'confirmed') continue;
+      for (const it of booking.items) {
+        if (reviewedIds.has(it.id) || seenIds.has(it.id)) continue;
+        seenIds.add(it.id);
+        items.push(it);
+      }
+    }
+    return items;
+  }
+
+  viewBookingItem(it: BookingCartItem, scrollToReview = false): void {
+    this.ui.viewItem(
+      { id: it.id, type: it.type, name: it.name, image: it.image, price: it.price, description: it.details },
+      { scrollToReview },
+    );
   }
 
   toggleEdit(user: UserAccount): void {
     if (!this.isEditing()) {
       this.draftFullName.set(user.fullName);
       this.draftEmail.set(user.email);
+      this.draftUsername.set(user.username);
       this.draftPhone.set(user.phone);
       this.draftBio.set(user.bio);
       this.draftAvatar.set(user.avatar);
+      this.usernameError.set('');
     }
     this.isEditing.update((v) => !v);
   }
@@ -116,10 +148,20 @@ export class ProfileComponent {
   }
 
   save(user: UserAccount): void {
+    const nextUsername = this.draftUsername().trim() || user.username;
+    const isTaken = this.auth
+      .users()
+      .some((u) => u.id !== user.id && u.username.toLowerCase() === nextUsername.toLowerCase());
+    if (isTaken) {
+      this.usernameError.set(this.i18n.isVi() ? 'Tên đăng nhập đã được sử dụng.' : 'This username is already taken.');
+      return;
+    }
+    this.usernameError.set('');
     this.auth.updateProfile({
       ...user,
       fullName: this.draftFullName() || user.fullName,
       email: this.draftEmail() || user.email,
+      username: nextUsername,
       phone: this.draftPhone(),
       bio: this.draftBio(),
       avatar: this.draftAvatar() || user.avatar,

@@ -4,11 +4,18 @@
           <p class="text-xs font-black uppercase tracking-[0.25em] text-natural-accent">History</p>
           <h1 class="font-serif text-4xl font-black text-natural-ink">{{ i18n.isVi() ? 'Dịch vụ đã xem' : 'Recently viewed' }}</h1>
         </div>
-        <button type="button" class="rounded-full border border-natural-border px-4 py-2 text-sm font-black" (click)="ui.clearRecentlyViewed()">{{ i18n.isVi() ? 'Xóa' : 'Clear' }}</button>
+        @if (ui.recentlyViewed().length > 0) {
+          <button type="button" class="rounded-full border border-natural-border px-4 py-2 text-sm font-black" (click)="ui.clearRecentlyViewed()">{{ i18n.isVi() ? 'Xóa tất cả' : 'Clear all' }}</button>
+        }
       </div>
       <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         @for (item of ui.recentlyViewed(); track item.id) {
-          <app-item-card [item]="item" />
+          <div class="relative">
+            <app-item-card [item]="item" />
+            <button type="button" class="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-natural-border bg-white/95 text-stone-500 shadow-sm backdrop-blur-md transition hover:bg-red-50 hover:text-red-600" [attr.aria-label]="i18n.isVi() ? 'Xóa mục này' : 'Remove this item'" (click)="ui.removeRecentlyViewed(item.id)">
+              <svg lucideX class="h-4 w-4"></svg>
+            </button>
+          </div>
         } @empty {
           <p class="rounded-2xl border border-natural-border bg-white p-6 font-bold">{{ i18n.isVi() ? 'Bạn chưa xem dịch vụ nào.' : 'No viewed services yet.' }}</p>
         }

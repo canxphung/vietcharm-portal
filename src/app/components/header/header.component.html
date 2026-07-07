@@ -60,9 +60,6 @@
                 @if (auth.currentUser()) {
                   <a class="drawer-btn" routerLink="/profile" (click)="closeMenus()"><svg lucideUserRound class="drawer-ic"></svg><span>{{ i18n.isVi() ? 'Hồ sơ cá nhân' : 'Profile' }}</span></a>
                 }
-                @if (auth.currentUser()?.role === 'admin') {
-                  <a class="drawer-btn" routerLink="/admin" (click)="closeMenus()"><svg lucideSettings class="drawer-ic"></svg><span>{{ i18n.isVi() ? 'Quản trị' : 'Admin' }}</span></a>
-                }
                 <a class="drawer-btn" href="tel:19005040" (click)="closeMenus()"><svg lucidePhone class="drawer-ic"></svg><span>{{ i18n.isVi() ? 'Hỗ trợ' : 'Support' }}</span></a>
               </nav>
             </div>
@@ -95,11 +92,6 @@
                   <img [src]="user.avatar" alt="Avatar" class="h-5 w-5 rounded-full object-cover" />
                   <span class="hidden max-w-28 truncate sm:inline">{{ user.fullName }}</span>
                 </button>
-                @if (user.role === 'admin') {
-                  <button type="button" class="inline-flex h-9 items-center gap-1 rounded-full bg-red-50 px-3 text-[10px] font-black uppercase text-red-700 transition hover:bg-red-100" routerLink="/admin" [title]="i18n.isVi() ? 'Trang quản trị' : 'Admin panel'">
-                    <svg lucideSettings class="h-3.5 w-3.5"></svg><span class="hidden sm:inline">{{ i18n.isVi() ? 'Quản trị' : 'Admin' }}</span>
-                  </button>
-                }
                 <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition hover:bg-white/10 hover:text-white" (click)="logout()" [title]="i18n.isVi() ? 'Đăng xuất' : 'Log out'">
                   <svg lucideLogOut class="h-4 w-4"></svg>
                 </button>
