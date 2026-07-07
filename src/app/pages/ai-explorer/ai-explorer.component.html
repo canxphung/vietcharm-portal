@@ -1,0 +1,158 @@
+    <div class="w-full border-y border-natural-border bg-[#1F261F] px-4 py-16 text-natural-text shadow-inner">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-8 max-w-3xl text-white">
+          <span class="text-[11px] font-black uppercase tracking-[0.24em] text-natural-gold">AI Trip Studio</span>
+          <h2 class="mt-2 font-serif text-3xl font-black tracking-tight md:text-5xl">{{ isVi() ? 'Trả lời vài câu, nhận lịch trình có thể đặt ngay.' : 'Answer a few prompts, get a bookable trip plan.' }}</h2>
+          <p class="mt-3 text-sm leading-relaxed text-white/70">{{ isVi() ? 'Studio này ghép ngày đi, gu du lịch, ngân sách và dịch vụ có sẵn thành một timeline dễ hiểu.' : 'This studio turns dates, mood, budget, and available services into a clear day-by-day timeline.' }}</p>
+        </div>
+
+        <div class="flex flex-col items-stretch gap-10 lg:flex-row">
+          <!-- Inputs -->
+          <div class="flex w-full flex-col justify-between rounded-3xl border border-natural-border bg-natural-bg p-6 shadow-xl lg:w-5/12 lg:p-8">
+            <div>
+              <div class="mb-4 flex items-center gap-2">
+                <div class="rounded-lg bg-natural-accent p-2 text-white shadow-md"><svg lucideBrain class="h-6 w-6"></svg></div>
+                <div>
+                  <h3 class="flex items-center gap-1.5 font-serif text-xl font-bold tracking-tight text-natural-text">{{ isVi() ? 'Bảng gu chuyến đi' : 'Trip brief' }}<span class="rounded bg-natural-gold px-1.5 py-0.5 font-sans text-[10px] font-bold uppercase tracking-widest text-white">Lite</span></h3>
+                  <p class="text-[11px] font-medium text-natural-text/70">{{ isVi() ? 'Chọn vài thông tin chính, phần còn lại để VietCharm gợi ý.' : 'Pick the key details and let VietCharm shape the rest.' }}</p>
+                </div>
+              </div>
+
+              <div class="mb-5 rounded-xl border border-natural-border bg-natural-beige-light p-4">
+                <div class="mb-1 flex items-center justify-between text-xs font-bold text-natural-text/80"><span>{{ isVi() ? 'Ngân sách thiết kế' : 'Target Outlay' }}</span><span class="font-mono text-sm font-bold text-natural-accent">{{ budget() | number : '1.0-0' }} VND</span></div>
+                <input type="range" min="1500000" max="12000000" step="500000" [ngModel]="budget()" (ngModelChange)="budget.set(+$event)" name="budget" class="h-1.5 w-full cursor-pointer rounded-lg bg-natural-border accent-natural-accent" />
+                <div class="mt-1 flex justify-between text-[10px] font-semibold uppercase text-natural-text/50"><span>1.5TR</span><span>6TR</span><span>12TR</span></div>
+              </div>
+
+              <div class="mb-5">
+                <label class="mb-1 block text-xs font-bold text-natural-text">{{ isVi() ? 'Tỉnh thành điểm đến' : 'Target Province Focus' }}</label>
+                <select class="w-full rounded-xl border border-natural-border bg-natural-bg p-3 text-xs font-bold text-natural-text outline-none focus:border-natural-accent" [ngModel]="province()" (ngModelChange)="province.set($event)" name="province">
+                  <option value="quang-nam">{{ isVi() ? 'Quảng Nam - Hội An' : 'Quang Nam - Hoi An' }}</option>
+                  <option value="da-nang">{{ isVi() ? 'Đà Nẵng (Bao gồm Bà Nà)' : 'Da Nang (Incl. Bana Hills)' }}</option>
+                  <option value="thua-thien-hue">{{ isVi() ? 'Thừa Thiên Huế (Cố Đô)' : 'Thua Thien Hue (Cradle Palace)' }}</option>
+                  <option value="binh-dinh">{{ isVi() ? 'Bình Định (Quy Nhơn)' : 'Binh Dinh (Quy Nhon)' }}</option>
+                  <option value="khanh-hoa">{{ isVi() ? 'Khánh Hòa (Nha Trang)' : 'Khanh Hoa (Nha Trang)' }}</option>
+                </select>
+              </div>
+
+              <div class="mb-5 space-y-4 rounded-2xl border border-natural-border bg-natural-cream p-4">
+                <div class="flex items-center justify-between gap-3">
+                  <span class="text-xs font-black uppercase tracking-wider text-natural-text">{{ isVi() ? 'Số ngày đi' : 'Trip length' }}</span>
+                  <div class="flex items-center gap-2 rounded-xl border border-natural-border bg-white p-1">
+                    <button type="button" class="h-8 w-8 rounded-lg text-sm font-black text-stone-500 transition hover:bg-natural-beige" (click)="daysCount.set(max(2, daysCount() - 1))">-</button>
+                    <span class="w-14 text-center font-mono text-sm font-black text-natural-accent">{{ daysCount() }} {{ isVi() ? 'ngày' : 'days' }}</span>
+                    <button type="button" class="h-8 w-8 rounded-lg text-sm font-black text-stone-500 transition hover:bg-natural-beige" (click)="daysCount.set(min(7, daysCount() + 1))">+</button>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <span class="text-[10px] font-black uppercase tracking-wider text-stone-500">{{ isVi() ? 'Bạn đi với ai?' : 'Who is going?' }}</span>
+                  <div class="grid grid-cols-3 gap-2">
+                    <button type="button" [class]="chipClass(travelers() === 'couple')" (click)="travelers.set('couple')"><svg lucideHeart class="mx-auto mb-1 h-4 w-4"></svg>{{ isVi() ? 'Cặp đôi' : 'Couple' }}</button>
+                    <button type="button" [class]="chipClass(travelers() === 'family')" (click)="travelers.set('family')"><svg lucideBaby class="mx-auto mb-1 h-4 w-4"></svg>{{ isVi() ? 'Gia đình' : 'Family' }}</button>
+                    <button type="button" [class]="chipClass(travelers() === 'friends')" (click)="travelers.set('friends')"><svg lucideUsersRound class="mx-auto mb-1 h-4 w-4"></svg>{{ isVi() ? 'Nhóm bạn' : 'Friends' }}</button>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <span class="text-[10px] font-black uppercase tracking-wider text-stone-500">{{ isVi() ? 'Gu chuyến đi' : 'Travel mood' }}</span>
+                  <div class="grid grid-cols-2 gap-2">
+                    <button type="button" [class]="moodClass(travelMood() === 'heritage')" (click)="travelMood.set('heritage')"><svg lucideCamera class="h-4 w-4 shrink-0"></svg>{{ isVi() ? 'Di sản & chụp ảnh' : 'Heritage & photos' }}</button>
+                    <button type="button" [class]="moodClass(travelMood() === 'beach')" (click)="travelMood.set('beach')"><svg lucideWaves class="h-4 w-4 shrink-0"></svg>{{ isVi() ? 'Biển & nghỉ dưỡng' : 'Beach & stay' }}</button>
+                    <button type="button" [class]="moodClass(travelMood() === 'food')" (click)="travelMood.set('food')"><svg lucideCoffee class="h-4 w-4 shrink-0"></svg>{{ isVi() ? 'Ẩm thực địa phương' : 'Local food' }}</button>
+                    <button type="button" [class]="moodClass(travelMood() === 'slow')" (click)="travelMood.set('slow')"><svg lucideLeaf class="h-4 w-4 shrink-0"></svg>{{ isVi() ? 'Chậm, ít di chuyển' : 'Slow travel' }}</button>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <span class="text-[10px] font-black uppercase tracking-wider text-stone-500">{{ isVi() ? 'Nhịp chuyến đi' : 'Pace' }}</span>
+                  <div class="grid grid-cols-3 gap-2">
+                    <button type="button" [class]="paceClass(pace() === 'easy')" (click)="pace.set('easy')">{{ isVi() ? 'Rảnh rang' : 'Easy' }}</button>
+                    <button type="button" [class]="paceClass(pace() === 'balanced')" (click)="pace.set('balanced')">{{ isVi() ? 'Vừa đủ' : 'Balanced' }}</button>
+                    <button type="button" [class]="paceClass(pace() === 'packed')" (click)="pace.set('packed')">{{ isVi() ? 'Đi nhiều' : 'Packed' }}</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-5">
+                <label class="mb-1 block text-xs font-bold text-natural-text">{{ isVi() ? 'Ghi chú thêm' : 'Extra notes' }}</label>
+                <textarea rows="3" class="w-full rounded-xl border border-natural-border bg-natural-bg p-3 text-xs text-natural-text outline-none focus:border-natural-accent" [ngModel]="customPrompt()" (ngModelChange)="customPrompt.set($event)" name="notes" [placeholder]="isVi() ? 'Ví dụ: Tôi đi du lịch với gia đình lớn, muốn đi nhẹ nhàng, không say sóng cano...' : 'Example: Traveling with kids, seeking private drivers, food adventures...'"></textarea>
+              </div>
+
+              <div class="mb-6">
+                <p class="mb-2 text-[10px] font-bold uppercase text-natural-accent">{{ isVi() ? 'Gợi ý nhanh cho bạn' : 'Quick Prompt Presets' }}</p>
+                <div class="flex flex-col gap-2">
+                  @for (s of presets(); track s) {
+                    <button type="button" class="line-clamp-1 rounded-xl border border-natural-border bg-natural-beige-light px-3 py-2.5 text-left text-[11px] text-natural-text transition hover:bg-natural-beige hover:text-natural-accent" (click)="customPrompt.set(s)"><span class="mr-1 text-natural-gold">•</span>{{ s }}</button>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-natural-gold py-3.5 font-serif text-xs font-black tracking-wide text-natural-ink shadow-lg transition hover:bg-natural-gold-dark md:text-sm" [disabled]="loading()" (click)="run()"><svg lucideSparkles class="h-4 w-4"></svg><span>{{ isVi() ? 'TẠO LỊCH TRÌNH CỦA TÔI' : 'CREATE MY TRIP PLAN' }}</span></button>
+          </div>
+
+          <!-- Output -->
+          <div class="relative flex min-h-[460px] w-full flex-col justify-between rounded-3xl border border-natural-border bg-natural-bg p-6 text-natural-text shadow-xl lg:w-7/12 lg:p-8">
+            @if (loading()) {
+              <div class="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-3xl bg-natural-beige/95 p-6 text-center backdrop-blur-xs">
+                <div class="relative"><div class="h-16 w-16 animate-spin rounded-full border-4 border-natural-accent border-t-transparent"></div><svg lucideBrain class="absolute inset-0 m-auto h-6 w-6 animate-pulse text-natural-accent"></svg></div>
+                <h4 class="mt-6 animate-pulse font-serif text-base font-bold text-natural-text">{{ isVi() ? 'Đang dựng lịch trình...' : 'Building your route...' }}</h4>
+                <p class="mt-3 max-w-sm whitespace-pre-wrap px-4 font-mono text-xs leading-relaxed text-natural-text/80">{{ loadingStep() }}</p>
+              </div>
+            }
+
+            @if (itinerary(); as plan) {
+              <div class="flex h-full flex-col justify-between">
+                <div>
+                  <div class="mb-4 flex flex-wrap items-start justify-between gap-2 border-b border-natural-border pb-4">
+                    <div>
+                      <span class="rounded-full border border-natural-accent/20 bg-natural-beige px-2.5 py-1 font-sans text-[9px] font-bold uppercase tracking-widest text-natural-accent">{{ isVi() ? 'Lịch trình thiết kế riêng' : 'Custom Tailored Itinerary' }}</span>
+                      <h4 class="mt-2 font-serif text-xl font-bold tracking-tight text-natural-text">{{ plan.itineraryTitle }}</h4>
+                    </div>
+                    <div class="shrink-0 rounded-2xl border border-emerald-500/20 bg-emerald-700/5 px-3 py-1.5 text-center"><p class="font-mono text-[9px] font-bold uppercase tracking-widest text-emerald-700">{{ isVi() ? 'TIẾT KIỆM COMBO' : 'COMBO SAVINGS' }}</p><h5 class="font-mono text-lg font-black text-emerald-700">{{ plan.estimatedSavingsPercent }}%</h5></div>
+                  </div>
+                  <div class="max-h-[300px] space-y-4 overflow-y-auto pr-2">
+                    @for (day of plan.days; track day.dayNumber) {
+                      <div class="rounded-2xl border border-natural-border bg-natural-beige-light p-4">
+                        <h5 class="mb-3 flex items-center gap-1.5 border-b border-natural-border pb-2 font-serif text-xs font-bold uppercase tracking-wider text-natural-accent"><svg lucideClock class="h-3.5 w-3.5 text-natural-accent"></svg><span>{{ isVi() ? 'Ngày ' + day.dayNumber + ': ' : 'Day ' + day.dayNumber + ': ' }}{{ day.title }}</span></h5>
+                        <div class="space-y-3">
+                          @for (act of day.activities; track act.time + act.attractionName) {
+                            <div class="flex gap-3 text-xs">
+                              <span class="h-fit shrink-0 rounded border border-natural-border bg-natural-beige px-2 py-0.5 font-mono font-bold text-natural-accent">{{ act.time }}</span>
+                              <div>
+                                <h6 class="font-serif text-xs font-bold text-natural-text">{{ act.attractionName }}</h6>
+                                <p class="mt-0.5 text-[11px] leading-relaxed text-natural-text/80">{{ act.description }}</p>
+                                <p class="mt-1 font-mono text-[10px] font-bold text-natural-accent">{{ act.costVND > 0 ? (act.costVND | number : '1.0-0') + ' VND' : (isVi() ? 'Miễn phí vé vào' : 'Free admission') }}</p>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  @if (plan.savingTips.length) {
+                    <div class="mt-4 rounded-2xl border border-natural-border bg-natural-beige-light p-4">
+                      <h5 class="mb-2 flex items-center gap-1.5 font-serif text-[10px] font-bold uppercase tracking-wider text-natural-accent"><svg lucideHelpCircle class="h-3.5 w-3.5"></svg>{{ isVi() ? 'Khuyến nghị mộc mạc từ AI' : 'Expert Local Insights' }}</h5>
+                      <ul class="list-disc space-y-1.5 pl-4 text-[11px] leading-relaxed text-natural-text/85">
+                        @for (tip of plan.savingTips; track tip) { <li>{{ tip }}</li> }
+                      </ul>
+                    </div>
+                  }
+                </div>
+                <div class="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-natural-border pt-4">
+                  <div><p class="text-[10px] font-bold uppercase text-natural-text/60">{{ isVi() ? 'ƯỚC TÍNH TRỌN GÓI COMBO' : 'OPTIMIZED BUNDLE PRICE' }}</p><p class="font-mono text-xl font-bold text-natural-accent">{{ plan.totalCostEstimate | number : '1.0-0' }} VND</p></div>
+                  <div class="flex items-center gap-2">
+                    @if (successMsg()) { <span class="flex items-center gap-1 text-xs font-bold text-emerald-600"><svg lucideCheckCircle class="h-4 w-4 text-emerald-600"></svg>{{ isVi() ? 'Đã áp dụng combo!' : 'Combo injected!' }}</span> }
+                    <button type="button" class="flex items-center gap-1.5 rounded-xl border border-emerald-700 bg-emerald-600 px-5 py-3 text-xs font-bold uppercase text-white shadow-md transition hover:bg-emerald-700" (click)="applyCombo()"><span>{{ isVi() ? 'ÁP DỤNG ĐẶT TRỌN BỘ COMBO' : 'BOOK ALL-IN-ONE COMBO' }}</span><svg lucideArrowRight class="h-4 w-4"></svg></button>
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="mx-auto flex h-full max-w-sm flex-col items-center justify-center text-center">
+                <svg lucideBrain class="mb-4 h-12 w-12 animate-pulse text-natural-accent/40"></svg>
+                <h4 class="font-serif text-base font-bold text-natural-text">{{ isVi() ? 'Trả lời bảng gu để nhận lịch trình mẫu' : 'Start with the trip brief' }}</h4>
+                <p class="mt-2 text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Chọn ngân sách, số ngày, người đi và gu trải nghiệm. VietCharm sẽ gợi ý timeline theo ngày cùng combo có thể đặt ngay.' : 'Choose budget, days, travelers, and mood. VietCharm will suggest a day-by-day route with a bookable bundle.' }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>

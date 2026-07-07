@@ -1,0 +1,150 @@
+    <footer class="border-t border-natural-accent/30 bg-natural-ink px-4 pb-12 pt-16 font-sans text-natural-beige/85 md:px-8">
+      <div class="mx-auto max-w-7xl">
+        <!-- Main 4-column layout + brand -->
+        <div class="grid grid-cols-1 gap-10 border-b border-natural-beige/10 pb-12 md:grid-cols-2 lg:grid-cols-12">
+          <!-- Brand block -->
+          <div class="space-y-5 lg:col-span-3">
+            <app-logo size="md" />
+            <p class="text-xs leading-relaxed text-natural-beige/70">
+              {{ i18n.isVi()
+                ? 'VietCharm mang đến những trải nghiệm du lịch chân thật và đáng nhớ tại Hội An và khắp Việt Nam.'
+                : 'VietCharm delivers authentic and memorable travel experiences in Hoi An and across Vietnam.' }}
+            </p>
+            <div class="flex items-center gap-3 pt-2">
+              <a href="#facebook" (click)="$event.preventDefault()" class="flex h-8 w-8 items-center justify-center rounded-full border border-natural-beige/25 text-natural-beige/80 transition duration-300 hover:border-natural-gold hover:bg-natural-gold/5 hover:text-natural-gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              </a>
+              <a href="#instagram" (click)="$event.preventDefault()" class="flex h-8 w-8 items-center justify-center rounded-full border border-natural-beige/25 text-natural-beige/80 transition duration-300 hover:border-natural-gold hover:bg-natural-gold/5 hover:text-natural-gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="#youtube" (click)="$event.preventDefault()" class="flex h-8 w-8 items-center justify-center rounded-full border border-natural-beige/25 text-natural-beige/80 transition duration-300 hover:border-natural-gold hover:bg-natural-gold/5 hover:text-natural-gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-2C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.41 19c1.71.46 8.59.46 8.59.46s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="#tiktok" (click)="$event.preventDefault()" class="flex h-8 w-8 select-none items-center justify-center rounded-full border border-natural-beige/25 text-xs font-bold text-natural-beige/80 transition duration-300 hover:border-natural-gold hover:bg-natural-gold/5 hover:text-natural-gold">
+                ♪
+              </a>
+            </div>
+          </div>
+
+          <!-- KHÁM PHÁ -->
+          <div class="space-y-4 lg:col-span-2">
+            <div>
+              <h5 class="text-xs font-bold uppercase tracking-widest text-natural-bg">{{ i18n.isVi() ? 'KHÁM PHÁ' : 'EXPLORE' }}</h5>
+              <span class="mt-2 block h-[2px] w-8 bg-natural-gold"></span>
+            </div>
+            <ul class="space-y-2.5 text-xs">
+              <li><button type="button" class="foot-link" (click)="ui.selectProvince('quang-nam')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Khám phá Hội An' : 'Explore Hoi An' }}</span></button></li>
+              <li><button type="button" class="foot-link" (click)="ui.openAllServices('hotels')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Khách sạn' : 'Hotels' }}</span></button></li>
+              <li><button type="button" class="foot-link" (click)="ui.openAllServices('vehicles')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Thuê xe' : 'Car Rental' }}</span></button></li>
+              <li><button type="button" class="foot-link" (click)="ui.openAllServices('activities')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hoạt động & vui chơi' : 'Experiences & Tours' }}</span></button></li>
+              <li><a routerLink="/tours" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Combo tiết kiệm' : 'Saver Combos' }}</span></a></li>
+              <li><a routerLink="/handbook" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Cẩm nang du lịch' : 'Travel Handbook' }}</span></a></li>
+            </ul>
+          </div>
+
+          <!-- HỖ TRỢ -->
+          <div class="space-y-4 lg:col-span-2">
+            <div>
+              <h5 class="text-xs font-bold uppercase tracking-widest text-natural-bg">{{ i18n.isVi() ? 'HỖ TRỢ' : 'SUPPORT' }}</h5>
+              <span class="mt-2 block h-[2px] w-8 bg-natural-gold"></span>
+            </div>
+            <ul class="space-y-2.5 text-xs">
+              <li><a href="#help" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Trung tâm hỗ trợ' : 'Help Center' }}</span></a></li>
+              <li><a href="#faq" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Câu hỏi thường gặp' : 'FAQs' }}</span></a></li>
+              <li><a href="#booking-guide" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hướng dẫn đặt dịch vụ' : 'Booking Guide' }}</span></a></li>
+              <li><a href="#refund" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Chính sách hủy & hoàn tiền' : 'Cancellation & Refund' }}</span></a></li>
+              <li><a href="#terms" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Điều khoản sử dụng' : 'Terms of Use' }}</span></a></li>
+              <li><a href="#privacy" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Chính sách bảo mật' : 'Privacy Policy' }}</span></a></li>
+            </ul>
+          </div>
+
+          <!-- VỀ VIETCHARM -->
+          <div class="space-y-4 lg:col-span-2">
+            <div>
+              <h5 class="text-xs font-bold uppercase tracking-widest text-natural-bg">{{ i18n.isVi() ? 'VỀ VIETCHARM' : 'ABOUT VIETCHARM' }}</h5>
+              <span class="mt-2 block h-[2px] w-8 bg-natural-gold"></span>
+            </div>
+            <ul class="space-y-2.5 text-xs">
+              <li><a href="#about" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Giới thiệu về chúng tôi' : 'About Us' }}</span></a></li>
+              <li><a routerLink="/partnership" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hợp tác với chúng tôi' : 'Work With Us' }}</span></a></li>
+              <li><a href="#careers" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Tuyển dụng' : 'Careers' }}</span></a></li>
+              <li><a href="#partners" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Đối tác & Liên kết' : 'Partners & Affiliates' }}</span></a></li>
+              <li><a href="#blog" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Tin tức & Blog' : 'News & Blog' }}</span></a></li>
+              <li><a href="#contact" (click)="$event.preventDefault()" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Liên hệ' : 'Contact' }}</span></a></li>
+            </ul>
+          </div>
+
+          <!-- LIÊN HỆ -->
+          <div class="space-y-4 lg:col-span-3">
+            <div>
+              <h5 class="text-xs font-bold uppercase tracking-widest text-natural-bg">{{ i18n.isVi() ? 'LIÊN HỆ' : 'CONTACT' }}</h5>
+              <span class="mt-2 block h-[2px] w-8 bg-natural-gold"></span>
+            </div>
+            <ul class="space-y-3.5 text-xs text-natural-beige/80">
+              <li class="flex items-start gap-2.5">
+                <svg lucideMapPin class="mt-0.5 h-4 w-4 shrink-0 text-natural-gold"></svg>
+                <span>{{ i18n.isVi() ? '123 Trần Phú, Minh An, Hội An, Quảng Nam' : '123 Tran Phu, Minh An, Hoi An, Quang Nam' }}</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <svg lucidePhone class="h-4 w-4 shrink-0 text-natural-gold"></svg>
+                <a href="tel:19005040" class="transition hover:text-natural-gold">Hotline: 1900 5040</a>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <svg lucideMail class="h-4 w-4 shrink-0 text-natural-gold"></svg>
+                <a href="mailto:info@vietcharm.com" class="break-all transition hover:text-natural-gold">Email: info&#64;vietcharm.com</a>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <svg lucideClock class="h-4 w-4 shrink-0 text-natural-gold"></svg>
+                <span>{{ i18n.isVi() ? 'Thứ 2 - Chủ nhật: 8:00 - 21:00' : 'Mon - Sun: 8:00 AM - 9:00 PM' }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bottom row: legals, trust badges, payment -->
+        <div class="flex flex-col items-center justify-between gap-8 pt-8 text-xs text-natural-beige/60 xl:flex-row">
+          <div class="space-y-1 text-center xl:text-left">
+            <p class="font-medium text-stone-300">{{ i18n.isVi() ? '© 2026 VietCharm Hội An. All rights reserved.' : '© 2026 VietCharm Hoi An. All rights reserved.' }}</p>
+            <p class="max-w-md text-[10px] leading-relaxed text-natural-beige/40">{{ i18n.isVi() ? 'Giấy phép kinh doanh lữ hành quốc tế số GP-79-1124' : 'International Tour Operator License No. GP-79-1124' }}</p>
+          </div>
+
+          <div class="flex flex-col items-center gap-4 sm:flex-row md:gap-6">
+            <div class="flex items-center gap-2 rounded-xl border border-stone-800/60 bg-natural-beige/5 px-3 py-2">
+              <svg lucideShieldCheck class="h-5 w-5 shrink-0 text-emerald-500"></svg>
+              <div class="text-left">
+                <span class="block text-[10px] font-bold leading-none text-stone-200">{{ i18n.isVi() ? 'Đặt chỗ an tâm' : 'Booking assurance' }}</span>
+                <span class="mt-0.5 block text-[9px] leading-none text-natural-beige/40">{{ i18n.isVi() ? 'Xác nhận rõ ràng' : 'Clear confirmation' }}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 rounded-xl border border-stone-800/60 bg-natural-beige/5 px-3 py-2">
+              <svg lucideHeadphones class="h-5 w-5 shrink-0 text-amber-500"></svg>
+              <div class="text-left">
+                <span class="block text-[10px] font-bold leading-none text-stone-200">{{ i18n.isVi() ? 'Hỗ trợ 24/7' : '24/7 Support' }}</span>
+                <span class="mt-0.5 block text-[9px] leading-none text-natural-beige/40">{{ i18n.isVi() ? 'Luôn sẵn sàng' : 'Always Ready' }}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 rounded-xl border border-stone-800/60 bg-natural-beige/5 px-3 py-2">
+              <svg lucideAward class="h-5 w-5 shrink-0 text-sky-400"></svg>
+              <div class="text-left">
+                <span class="block text-[10px] font-bold leading-none text-stone-200">{{ i18n.isVi() ? 'Đảm bảo chất lượng' : 'Quality Assurance' }}</span>
+                <span class="mt-0.5 block text-[9px] leading-none text-natural-beige/40">{{ i18n.isVi() ? 'Dịch vụ tốt nhất' : 'Best Service' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center gap-2.5 xl:items-end">
+            <span class="text-[11px] font-bold text-stone-400">{{ i18n.isVi() ? 'Chấp nhận thanh toán' : 'We Accept Payments' }}</span>
+            <div class="flex items-center gap-1.5">
+              <div class="flex h-6 w-11 select-none items-center justify-center rounded-lg border border-stone-200 bg-white text-[10px] font-bold tracking-tight text-blue-800 shadow-xs">VISA</div>
+              <div class="relative flex h-6 w-11 select-none items-center justify-center gap-0.5 rounded-lg border border-stone-200 bg-white py-1 shadow-xs">
+                <div class="h-3.5 w-3.5 rounded-full bg-red-500 opacity-90"></div>
+                <div class="-ml-2.5 h-3.5 w-3.5 rounded-full bg-amber-500 opacity-90 mix-blend-multiply"></div>
+              </div>
+              <div class="flex h-6 w-11 select-none items-center justify-center rounded-lg bg-[#A50064] text-[8px] font-extrabold tracking-tighter text-white shadow-xs">momo</div>
+              <div class="flex h-6 w-11 select-none items-center justify-center rounded-lg bg-[#008FE5] text-[7px] font-black tracking-tight text-white shadow-xs">ZaloPay</div>
+              <div class="flex h-6 w-11 select-none items-center justify-center rounded-lg bg-[#003087] font-serif text-[9px] font-black italic tracking-tighter text-white shadow-xs">PayPal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>

@@ -1,0 +1,13 @@
+    <section class="mx-auto max-w-6xl px-4 py-12">
+      <div class="overflow-hidden rounded-3xl border border-natural-border bg-white shadow-luxe">
+        <div class="grid md:grid-cols-2">
+          <div class="p-8 md:p-12">
+            <p class="text-xs font-black uppercase tracking-[0.25em] text-natural-accent">{{ eyebrow() }}</p>
+            <h1 class="mt-3 font-serif text-5xl font-black text-natural-ink">{{ title() }}</h1>
+            <p class="mt-5 text-base leading-8 text-natural-text/72">{{ description() }}</p>
+            <a routerLink="/services" class="mt-8 inline-flex min-h-12 items-center rounded-full bg-natural-accent px-6 text-sm font-black text-white">{{ cta() }}</a>
+          </div>
+          <img [src]="image()" [alt]="title()" class="h-full min-h-80 w-full object-cover" />
+        </div>
+      </div>
+    </section>

@@ -1,0 +1,201 @@
+    <div class="relative w-full overflow-hidden border-y border-natural-border bg-natural-sand px-4 py-12 text-natural-text md:px-8">
+      @if (alertMsg(); as msg) {
+        <div class="fixed bottom-6 left-1/2 z-50 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-2 rounded-2xl border border-natural-border/20 bg-natural-text px-5 py-3 text-sm font-bold text-natural-sand shadow-2xl"><svg lucideSparkles class="h-4 w-4 text-natural-gold"></svg><span>{{ msg }}</span></div>
+      }
+
+      <div class="mx-auto max-w-7xl space-y-10">
+        <div class="mx-auto max-w-3xl space-y-3 text-center">
+          <div class="inline-flex items-center gap-1.5 rounded-full bg-natural-border-light px-3 py-1 text-[10px] font-black uppercase tracking-widest text-natural-accent"><svg lucideUsers class="h-3.5 w-3.5"></svg><span>{{ isVi() ? 'PHÒNG LẬP KẾ HOẠCH NHÓM ĐỒNG THUẬN' : 'SHARED GROUP PLANNING ROOM' }}</span></div>
+          <h2 class="font-serif text-3xl font-black tracking-tight text-natural-text md:text-5xl">{{ isVi() ? 'Trip Room – Giải Mã Áp Lực Đi Nhóm' : 'Trip Room – Group Co-Planning Oasis' }}</h2>
+          <p class="mx-auto max-w-2xl text-xs leading-relaxed text-natural-text/80 md:text-sm">{{ isVi() ? 'Đi nhóm mệt vì một người chốt tự phát, người khác không ưng, không biết ai đã trả tiền, hay đổi lịch. Trip Room cho phép cả nhóm đề xuất gu, bầu chọn tối ưu, tự thanh toán và hiển thị hóa đơn minh bạch.' : 'Group trips get chaotic when one person decides and others suffer. Invite friends, cast votes on options, track payment shares, and build a trip everyone actually loves.' }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
+          <!-- LEFT -->
+          <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-natural-border bg-white p-6 shadow-lg lg:col-span-5">
+            <div class="space-y-6">
+              <div class="space-y-3 rounded-2xl border border-natural-border bg-natural-sand p-4">
+                <div class="flex items-center justify-between">
+                  <span class="block text-[10px] font-black uppercase tracking-wider text-natural-accent">{{ isVi() ? 'LIÊN KẾT PHÒNG DU LỊCH NHÓM' : 'CO-PLANNING INVITE LINK' }}</span>
+                  <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-800"><span class="h-1.5 w-1.5 animate-ping rounded-full bg-emerald-500"></span><span>{{ isVi() ? 'Đang hoạt động' : 'Live' }}</span></span>
+                </div>
+                <div class="flex gap-2">
+                  <input type="text" readonly [value]="'https://vietcharm.vn/triproom/' + roomId" class="flex-1 rounded-xl border border-natural-border bg-white p-2.5 font-mono text-[10px] text-natural-text" />
+                  <button type="button" class="flex items-center gap-1.5 rounded-xl bg-natural-accent px-3 py-2.5 text-xs font-bold text-white transition hover:bg-natural-olive" (click)="copyLink()"><svg lucideShare2 class="h-3.5 w-3.5"></svg><span>{{ copied() ? (isVi() ? 'Đã lưu' : 'Copied') : (isVi() ? 'Mời' : 'Invite') }}</span></button>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div class="flex items-center justify-between border-b border-natural-sand pb-2">
+                  <span class="font-serif text-xs font-black uppercase tracking-wider text-natural-text">{{ isVi() ? 'Danh sách thành viên' : 'Group Members' }}</span>
+                  <span class="rounded-full border border-natural-border bg-natural-sand px-2.5 py-0.5 font-mono text-[10px] font-bold text-natural-accent">{{ members().length }} {{ isVi() ? 'người' : 'people' }}</span>
+                </div>
+                <div class="max-h-[220px] space-y-2.5 overflow-y-auto pr-1">
+                  @for (member of members(); track member.id) {
+                    <div class="group/item flex items-start gap-3 rounded-2xl border border-transparent p-3 transition hover:border-natural-border hover:bg-natural-sand">
+                      <img [src]="member.avatar" [alt]="member.name" class="h-10 w-10 shrink-0 rounded-full border border-natural-border object-cover shadow-xs" />
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-start justify-between gap-1">
+                          <span class="truncate text-xs font-black text-natural-text">{{ member.name }}</span>
+                          <div class="flex items-center gap-1">
+                            <span [class]="'rounded-full px-2 py-0.5 text-[9px] font-black ' + (member.status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800')">{{ member.status === 'paid' ? (isVi() ? 'Đã đóng' : 'Paid') : (isVi() ? 'Chưa đóng' : 'Unpaid') }}</span>
+                            @if (member.id !== 'm1') { <button type="button" class="p-0.5 text-rose-500 opacity-0 transition hover:text-rose-700 group-hover/item:opacity-100" (click)="deleteMember(member.id)"><svg lucideTrash2 class="h-3.5 w-3.5"></svg></button> }
+                          </div>
+                        </div>
+                        <div class="mt-1 flex flex-wrap gap-1">
+                          <span class="font-mono text-[9px] font-bold text-slate-500">{{ isVi() ? 'Ngân sách:' : 'Budget limit:' }} {{ member.budget | number : '1.0-0' }}đ</span>
+                          @for (p of member.preferences; track p) { <span class="rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] text-amber-900">{{ p }}</span> }
+                        </div>
+                        <p class="mt-1 truncate text-[9px] text-rose-700">⚠️ {{ isVi() ? 'Tránh: ' + member.dislikes : 'Dislike: ' + member.dislikes }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <form class="space-y-3 border-t border-natural-border pt-4" (ngSubmit)="addMember()">
+                <span class="block text-[10px] font-black uppercase text-natural-accent">{{ isVi() ? 'MÔ PHỎNG BẠN BÈ GIA NHẬP NHÓM' : 'SIMULATE FRIENDS JOINING LOBBY' }}</span>
+                <div class="space-y-2">
+                  <input type="text" required [ngModel]="friendName()" (ngModelChange)="friendName.set($event)" name="fname" [placeholder]="isVi() ? 'Tên bạn thân...' : 'Friend name...'" class="w-full rounded-xl border border-natural-border bg-natural-sand p-2.5 text-xs text-natural-text outline-none" />
+                  <div class="grid grid-cols-2 gap-2">
+                    <input type="text" [ngModel]="friendPref()" (ngModelChange)="friendPref.set($event)" name="fpref" [placeholder]="isVi() ? 'Gu du lịch (phẩy)...' : 'Vibes (comma separated)...'" class="rounded-xl border border-natural-border bg-natural-sand p-2.5 text-xs text-natural-text outline-none" />
+                    <input type="text" [ngModel]="friendDislike()" (ngModelChange)="friendDislike.set($event)" name="fdis" [placeholder]="isVi() ? 'Cực ghét gì...' : 'Avoid/Dislike...'" class="rounded-xl border border-natural-border bg-natural-sand p-2.5 text-xs text-natural-text outline-none" />
+                  </div>
+                  <div class="flex items-center justify-between text-xs text-natural-accent">
+                    <span>{{ isVi() ? 'Hạn mức chi:' : 'Budget max:' }} {{ friendBudget() | number : '1.0-0' }}đ</span>
+                    <input type="range" min="3000000" max="10000000" step="500000" [ngModel]="friendBudget()" (ngModelChange)="friendBudget.set(+$event)" name="fbud" class="w-32 accent-natural-accent" />
+                  </div>
+                </div>
+                <button type="submit" class="flex w-full items-center justify-center gap-1 rounded-xl border border-natural-border bg-natural-sand py-2 text-xs font-bold text-natural-accent transition hover:bg-natural-border"><svg lucidePlus class="h-4 w-4"></svg><span>{{ isVi() ? 'Thêm thành viên ảo này' : 'Insert Simulated Friend' }}</span></button>
+              </form>
+            </div>
+
+            <div class="space-y-4 border-t border-natural-border pt-4">
+              <div class="flex items-center justify-between rounded-2xl border border-natural-border bg-natural-sand p-3">
+                <div><span class="block text-[9px] font-black uppercase text-natural-accent">{{ isVi() ? 'TỔNG CHUYẾN ĐI NHÓM' : 'TOTAL GROUP ESTIMATE' }}</span><span class="font-serif text-base font-black text-natural-text">{{ packageTotal() | number : '1.0-0' }}đ</span></div>
+                <div class="text-right"><span class="block text-[9px] font-black uppercase text-natural-accent">{{ isVi() ? 'MỖI THÀNH VIÊN' : 'EACH SHARE (SPLIT)' }}</span><span class="font-mono text-sm font-black text-natural-accent">{{ perPersonShare() | number : '1.0-0' }}đ</span></div>
+              </div>
+              @if (unpaidCount() > 0) {
+                <div class="flex items-center justify-between gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-3.5">
+                  <div class="flex items-center gap-1.5 text-xs font-semibold text-rose-800"><svg lucideAlertCircle class="h-4 w-4 shrink-0 text-rose-600"></svg><span class="text-[11px]">{{ isVi() ? 'Còn ' + unpaidCount() + ' người chưa đóng' : unpaidCount() + ' co-planners unpaid' }}</span></div>
+                  <button type="button" class="shrink-0 rounded-xl bg-rose-600 px-3 py-1.5 text-[10px] font-bold uppercase text-white transition hover:bg-rose-700" (click)="alert(isVi() ? '🔔 Đã rung chuông gửi SMS & Zalo nhắc đóng tiền cho thành viên!' : '🔔 Split-bill reminders broadcasted via text!')">{{ isVi() ? 'Đòi tiền' : 'Remind' }}</button>
+                </div>
+              } @else {
+                <div class="flex items-center gap-2 rounded-2xl border border-emerald-100 bg-emerald-50 p-3 text-xs font-black text-emerald-800"><svg lucideCheckCircle class="h-4 w-4 text-emerald-600"></svg><span>{{ isVi() ? 'Tất cả đã đóng! Đã sẵn sàng xuất phát.' : 'All paid! Ready to depart.' }}</span></div>
+              }
+              <div class="space-y-1">
+                @for (m of members(); track m.id) {
+                  @if (m.status === 'unpaid') {
+                    <button type="button" class="flex w-full justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 font-mono text-[10px] font-bold text-slate-800 transition hover:bg-slate-100" (click)="pay(m.id)"><span>{{ isVi() ? 'Xác nhận ' + m.name + ' trả tiền' : 'Confirm pay for ' + m.name }}</span><span>+{{ perPersonShare() | number : '1.0-0' }}đ &rarr;</span></button>
+                  }
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-natural-border bg-white p-6 shadow-lg lg:col-span-7 md:p-8">
+            <div class="space-y-6">
+              <div class="flex gap-4 border-b border-natural-sand pb-1">
+                <button type="button" [class]="tabClass('invite')" (click)="tab.set('invite')">🗳️ {{ isVi() ? '1. Đóng góp ý kiến' : '1. Submit opinions' }}</button>
+                <button type="button" [class]="tabClass('voting')" (click)="tab.set('voting')">📊 {{ isVi() ? '2. Bầu chọn địa điểm' : '2. Vote & Consensus' }}</button>
+                <button type="button" [class]="tabClass('checkout')" (click)="tab.set('checkout')">💳 {{ isVi() ? '3. Hóa đơn chiết khấu' : '3. Group Checkout' }}</button>
+              </div>
+
+              @switch (tab()) {
+                @case ('invite') {
+                  <div class="space-y-4">
+                    <div class="flex items-start gap-3 rounded-2xl border border-amber-200/40 bg-amber-50/50 p-4"><svg lucideInfo class="mt-0.5 h-4 w-4 shrink-0 text-amber-700"></svg><p class="text-[11px] leading-relaxed text-amber-900">{{ isVi() ? 'Từng thành viên khi nhấp vào link phòng sẽ điền gu nghỉ ngơi, ngân sách và các điểm đặc biệt cần tránh. Hệ thống sẽ lọc và đưa ra các đề xuất lưu trú, ăn uống, vui chơi phù hợp nhất để cả nhóm bầu chọn.' : 'Every group member inputs their design style, budget, and red-flags. Our platform aggregates these vibes and lists personalized hotels, dining, and activity nodes.' }}</p></div>
+                    <div class="space-y-3">
+                      <h4 class="text-xs font-bold uppercase tracking-wider text-natural-accent">{{ isVi() ? 'Ý KIẾN ĐANG HOẠT ĐỘNG TRONG PHÒNG' : 'COLLECTIVE GROUP INSIGHTS' }}</h4>
+                      <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <div class="space-y-1 rounded-xl border border-natural-border bg-natural-sand p-3"><span class="block text-[9px] font-bold uppercase text-natural-accent">{{ isVi() ? 'NGÂN SÁCH TRUNG BÌNH' : 'AVERAGE BUDGET TARGET' }}</span><span class="font-mono text-sm font-bold">{{ avgBudget() | number : '1.0-0' }}đ</span></div>
+                        <div class="space-y-1 rounded-xl border border-natural-border bg-natural-sand p-3"><span class="block text-[9px] font-bold uppercase text-rose-700">{{ isVi() ? 'ĐIỂM TRÁNH CHUNG (ANTI-VIBE)' : 'CONSENSUS RED FLAGS' }}</span><span class="text-xs font-semibold text-rose-800">{{ isVi() ? 'Tránh mệt mỏi, đi bộ dài, khách sạn ồn' : 'No long tiring slopes, quiet hotels' }}</span></div>
+                      </div>
+                      <div class="space-y-2 rounded-2xl border border-natural-border bg-natural-bg p-4">
+                        <span class="block text-[10px] font-black uppercase tracking-wider text-natural-accent">{{ isVi() ? 'GU CHUNG CỦA CẢ NHÓM ĐƯỢC TỔNG HỢP' : 'SYSTEM MATCHED VIBES' }}</span>
+                        <div class="flex flex-wrap gap-1.5">
+                          <span class="rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] text-emerald-800">🌾 {{ isVi() ? 'Thảnh thơi mộc mạc hoài cổ' : 'Rustic traditional vintage' }}</span>
+                          <span class="rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] text-emerald-800">🏊 {{ isVi() ? 'Khách sạn có hồ bơi view sông' : 'Riverside stay with pools' }}</span>
+                          <span class="rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] text-emerald-800">🥢 {{ isVi() ? 'Ẩm thực di sản bản địa mộc' : 'Heritage local gastronomy' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex justify-end pt-4"><button type="button" class="flex items-center gap-1 rounded-xl bg-natural-accent px-6 py-3 font-serif text-xs font-bold text-white transition duration-300 hover:bg-natural-olive" (click)="tab.set('voting')"><span>{{ isVi() ? 'Tiến hành Bầu Chọn Địa Điểm' : 'Proceed to Group Voting' }}</span><svg lucideChevronRight class="h-4 w-4"></svg></button></div>
+                  </div>
+                }
+                @case ('voting') {
+                  <div class="space-y-6">
+                    <div class="flex items-center justify-between border-b border-natural-sand pb-2"><p class="text-[10px] font-black uppercase tracking-wider text-natural-accent">{{ isVi() ? 'CẢ NHÓM BẦU CHỌN CHO CÁC PHƯƠNG ÁN' : 'REAL-TIME CO-PLANNER VOTING' }}</p><span class="rounded border border-amber-200 bg-amber-50 px-2 py-0.5 font-mono text-[9px] text-natural-accent">{{ isVi() ? 'Chạm để bầu nhân danh Trần Tuấn' : 'Tap to vote as Tuan' }}</span></div>
+                    @for (cat of voteCategories(); track cat.type) {
+                      <div class="space-y-3">
+                        <h4 class="font-serif text-xs font-black uppercase tracking-wider text-natural-text">{{ cat.label }}</h4>
+                        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                          @for (item of itemsOfType(cat.type); track item.id) {
+                            <div [class]="'group flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border bg-natural-bg transition duration-300 ' + (item.votes.includes('m1') ? 'border-natural-accent shadow-md ring-1 ring-natural-accent/30' : 'border-natural-border hover:border-natural-accent')" (click)="vote(item.id)">
+                              <div class="relative h-28 overflow-hidden">
+                                <img [src]="item.image" [alt]="item.nameVi" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                                @if (item.votes.length === members().length) { <div class="absolute right-2 top-2 flex items-center gap-0.5 rounded-full bg-emerald-600 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow"><svg lucideCheckCircle class="h-2.5 w-2.5"></svg><span>{{ isVi() ? 'Nhất trí 100%' : '100% Agreed' }}</span></div> }
+                                <div class="absolute bottom-1 left-2 rounded bg-black/50 px-1.5 py-0.5 font-mono text-[9px] text-white">{{ item.price | number : '1.0-0' }}đ{{ cat.type === 'hotel' ? '/đêm' : '/người' }}</div>
+                              </div>
+                              <div class="space-y-2 p-3">
+                                <div>
+                                  <span class="block font-mono text-[8px] font-bold uppercase tracking-tight text-natural-accent">{{ isVi() ? item.locationVi : item.locationEn }}</span>
+                                  <h5 class="line-clamp-1 font-serif text-[11px] font-bold leading-snug text-natural-text">{{ isVi() ? item.nameVi : item.nameEn }}</h5>
+                                </div>
+                                <div class="space-y-1">
+                                  <div class="flex items-center justify-between text-[9px] font-semibold text-natural-accent"><span>{{ isVi() ? 'Tiến trình nhóm:' : 'Consensus:' }}</span><span>{{ item.votes.length }}/{{ members().length }} ({{ percent(item) }}%)</span></div>
+                                  <div class="h-1.5 w-full overflow-hidden rounded-full bg-natural-border-light"><div class="h-full transition-all duration-500" [class.bg-emerald-600]="item.votes.length === members().length" [class.bg-natural-accent]="item.votes.length !== members().length" [style.width.%]="percent(item)"></div></div>
+                                </div>
+                                <div class="flex items-center justify-between border-t border-natural-sand pt-1">
+                                  <div class="flex -space-x-1.5 overflow-hidden">
+                                    @for (vId of item.votes; track vId) {
+                                      @if (memberById(vId); as mb) { <img [src]="mb.avatar" [alt]="mb.name" [title]="mb.name" class="inline-block h-4 w-4 rounded-full object-cover ring-1 ring-white" /> }
+                                    }
+                                  </div>
+                                  <span [class]="'rounded px-1.5 py-0.5 text-[8px] font-bold ' + (item.votes.includes('m1') ? 'bg-natural-accent text-white' : 'border border-natural-border bg-natural-sand text-natural-accent')">{{ item.votes.includes('m1') ? (isVi() ? '✓ Bạn đã bầu' : '✓ You voted') : (isVi() ? 'Bầu chọn' : 'Vote') }}</span>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                    <div class="flex items-center justify-between border-t border-natural-sand pt-4">
+                      <div class="text-xs text-natural-accent">💡 {{ isVi() ? 'Mẹo: Các lựa chọn đạt 100% đồng ý sẽ tự động tối ưu hóa đơn!' : 'Tip: 100% consensus items reduce platform surcharges!' }}</div>
+                      <button type="button" class="flex items-center gap-1 rounded-xl bg-emerald-700 px-6 py-3 font-serif text-xs font-black text-white transition duration-300 hover:bg-emerald-800" (click)="checkoutGroup()"><span>{{ isVi() ? 'Tải Lựa Chọn Đồng Thuận Lên Giỏ Vé' : 'Load Group Selections to Cart' }}</span><svg lucideSparkles class="h-4 w-4 text-amber-300"></svg></button>
+                    </div>
+                  </div>
+                }
+                @case ('checkout') {
+                  <div class="space-y-6">
+                    <div class="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4"><svg lucideShieldCheck class="h-6 w-6 shrink-0 text-emerald-600"></svg><div><h4 class="font-serif text-xs font-black uppercase text-emerald-800">{{ isVi() ? 'CHIẾT KHẤU ĐỒNG THUẬN TỰ ĐỘNG ĐÃ ÁP DỤNG!' : 'CONSENSUS DISCOUNT ACTIVATED!' }}</h4><p class="mt-0.5 text-[11px] leading-relaxed text-emerald-700">{{ isVi() ? 'Dựa trên việc cả nhóm đồng thuận 100% một số địa điểm (Vườn Vy, Rừng Dừa Bảy Mẫu), VietCharm chiết khấu ngay 12% phí dịch vụ trọn gói cho nhóm bạn.' : 'Due to perfect 100% consensus on multiple activities, VietCharm applied an automatic 12% discount to your collective bundle.' }}</p></div></div>
+                    <div class="space-y-4 rounded-2xl border border-natural-border bg-natural-sand p-4">
+                      <span class="block text-[10px] font-black uppercase tracking-wider text-natural-accent">{{ isVi() ? 'BẢNG CHI TIẾT THANH TOÁN THEO ĐẦU NGƯỜI' : 'DETAILED PER-HEAD LEDGER' }}</span>
+                      <div class="space-y-2 font-mono text-[11px]">
+                        @for (member of members(); track member.id) {
+                          <div class="flex items-center justify-between border-b border-natural-border/40 py-2">
+                            <div class="flex items-center gap-2"><img [src]="member.avatar" [alt]="member.name" class="h-5 w-5 rounded-full object-cover" /><span class="font-bold text-natural-text">{{ member.name }}</span></div>
+                            <div class="flex items-center gap-3"><span class="font-bold text-natural-accent">{{ perPersonShare() | number : '1.0-0' }}đ</span><span [class]="'rounded px-2 py-0.5 text-[9px] font-black ' + (member.status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800')">{{ member.status === 'paid' ? (isVi() ? 'ĐÃ TRẢ' : 'PAID') : (isVi() ? 'CHƯA TRẢ' : 'PENDING') }}</span></div>
+                          </div>
+                        }
+                      </div>
+                      <div class="flex justify-between pt-2 text-xs font-bold text-natural-text"><span>{{ isVi() ? 'Trưởng nhóm thanh toán trước:' : 'Leader pay-upfront total:' }}</span><span class="font-mono text-sm font-black text-natural-accent">{{ packageTotal() | number : '1.0-0' }}đ</span></div>
+                    </div>
+                    <div class="space-y-3 rounded-2xl border border-natural-border bg-white p-4">
+                      <div class="flex items-center justify-between text-xs"><span class="font-serif font-black">{{ isVi() ? 'Trạng thái huy động quỹ:' : 'Crowdfunding progress:' }}</span><span class="font-mono font-bold text-emerald-700">{{ paidCount() }} / {{ members().length }} {{ isVi() ? 'đã hoàn tất' : 'completed' }}</span></div>
+                      <div class="h-2 w-full overflow-hidden rounded-full border border-natural-border bg-natural-sand"><div class="h-full bg-emerald-600 transition-all duration-500" [style.width.%]="paidCount() / members().length * 100"></div></div>
+                    </div>
+                    <div class="flex flex-wrap justify-end gap-2">
+                      <a routerLink="/" class="rounded-xl border border-natural-border bg-white px-6 py-3 text-xs font-bold text-natural-accent transition hover:bg-natural-sand">{{ isVi() ? 'Quay lại Trang Chủ' : 'Back to Home' }}</a>
+                      <button type="button" class="rounded-xl bg-natural-accent px-6 py-3 font-serif text-xs font-bold text-white transition hover:bg-natural-olive" (click)="alert(isVi() ? '✓ Đã mở bước thanh toán đặt cọc nhóm!' : '✓ Opening group deposit checkout!')">{{ isVi() ? 'Thanh toán đặt cọc trọn gói' : 'Pay Group Deposit' }}</button>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+            <div class="border-t border-natural-sand pt-3 text-center font-sans text-[10px] italic text-natural-accent/80">✦ {{ isVi() ? 'Công nghệ Trip Room của VietCharm hiện đã hỗ trợ mở rộng cho mọi vùng di sản (Bắc, Trung, Nam).' : 'VietCharm Trip Room technology currently extends native multi-planner logic across all heritage regions.' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>

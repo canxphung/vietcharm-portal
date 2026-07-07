@@ -1,0 +1,103 @@
+    <div class="min-h-screen w-full bg-natural-bg px-4 py-8">
+      <div class="mx-auto max-w-7xl space-y-8">
+        <div>
+          <a routerLink="/discover" class="inline-flex items-center justify-center gap-2 rounded-full border border-natural-border bg-white px-4 py-2.5 text-xs font-black uppercase tracking-wide text-natural-accent shadow-xs transition hover:bg-natural-beige hover:text-natural-olive">
+            <svg lucideArrowLeft class="h-4 w-4"></svg><span>{{ i18n.isVi() ? 'Quay lại' : 'Back' }}</span>
+          </a>
+        </div>
+
+        <div class="max-w-3xl">
+          <span class="text-[11px] font-black uppercase tracking-[0.22em] text-natural-accent">{{ i18n.isVi() ? 'Danh mục dịch vụ' : 'Service catalog' }}</span>
+          <h1 class="mt-2 font-serif text-3xl font-black tracking-tight text-natural-ink md:text-4xl">{{ heading() }}</h1>
+          <p class="mt-2 text-sm leading-relaxed text-stone-600">{{ scopeDescription() }}</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex flex-wrap gap-2">
+          @for (tab of tabs; track tab.id) {
+            <button type="button" class="rounded-full border px-4 py-2 text-sm font-black transition" [class.border-natural-accent]="activeTab() === tab.id" [class.bg-natural-accent]="activeTab() === tab.id" [class.text-white]="activeTab() === tab.id" [class.border-natural-border]="activeTab() !== tab.id" (click)="setTab(tab.id)">
+              {{ i18n.isVi() ? tab.vi : tab.en }}
+            </button>
+          }
+        </div>
+
+        <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <!-- Filter sidebar -->
+          <aside class="self-start rounded-3xl border border-natural-border bg-natural-cream p-5 lg:sticky lg:top-28">
+            <div class="flex items-center justify-between">
+              <h3 class="flex items-center gap-2 font-serif text-base font-black text-natural-text"><svg lucideSlidersHorizontal class="h-4 w-4 text-natural-accent"></svg>{{ i18n.isVi() ? 'Bộ lọc' : 'Filters' }}</h3>
+              <button type="button" class="text-[11px] font-bold uppercase tracking-wide text-stone-400 transition hover:text-natural-accent" (click)="resetFilters()">{{ i18n.isVi() ? 'Đặt lại' : 'Reset' }}</button>
+            </div>
+            <div class="mt-5 space-y-5">
+              <div class="space-y-1.5">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Tìm kiếm' : 'Search' }}</label>
+                <div class="relative">
+                  <svg lucideSearch class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"></svg>
+                  <input type="text" [ngModel]="query()" (ngModelChange)="query.set($event)" [placeholder]="i18n.isVi() ? 'Nhập tên, mô tả...' : 'Type name, location...'" class="w-full rounded-xl border border-stone-200 bg-white px-9 py-2.5 text-sm focus:border-natural-accent focus:outline-none" />
+                </div>
+              </div>
+
+              @if (activeTab() !== 'vehicles') {
+                <div class="space-y-1.5">
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Tỉnh thành' : 'Province' }}</label>
+                  <select [ngModel]="province()" (ngModelChange)="province.set($event)" class="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-natural-text focus:border-natural-accent focus:outline-none">
+                    <option value="all">{{ i18n.isVi() ? 'Tất cả tỉnh thành' : 'All provinces' }}</option>
+                    @for (p of provinces; track p.id) { <option [value]="p.id">{{ p.name }}</option> }
+                  </select>
+                </div>
+              }
+
+              @if (activeTab() === 'activities') {
+                <div class="space-y-2">
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Chủ đề trải nghiệm' : 'Experience Theme' }}</label>
+                  <div class="flex flex-col gap-1.5">
+                    @for (cat of activityCategories(); track cat.id) {
+                      <button type="button" [class]="'w-full rounded-xl px-3 py-2 text-left text-xs font-bold transition ' + (category() === cat.id ? 'bg-natural-accent text-white' : 'border border-stone-200 bg-white text-stone-600 hover:bg-stone-100')" (click)="category.set(cat.id)">{{ cat.label }}</button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </aside>
+
+          <!-- Results -->
+          <div class="min-w-0 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-natural-border bg-white px-4 py-3 shadow-xs">
+              <p class="text-sm text-stone-500">{{ i18n.isVi() ? 'Kết quả: ' : 'Results: ' }}<span class="font-black text-natural-accent">{{ filteredItems().length }}</span></p>
+              <div class="flex items-center gap-2">
+                <span class="hidden text-[11px] font-bold uppercase tracking-wide text-stone-400 sm:inline">{{ i18n.isVi() ? 'Sắp xếp theo' : 'Sort by' }}</span>
+                <div class="relative">
+                  <svg lucideArrowUpDown class="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400"></svg>
+                  <select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)" class="rounded-xl border border-stone-200 bg-white py-2 pl-8 pr-3 text-xs font-semibold focus:border-natural-accent focus:outline-none">
+                    <option value="default">{{ i18n.isVi() ? 'Mặc định phổ biến' : 'Popularity / Default' }}</option>
+                    @if (activeTab() !== 'attractions') {
+                      <option value="price-asc">{{ i18n.isVi() ? 'Giá tiền: Thấp đến Cao' : 'Price: Low to High' }}</option>
+                      <option value="price-desc">{{ i18n.isVi() ? 'Giá tiền: Cao đến Thấp' : 'Price: High to Low' }}</option>
+                    }
+                    <option value="rating-desc">{{ i18n.isVi() ? 'Đánh giá: Cao nhất' : 'Rating: Top Rated' }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            @if (filteredItems().length === 0) {
+              <div class="rounded-3xl border border-dashed border-natural-border bg-white p-10 text-center">
+                <p class="font-serif text-xl font-black text-natural-ink">{{ i18n.isVi() ? 'Không tìm thấy dịch vụ phù hợp' : 'No matching services found' }}</p>
+                <p class="mt-2 text-sm text-stone-500">{{ i18n.isVi() ? 'Thử đổi bộ lọc hoặc đặt lại để xem thêm.' : 'Try changing the filters or reset to see more.' }}</p>
+              </div>
+            } @else {
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                @for (item of visibleItems(); track item.id) {
+                  <app-item-card [item]="item" [cta]="i18n.isVi() ? 'Thêm vào giỏ' : 'Add to cart'" />
+                }
+              </div>
+              @if (filteredItems().length > visibleCount()) {
+                <div class="flex justify-center pt-2">
+                  <button type="button" class="rounded-full border border-natural-border bg-white px-6 py-3 text-sm font-black text-natural-accent shadow-xs transition hover:bg-natural-beige" (click)="visibleCount.set(visibleCount() + 9)">{{ i18n.isVi() ? 'Xem thêm dịch vụ' : 'Load more services' }}</button>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </div>

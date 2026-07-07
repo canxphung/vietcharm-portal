@@ -1,0 +1,51 @@
+    <div class="py-8">
+      <div class="mx-auto max-w-7xl space-y-10 px-4 text-natural-text">
+        <div class="mx-auto max-w-2xl space-y-2 text-center">
+          <span class="rounded-full bg-natural-gold px-3.5 py-1 text-[10px] font-black uppercase tracking-widest text-natural-text">EXCLUSIVE HERITAGE BUNDLES</span>
+          <h2 class="font-serif text-3xl font-black uppercase text-stone-900">{{ i18n.isVi() ? 'ĐẶT COMBO TOUR DU LỊCH TIẾT KIỆM IPP' : 'SAVER HERITAGE TOUR COMBOS' }}</h2>
+          <p class="text-xs leading-relaxed text-stone-500">{{ i18n.isVi() ? 'Kết hợp phòng nghỉ cao cấp, xe di chuyển riêng tư và vé tham quan di sản nổi bật với mức chiết khấu độc quyền lên đến 25% tổng hóa đơn.' : 'Unite premium hotel stays, private airport transfers, and verified attraction entries with absolute 25% bundling savings.' }}</p>
+          <div class="flex items-center justify-center gap-3 pt-1" aria-hidden="true">
+            <span class="h-px w-12 bg-gradient-to-r from-transparent to-natural-gold/70 sm:w-20"></span>
+            <span class="relative flex h-3.5 w-3.5 items-center justify-center"><span class="absolute inset-0 rotate-45 rounded-[2px] border border-natural-gold/50"></span><span class="h-1.5 w-1.5 rotate-45 rounded-[1px] bg-natural-gold"></span></span>
+            <span class="h-px w-12 bg-gradient-to-l from-transparent to-natural-gold/70 sm:w-20"></span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          @for (combo of combos; track combo.id) {
+            <div class="group flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-natural-border bg-white shadow-xs transition duration-300 ease-out hover:-translate-y-1.5 hover:border-natural-gold/45 hover:shadow-luxe-lg" (click)="view(combo)">
+              <div class="relative h-56 overflow-hidden">
+                <img [src]="combo.image" [alt]="combo.name" class="h-full w-full object-cover transition duration-[600ms] ease-out group-hover:scale-110" />
+                <button type="button" class="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow-md transition hover:scale-110" [title]="i18n.isVi() ? 'Thêm vào yêu thích' : 'Add to favorites'" (click)="$event.stopPropagation(); ui.toggleFavorite(asItem(combo))">
+                  <svg lucideHeart class="h-4 w-4 transition duration-200" [class.text-rose-600]="ui.isFavorite(combo.id)" [class.fill-rose-600]="ui.isFavorite(combo.id)" [class.text-stone-400]="!ui.isFavorite(combo.id)"></svg>
+                </button>
+                <div class="absolute right-3 top-3 flex items-center gap-1 rounded-xl border border-stone-200 bg-white/95 px-2.5 py-1 text-xs font-bold text-stone-800 shadow-sm backdrop-blur-md">
+                  <svg lucideStar class="h-4 w-4 fill-amber-400 stroke-amber-400"></svg><span>{{ combo.rating }}</span>
+                </div>
+              </div>
+              <div class="flex flex-1 flex-col justify-between space-y-5 p-5">
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="block text-xs font-bold uppercase tracking-wider text-natural-accent">{{ combo.days }}</span>
+                    <span class="text-xs text-stone-400 line-through">{{ combo.oldPrice | number : '1.0-0' }}đ</span>
+                  </div>
+                  <h3 class="line-clamp-2 min-h-[44px] font-serif text-base font-bold leading-snug text-stone-900">{{ combo.name }}</h3>
+                  <ul class="space-y-1.5 border-t border-stone-100 pt-1 text-xs text-stone-600">
+                    @for (inc of combo.includes; track inc) {
+                      <li class="flex items-start gap-1.5 leading-relaxed"><span class="mt-0.5 font-bold text-emerald-600">✓</span><span>{{ inc }}</span></li>
+                    }
+                  </ul>
+                </div>
+                <div class="space-y-3 border-t border-stone-100 pt-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase text-stone-400">{{ i18n.isVi() ? 'Giá trọn gói' : 'Bundled Price' }}</span>
+                    <strong class="font-serif text-xl font-black text-natural-accent">{{ combo.price | number : '1.0-0' }}đ <span class="font-sans text-[10px] text-stone-500">/{{ i18n.isVi() ? 'Khách' : 'Pax' }}</span></strong>
+                  </div>
+                  <button type="button" class="w-full rounded-xl bg-natural-accent py-3 text-xs font-black uppercase tracking-wider text-white transition hover:bg-natural-olive" (click)="$event.stopPropagation(); view(combo)">{{ i18n.isVi() ? 'ĐẶT COMBO NGAY' : 'BOOK BUNDLED PACKAGE' }}</button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
