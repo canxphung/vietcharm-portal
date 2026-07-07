@@ -1,0 +1,106 @@
+    <div class="min-h-screen w-full bg-natural-bg px-4 py-12">
+      <div class="mx-auto max-w-7xl">
+        <!-- Top bar: back + breadcrumb + status -->
+        <div class="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <a routerLink="/" class="flex items-center gap-2 rounded-full border border-natural-border bg-natural-beige px-4 py-2 font-serif text-xs font-bold text-natural-accent shadow-xs transition hover:text-natural-olive">
+            <svg lucideArrowLeft class="h-3.5 w-3.5 text-natural-accent"></svg>
+            <span>{{ i18n.isVi() ? 'Quay lại chọn Vùng Miền' : 'Back to Regions' }}</span>
+          </a>
+          <nav class="flex flex-wrap items-center gap-2 text-xs font-bold text-stone-500" [attr.aria-label]="i18n.isVi() ? 'Điều hướng phân cấp' : 'Breadcrumb'">
+            <a routerLink="/" class="transition hover:text-natural-accent">{{ i18n.isVi() ? 'Trang chủ' : 'Home' }}</a>
+            <span aria-hidden="true">/</span>
+            <span class="text-natural-accent">{{ i18n.isVi() ? 'Miền Trung' : 'Central Vietnam' }}</span>
+            <span aria-hidden="true">/</span>
+            <span class="text-natural-text" aria-current="page">{{ i18n.isVi() ? 'Điểm đến' : 'Destinations' }}</span>
+          </nav>
+          <div class="flex items-center gap-1.5 font-mono text-xs text-stone-500">
+            <svg lucideNavigation class="h-3 w-3 text-natural-accent"></svg>
+            <span>{{ i18n.isVi() ? 'Dữ liệu điểm đến đang có' : 'Available destination data' }}</span>
+          </div>
+        </div>
+
+        <!-- Section title -->
+        <div class="mb-12 text-center md:text-left">
+          <span class="text-gold-gradient text-[11px] font-black uppercase tracking-[0.22em]">{{ i18n.isVi() ? 'Điểm đến tiêu biểu' : 'Featured destinations' }}</span>
+          <h2 class="mt-1 font-serif text-2xl font-bold tracking-tight text-natural-text md:text-4xl">{{ i18n.isVi() ? 'Chọn điểm đến để xem dịch vụ' : 'Choose a destination to browse services' }}</h2>
+          <p class="mt-3 max-w-2xl text-xs leading-relaxed text-natural-text/80 md:text-sm">
+            {{ i18n.isVi()
+              ? 'Chọn một điểm đến để đặt tour, khách sạn, thuê xe và lên lịch trình cùng trợ lý AI — tất cả trong một flow liền mạch.'
+              : 'Pick a destination to book tours, hotels, and rentals, and plan with the AI assistant — all in one seamless flow.' }}
+          </p>
+          <div class="mt-6 flex items-center justify-center gap-3 md:justify-start" aria-hidden="true">
+            <span class="h-px w-12 bg-gradient-to-r from-transparent to-natural-gold/70 sm:w-20"></span>
+            <span class="relative flex h-3.5 w-3.5 items-center justify-center">
+              <span class="absolute inset-0 rotate-45 rounded-[2px] border border-natural-gold/50"></span>
+              <span class="h-1.5 w-1.5 rotate-45 rounded-[1px] bg-natural-gold"></span>
+            </span>
+            <span class="h-px w-12 bg-gradient-to-l from-transparent to-natural-gold/70 sm:w-20"></span>
+          </div>
+        </div>
+
+        <!-- Provinces grid -->
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          @for (prov of provinces; track prov.id) {
+            <div
+              [class]="'group relative h-full overflow-hidden rounded-3xl border bg-natural-beige-light transition duration-300 ' + (prov.active ? 'border-natural-border cursor-pointer shadow-luxe hover:shadow-luxe-lg hover:-translate-y-1.5 hover:border-natural-gold/45' : 'border-natural-border/60 opacity-70 shadow-lg')"
+              (click)="prov.active && ui.selectProvince(prov.id)"
+            >
+              <div class="relative h-56 w-full overflow-hidden">
+                <img [src]="prov.image" [alt]="prov.name" class="h-full w-full object-cover transition duration-[600ms] ease-out group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"></div>
+                <div class="absolute right-4 top-4 rounded-full border border-natural-border/20 bg-natural-olive/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+                  @if (prov.active) {
+                    <span class="font-bold text-natural-gold">● {{ i18n.isVi() ? 'HOẠT ĐỘNG' : 'READY' }}</span>
+                  } @else {
+                    <span class="text-stone-300">⚡ {{ i18n.isVi() ? 'SẮP RA MẮT' : 'COMING SOON' }}</span>
+                  }
+                </div>
+                <div class="absolute bottom-4 left-4 text-white">
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-natural-gold">{{ prov.tagline }}</p>
+                  <h3 class="font-serif text-xl font-bold tracking-tight">{{ prov.name }}</h3>
+                </div>
+              </div>
+              <div class="p-5">
+                <p class="line-clamp-2 text-xs leading-relaxed text-natural-text/80">{{ prov.description }}</p>
+                <div class="mt-5 flex items-center justify-between border-t border-natural-border pt-4">
+                  <span class="flex items-center gap-1.5 font-mono text-[11px] uppercase text-stone-500">
+                    <svg lucideMapPin class="h-3.5 w-3.5 text-natural-accent"></svg>
+                    {{ prov.id === 'quang-nam' ? (i18n.isVi() ? 'Đậm nét Hội An' : 'Heritage Core') : (i18n.isVi() ? 'Liên tỉnh lân cận' : 'Coastal Gateway') }}
+                  </span>
+                  @if (prov.active) {
+                    <div class="flex items-center gap-1 text-xs font-bold text-natural-accent">
+                      <span>{{ i18n.isVi() ? 'Ấn để khám phá' : 'Click to Plan' }}</span>
+                      <svg lucideArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1"></svg>
+                    </div>
+                  } @else {
+                    <button type="button" class="text-[10px] font-bold text-natural-accent underline transition hover:text-natural-olive" (click)="$event.stopPropagation(); showRoadmap(prov.name)">
+                      {{ i18n.isVi() ? 'Xem lộ trình' : 'See roadmap' }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Travel safety statement -->
+        <div class="mt-14 flex flex-col items-center justify-between gap-6 rounded-3xl border border-natural-border bg-natural-beige p-6 md:flex-row">
+          <div class="flex items-center gap-3">
+            <div class="shrink-0 rounded-full border border-natural-border bg-natural-bg p-3 text-natural-accent">
+              <svg lucideShieldCheck class="h-6 w-6"></svg>
+            </div>
+            <div>
+              <h4 class="font-serif text-sm font-bold text-natural-text">{{ i18n.isVi() ? 'Bảo chứng Lữ Hành Độc Quyền từ Ban Quản Lý' : 'Certified Safe Travel Assured' }}</h4>
+              <p class="mt-1 max-w-xl text-xs leading-relaxed text-natural-text/75">
+                {{ i18n.isVi()
+                  ? 'Mọi chuỗi đặt phòng khách sạn, đại lý cho thuê phương tiện xe máy đều đã được tích hợp liên kết trực tiếp, bảo đảm quyền lợi hoàn tiền 100% khi lộ trình thời tiết bị thay đổi đột ngột.'
+                  : 'We safeguard all bookings, vehicle rentals, and regional tours through our legal 100% weather refund warranty.' }}
+              </p>
+            </div>
+          </div>
+          <button type="button" class="btn-sheen shrink-0 rounded-full bg-natural-accent px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white transition hover:bg-natural-olive" (click)="ui.selectProvince('quang-nam')">
+            {{ i18n.isVi() ? 'Khám Phá Hội An Ngay' : 'Go to Hoi An First' }}
+          </button>
+        </div>
+      </div>
+    </div>

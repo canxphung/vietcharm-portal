@@ -1,0 +1,69 @@
+    <div class="mx-auto max-w-4xl px-4 py-8 text-natural-text">
+      <div class="mb-8 space-y-2 text-center">
+        <span class="rounded-full bg-natural-accent px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">VIETCHARM TAXI & AIRPORT TRANSFER</span>
+        <h2 class="font-serif text-3xl font-black uppercase text-stone-900">{{ i18n.isVi() ? 'ĐẶT XE TAXI & ĐƯA ĐÓN SÂN BAY' : 'AIRPORT TAXI & PRIVATE TRANSFER' }}</h2>
+        <p class="mx-auto max-w-lg text-xs leading-relaxed text-stone-500">{{ i18n.isVi() ? 'Cổng tính phí tự động chuẩn xác theo km. Xe sạch sẽ, máy lạnh mát rượi, tài xế bản địa cực am hiểu Hội An và Đà Nẵng.' : 'Get instant exact distance calculations and flat-rate transparent billing with polite multilingual drivers.' }}</p>
+      </div>
+
+      @if (bookedMsg()) {
+        <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center text-xs font-bold text-emerald-800">✓ {{ i18n.isVi() ? 'Đã thêm dịch vụ đưa đón vào giỏ hàng! Vui lòng mở giỏ hàng để tiếp tục thanh toán.' : 'Taxi ride added to cart. Open your cart to continue checkout.' }}</div>
+      }
+
+      <div class="grid grid-cols-1 items-stretch gap-8 md:grid-cols-2">
+        <form class="space-y-5 rounded-3xl border border-natural-border bg-white p-6 shadow-xs" (ngSubmit)="book()">
+          <h3 class="flex items-center gap-1.5 border-b border-natural-border pb-2 font-serif text-base font-bold uppercase text-natural-accent"><svg lucideCar class="h-5 w-5 text-amber-500"></svg><span>{{ i18n.isVi() ? 'Thông tin lộ trình' : 'Route Details' }}</span></h3>
+          <div class="space-y-4 text-xs">
+            <div>
+              <label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Điểm Đón (Pick-up Location)' : 'Pick-up' }}</label>
+              <select class="w-full rounded-xl border border-natural-border bg-natural-cream px-3 py-2.5 font-medium text-stone-800 outline-none" [ngModel]="pickup()" (ngModelChange)="pickup.set($event)" name="pickup">
+                @for (l of locations; track l.id) { <option [value]="l.id">{{ l.name }}</option> }
+              </select>
+            </div>
+            <div>
+              <label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Điểm Đến (Drop-off Location)' : 'Drop-off' }}</label>
+              <select class="w-full rounded-xl border border-natural-border bg-natural-cream px-3 py-2.5 font-medium text-stone-800 outline-none" [ngModel]="dropoff()" (ngModelChange)="dropoff.set($event)" name="dropoff">
+                @for (l of locations; track l.id) { <option [value]="l.id">{{ l.name }}</option> }
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Ngày đưa đón' : 'Date' }}</label><input type="date" [min]="today" class="w-full rounded-xl border border-natural-border bg-natural-cream px-3 py-2 text-stone-800 outline-none" [ngModel]="bookingDate()" (ngModelChange)="bookingDate.set($event)" name="date" /></div>
+              <div><label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Giờ đón' : 'Time' }}</label><input type="time" class="w-full rounded-xl border border-natural-border bg-natural-cream px-3 py-2 text-stone-800 outline-none" [ngModel]="bookingTime()" (ngModelChange)="bookingTime.set($event)" name="time" required /></div>
+            </div>
+            <div>
+              <label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Chọn Loại Phương Tiện' : 'Vehicle Type' }}</label>
+              <div class="grid grid-cols-3 gap-2">
+                <button type="button" [class]="vehClass('vios-4')" (click)="vehicleType.set('vios-4')"><span class="block text-[11px] font-bold">{{ i18n.isVi() ? 'Xe 4 Chỗ' : '4-Seater' }}</span><span class="block text-[9px] opacity-85">12,000đ/km</span></button>
+                <button type="button" [class]="vehClass('xpander-7')" (click)="vehicleType.set('xpander-7')"><span class="block text-[11px] font-bold">{{ i18n.isVi() ? 'Xe 7 Chỗ' : '7-Seater' }}</span><span class="block text-[9px] opacity-85">16,000đ/km</span></button>
+                <button type="button" [class]="vehClass('sirius-moto')" (click)="vehicleType.set('sirius-moto')"><span class="block text-[11px] font-bold">{{ i18n.isVi() ? 'Xe ôm Sirius' : 'Sirius Moto' }}</span><span class="block text-[9px] opacity-85">6,000đ/km</span></button>
+              </div>
+            </div>
+            <div>
+              <label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Ghi chú cho tài xế (VD: Sân bay ga quốc tế...)' : 'Driver Notes' }}</label>
+              <input type="text" class="w-full rounded-xl border border-natural-border bg-natural-cream px-3 py-2 outline-none" [ngModel]="specialNote()" (ngModelChange)="specialNote.set($event)" name="note" placeholder="Ex: Đón tôi ở cột số 5, ga đến quốc nội Đà Nẵng..." />
+            </div>
+          </div>
+          <button type="submit" [disabled]="pickup() === dropoff()" class="w-full rounded-xl bg-natural-gold py-3 text-xs font-black uppercase tracking-wider text-natural-text shadow-md transition hover:bg-natural-gold-dark disabled:opacity-50">{{ pickup() === dropoff() ? (i18n.isVi() ? 'Vui lòng chọn 2 điểm khác nhau' : 'Select different locations') : (i18n.isVi() ? 'Xác nhận đặt xe lữ hành' : 'Confirm & Add to Cart') }}</button>
+        </form>
+
+        <div class="flex flex-col justify-between rounded-3xl border border-natural-border bg-natural-beige p-6 shadow-xs">
+          <div class="space-y-4">
+            <h3 class="border-b border-natural-border pb-2 font-serif text-base font-bold uppercase text-stone-800">{{ i18n.isVi() ? 'Chi tiết chi phí & hành trình' : 'Dynamic Fare Indexing' }}</h3>
+            <div class="space-y-3.5 text-xs">
+              <div class="space-y-2 rounded-xl border border-stone-150 bg-white p-3">
+                <div class="flex justify-between"><span class="font-semibold uppercase text-stone-500">{{ i18n.isVi() ? 'Quãng đường tối ưu:' : 'Route Distance:' }}</span><span class="font-black text-stone-800">{{ distance() }} km</span></div>
+                <div class="flex justify-between"><span class="font-semibold uppercase text-stone-500">{{ i18n.isVi() ? 'Đơn giá loại xe:' : 'Fare Rate:' }}</span><span class="font-mono font-bold text-stone-800">{{ pricePerKm() | number : '1.0-0' }} đ / km</span></div>
+                <div class="flex justify-between border-t border-stone-100 pt-2 font-bold text-stone-900"><span class="uppercase">{{ i18n.isVi() ? 'Cước xe ước tính:' : 'Base Subtotal:' }}</span><span>{{ totalCost() | number : '1.0-0' }} đ</span></div>
+              </div>
+              <div class="space-y-1.5 rounded-xl border border-dashed border-amber-300 bg-amber-50/50 p-3 text-[11px] leading-relaxed">
+                <strong class="flex items-center gap-1 text-amber-800"><svg lucideInfo class="h-3.5 w-3.5"></svg>{{ i18n.isVi() ? 'ƯU ĐÃI KHÔNG PHỤ PHÍ' : 'FLAT-RATE PROTECTION' }}</strong>
+                <p class="text-stone-600">{{ i18n.isVi() ? 'Giá trên là trọn gói đã bao gồm phí cầu đường BOT sân bay Đà Nẵng, cam kết không phát sinh bất kỳ chi phí ẩn nào khi di chuyển dọc đường.' : 'The rate listed is 100% flat-rate, including all regional highway tolls, airport gate tariffs and luggage protection.' }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 space-y-2 border-t border-natural-border pt-4 text-center text-xs">
+            <p class="font-serif italic text-stone-500">{{ i18n.isVi() ? 'Tự động gán tài xế phản hồi nhanh trong 5 phút sau khi thanh toán.' : 'Guaranteed polite driver assigned within 5 mins of cart checkout.' }}</p>
+            <a routerLink="/" class="font-bold text-natural-accent hover:underline">← {{ i18n.isVi() ? 'Quay về dạo chơi di sản' : 'Browse other experiences' }}</a>
+          </div>
+        </div>
+      </div>
+    </div>

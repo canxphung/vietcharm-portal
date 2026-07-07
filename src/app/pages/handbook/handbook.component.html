@@ -1,0 +1,25 @@
+    <div class="py-8">
+      <div class="mx-auto max-w-5xl space-y-8 rounded-3xl border border-natural-border bg-white px-4 py-8 text-natural-text shadow-xs">
+        <div class="space-y-1.5 border-b border-stone-150 pb-6 text-center">
+          <h2 class="font-serif text-2xl font-black uppercase tracking-tight text-stone-900 sm:text-3xl">📖 {{ i18n.isVi() ? 'CẨM NANG DU LỊCH & DI SẢN MIỀN TRUNG' : 'CENTRAL VIETNAM HERITAGE HANDBOOK' }}</h2>
+          <p class="text-xs text-stone-500">{{ i18n.isVi() ? 'Mọi điều cần biết để hành trình dạo bước di sản của bạn trọn vẹn và an toàn nhất' : 'A beautifully crafted slow-travel guidebook for the modern heritage explorer' }}</p>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-2 border-b border-stone-100 pb-4">
+          @for (tab of tabs(); track tab.id) {
+            <button type="button" [class]="'rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider transition ' + (activeTab() === tab.id ? 'bg-natural-accent text-white shadow-xs' : 'bg-stone-50 text-stone-600 hover:bg-stone-100')" (click)="activeTab.set(tab.id)">{{ tab.label }}</button>
+          }
+        </div>
+
+        <div class="grid grid-cols-1 items-center gap-8 pt-2 md:grid-cols-2">
+          <div class="h-64 overflow-hidden rounded-2xl shadow-md sm:h-80">
+            <img [src]="active().img" [alt]="active().title" class="h-full w-full object-cover" />
+          </div>
+          <div class="space-y-4">
+            <h3 class="font-serif text-xl font-black leading-snug text-stone-900">{{ active().title }}</h3>
+            <p class="text-xs leading-relaxed text-stone-600">{{ active().p1 }}</p>
+            <p class="text-xs leading-relaxed text-stone-600">{{ active().p2 }}</p>
+          </div>
+        </div>
+      </div>
+    </div>

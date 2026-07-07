@@ -1,0 +1,181 @@
+    <main class="py-8 md:py-10">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div class="space-y-2">
+            <a routerLink="/discover" class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-natural-accent transition hover:text-natural-olive">
+              <svg lucideArrowLeft class="h-4 w-4"></svg><span>{{ isVi() ? 'Tiếp tục khám phá' : 'Continue exploring' }}</span>
+            </a>
+            <div>
+              <h1 class="text-3xl font-black tracking-tight text-natural-ink md:text-4xl">{{ isVi() ? 'Giỏ hàng' : 'Travel Cart' }}</h1>
+              <p class="mt-1 max-w-2xl text-sm leading-relaxed text-stone-500">{{ isVi() ? 'Kiểm tra dịch vụ đã chọn, bỏ mục không cần và chuyển sang thanh toán khi lịch trình đã ổn.' : 'Review selected services, remove anything unnecessary, then continue to checkout.' }}</p>
+            </div>
+          </div>
+
+          @if (cart.items().length > 0) {
+            <div class="grid grid-cols-3 overflow-hidden rounded-2xl border border-natural-border bg-white text-center shadow-xs">
+              <div class="px-4 py-3"><p class="text-[10px] font-black uppercase tracking-wider text-stone-400">{{ isVi() ? 'Dịch vụ' : 'Items' }}</p><p class="mt-1 font-mono text-lg font-black text-natural-ink">{{ cart.selectedCount() }}</p></div>
+              <div class="border-x border-natural-border px-4 py-3"><p class="text-[10px] font-black uppercase tracking-wider text-stone-400">{{ isVi() ? 'Ưu đãi' : 'Saving' }}</p><p class="mt-1 font-mono text-lg font-black" [class.text-emerald-700]="isBundleEligible()" [class.text-stone-400]="!isBundleEligible()">{{ isBundleEligible() ? '15%' : '0%' }}</p></div>
+              <div class="px-4 py-3"><p class="text-[10px] font-black uppercase tracking-wider text-stone-400">{{ isVi() ? 'Tổng' : 'Total' }}</p><p class="mt-1 font-mono text-lg font-black text-natural-bronze">{{ payableAmount() | number : '1.0-0' }} đ</p></div>
+            </div>
+          }
+        </div>
+
+        @if (cart.items().length === 0) {
+          <section class="flex min-h-[420px] items-center justify-center rounded-2xl border border-dashed border-natural-border bg-white px-5 py-12 text-center shadow-xs">
+            <div class="max-w-md space-y-5">
+              <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-natural-beige text-natural-accent"><svg lucideShoppingBag class="h-8 w-8"></svg></div>
+              <div class="space-y-2">
+                <h2 class="text-2xl font-black text-natural-ink">{{ isVi() ? 'Giỏ hàng đang trống' : 'Your cart is empty' }}</h2>
+                <p class="text-sm leading-relaxed text-stone-500">{{ isVi() ? 'Chọn khách sạn, xe hoặc hoạt động yêu thích rồi quay lại đây để gom lịch trình trước khi thanh toán.' : 'Choose hotels, rides, or experiences first, then return here to review the trip before payment.' }}</p>
+              </div>
+              <div class="flex flex-col justify-center gap-3 sm:flex-row">
+                <button type="button" class="btn-sheen inline-flex items-center justify-center gap-2 rounded-full bg-natural-gold-deep px-5 py-3 text-sm font-black text-natural-ink" (click)="continueShopping()"><svg lucideSparkles class="h-4 w-4"></svg><span>{{ isVi() ? 'Chọn dịch vụ' : 'Browse services' }}</span></button>
+                <a routerLink="/" class="inline-flex items-center justify-center gap-2 rounded-full border border-natural-border bg-white px-5 py-3 text-sm font-black text-natural-ink"><svg lucideMapPinned class="h-4 w-4"></svg><span>{{ isVi() ? 'Về trang chủ' : 'Home' }}</span></a>
+              </div>
+            </div>
+          </section>
+        } @else {
+          <!-- Trip board -->
+          <section class="mb-6 overflow-hidden rounded-3xl border border-natural-border bg-[#1F261F] text-white shadow-luxe">
+            <div class="grid gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div class="p-5 md:p-7">
+                <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <span class="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-natural-gold"><svg lucideRoute class="h-4 w-4"></svg>Trip board</span>
+                    <h2 class="mt-2 font-serif text-2xl font-black tracking-tight md:text-4xl">{{ isVi() ? 'Chuyến đi VietCharm của bạn' : 'Your VietCharm trip' }}</h2>
+                    <p class="mt-2 max-w-2xl text-sm leading-relaxed text-white/70">{{ isVi() ? 'Các dịch vụ trong giỏ được gom thành từng chặng để bạn dễ nhìn lại trước khi thanh toán.' : 'Selected services are grouped into route steps so the plan is easy to review before checkout.' }}</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-md">
+                    <p class="text-[10px] font-black uppercase tracking-wider text-white/55">{{ isVi() ? 'Trạng thái combo' : 'Bundle status' }}</p>
+                    <p class="mt-1 text-sm font-black" [class.text-emerald-300]="isBundleEligible()" [class.text-natural-gold]="!isBundleEligible()">{{ isBundleEligible() ? (isVi() ? 'Đã đủ điều kiện giảm 15%' : '15% saving unlocked') : (isVi() ? 'Thêm nhóm dịch vụ để mở ưu đãi' : 'Add another service type to unlock') }}</p>
+                  </div>
+                </div>
+                <div class="grid gap-3 md:grid-cols-3">
+                  @for (item of cart.items().slice(0, 3); track item.cartKey || item.id; let i = $index) {
+                    <div class="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur-md">
+                      <div class="mb-3 flex items-center justify-between gap-3">
+                        <span class="rounded-full bg-natural-gold px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-natural-ink">{{ stepLabel(item, i) }}</span>
+                        @switch (item.type) {
+                          @case ('hotel') { <svg lucideHotel class="h-4 w-4"></svg> }
+                          @case ('vehicle') { <svg lucideCar class="h-4 w-4"></svg> }
+                          @default { <svg lucideMapPinned class="h-4 w-4"></svg> }
+                        }
+                      </div>
+                      <h3 class="line-clamp-2 text-sm font-black leading-snug text-white">{{ item.name }}</h3>
+                      <p class="mt-2 line-clamp-2 text-xs leading-relaxed text-white/62">{{ stepNote(item) }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="border-t border-white/10 bg-white/[0.08] p-5 md:p-7 lg:border-l lg:border-t-0">
+                <div class="grid grid-cols-2 gap-3 lg:grid-cols-1">
+                  <div class="rounded-2xl border border-white/12 bg-white/10 p-4"><svg lucideClock3 class="mb-2 h-4 w-4 text-natural-gold"></svg><p class="text-[10px] font-black uppercase tracking-wider text-white/50">{{ isVi() ? 'Số dịch vụ' : 'Services' }}</p><p class="mt-1 font-mono text-2xl font-black">{{ cart.selectedCount() }}</p></div>
+                  <div class="rounded-2xl border border-white/12 bg-white/10 p-4"><svg lucideCreditCard class="mb-2 h-4 w-4 text-natural-gold"></svg><p class="text-[10px] font-black uppercase tracking-wider text-white/50">{{ isVi() ? 'Dự tính' : 'Estimate' }}</p><p class="mt-1 font-mono text-xl font-black text-natural-gold">{{ payableAmount() | number : '1.0-0' }} đ</p></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+            <section class="space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-natural-border bg-white px-4 py-3 shadow-xs">
+                <div>
+                  <h2 class="text-sm font-black uppercase tracking-wider text-natural-ink">{{ isVi() ? 'Dịch vụ đã chọn' : 'Selected services' }}</h2>
+                  <p class="mt-0.5 text-xs text-stone-500">{{ isVi() ? 'Tích chọn dịch vụ muốn thanh toán — đã chọn ' + cart.selectedItems().length + '/' + cart.items().length + '.' : 'Tick the services to pay for — ' + cart.selectedItems().length + '/' + cart.items().length + ' selected.' }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" class="inline-flex items-center gap-1.5 rounded-xl border border-natural-border bg-natural-bg px-3 py-2 text-xs font-bold text-natural-accent transition hover:bg-natural-beige" (click)="cart.setAllItemsSelected(!cart.allSelected())">
+                    @if (cart.allSelected()) { <svg lucideCheckSquare class="h-4 w-4"></svg> } @else { <svg lucideSquare class="h-4 w-4"></svg> }
+                    <span>{{ cart.allSelected() ? (isVi() ? 'Bỏ chọn tất cả' : 'Unselect all') : (isVi() ? 'Chọn tất cả' : 'Select all') }}</span>
+                  </button>
+                  <button type="button" class="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold text-natural-accent transition hover:bg-natural-beige" (click)="continueShopping()"><svg lucidePackageCheck class="h-4 w-4"></svg><span>{{ isVi() ? 'Chọn thêm' : 'Add more' }}</span></button>
+                </div>
+              </div>
+
+              <ul class="space-y-3">
+                @for (item of cart.items(); track item.cartKey || item.id; let i = $index) {
+                  <li [class]="'grid gap-4 rounded-2xl border bg-white p-3 shadow-xs transition sm:grid-cols-[88px_minmax(0,1fr)_auto] sm:items-center ' + (cart.isItemSelected(item.cartKey || item.id) ? 'border-natural-gold/50' : 'border-natural-border opacity-60')">
+                    <div class="relative">
+                      <img [src]="item.image" [alt]="item.name" class="h-24 w-full rounded-xl border border-natural-border object-cover sm:h-20 sm:w-[5.5rem]" />
+                      <button type="button" class="absolute left-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md bg-white/95 shadow-sm backdrop-blur-sm transition hover:scale-105" (click)="cart.toggleItemSelected(item.cartKey || item.id)">
+                        @if (cart.isItemSelected(item.cartKey || item.id)) { <svg lucideCheckSquare class="h-4 w-4 text-natural-accent"></svg> } @else { <svg lucideSquare class="h-4 w-4 text-stone-400"></svg> }
+                      </button>
+                    </div>
+                    <div class="min-w-0 space-y-2">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#1F261F] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white"><svg lucideRoute class="h-3.5 w-3.5 text-natural-gold"></svg>{{ stepLabel(item, i) }}</span>
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-natural-beige px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-natural-accent">
+                          @switch (item.type) {
+                            @case ('hotel') { <svg lucideHotel class="h-4 w-4"></svg> }
+                            @case ('vehicle') { <svg lucideCar class="h-4 w-4"></svg> }
+                            @default { <svg lucideMapPinned class="h-4 w-4"></svg> }
+                          }
+                          {{ typeLabel(item.type) }}
+                        </span>
+                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700"><svg lucideUsersRound class="h-3.5 w-3.5"></svg>x{{ item.quantity }}</span>
+                      </div>
+                      <h3 class="line-clamp-2 text-base font-black leading-snug text-stone-950">{{ item.name }}</h3>
+                      <p class="text-[11px] font-bold text-natural-accent">{{ stepTitle(item) }}</p>
+                      @if (item.details) { <p class="line-clamp-2 text-xs leading-relaxed text-stone-500">{{ item.details }}</p> }
+                    </div>
+                    <div class="flex items-center justify-between gap-4 border-t border-natural-border pt-3 sm:flex-col sm:items-end sm:border-t-0 sm:pt-0">
+                      <div class="text-left sm:text-right">
+                        <p class="text-[10px] font-black uppercase tracking-wider text-stone-400">{{ isVi() ? 'Thành tiền' : 'Line total' }}</p>
+                        <p class="mt-1 font-mono text-base font-black text-natural-bronze">{{ item.price * item.quantity | number : '1.0-0' }} đ</p>
+                        <p class="mt-0.5 text-[11px] font-semibold text-stone-400">{{ item.price | number : '1.0-0' }} đ / {{ isVi() ? 'mục' : 'item' }}</p>
+                      </div>
+                      <button type="button" class="inline-flex h-9 min-w-9 items-center justify-center rounded-full border border-red-100 bg-red-50 px-2.5 text-xs font-black uppercase text-red-600 transition hover:bg-red-100" (click)="cart.removeItem(item.cartKey || item.id)"><svg lucideTrash2 class="h-4 w-4"></svg></button>
+                    </div>
+                  </li>
+                }
+              </ul>
+            </section>
+
+            <aside class="h-fit rounded-2xl border border-natural-border bg-white p-5 shadow-xs lg:sticky lg:top-32">
+              <div class="mb-5 flex items-center gap-3 border-b border-natural-border pb-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-natural-gold/25 text-natural-bronze"><svg lucideCreditCard class="h-5 w-5"></svg></div>
+                <div>
+                  <h2 class="font-black text-natural-ink">{{ isVi() ? 'Tóm tắt thanh toán' : 'Payment summary' }}</h2>
+                  <p class="text-xs text-stone-500">{{ isBundleEligible() ? (isVi() ? 'Ưu đãi combo được tính tự động.' : 'Bundle discount is applied automatically.') : (isVi() ? 'Cần ít nhất 2 nhóm dịch vụ để nhận combo.' : 'Add at least 2 service types to unlock bundle savings.') }}</p>
+                </div>
+              </div>
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between gap-3"><span class="text-stone-500">{{ isVi() ? 'Tạm tính' : 'Subtotal' }}</span><span class="font-mono font-bold text-stone-900">{{ totalCost() | number : '1.0-0' }} đ</span></div>
+                <div class="flex justify-between gap-3" [class.text-emerald-700]="isBundleEligible()" [class.text-stone-400]="!isBundleEligible()">
+                  <span class="font-semibold">{{ isBundleEligible() ? (isVi() ? 'Giảm combo 15%' : 'Bundle discount 15%') : (isVi() ? 'Combo chưa đủ điều kiện' : 'Bundle not eligible') }}</span>
+                  <span class="font-mono font-bold">{{ isBundleEligible() ? '-' + (bundleDiscount() | number : '1.0-0') + ' đ' : '0 đ' }}</span>
+                </div>
+                <div class="flex justify-between gap-3 border-t border-natural-border pt-4"><span class="text-xs font-black uppercase tracking-wider text-natural-ink">{{ isVi() ? 'Cần thanh toán' : 'Payable' }}</span><span class="font-mono text-xl font-black text-natural-bronze">{{ payableAmount() | number : '1.0-0' }} đ</span></div>
+              </div>
+              <div class="mt-5 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-3 text-xs leading-relaxed text-emerald-800">
+                <div class="mb-1 flex items-center gap-1.5 font-black"><svg lucideCalendarDays class="h-4 w-4"></svg><span>{{ isVi() ? 'Lưu ý lịch trình' : 'Trip note' }}</span></div>
+                <p>{{ isVi() ? 'Ngày nhận phòng, lịch xe và mô tả dịch vụ sẽ đi theo từng mục trong giỏ để tránh nhầm lịch.' : 'Dates, ride schedules, and service details stay attached to each cart item to prevent mix-ups.' }}</p>
+              </div>
+              <div class="mt-5 space-y-3">
+                <button type="button" class="btn-sheen inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-accent px-4 text-sm font-black text-white disabled:opacity-50" [disabled]="cart.selectedCount() === 0" (click)="checkout()"><svg lucideCreditCard class="h-4 w-4"></svg><span>{{ cart.selectedCount() > 0 ? (isVi() ? 'Thanh toán (' + cart.selectedItems().length + ')' : 'Checkout (' + cart.selectedItems().length + ')') : (isVi() ? 'Chọn dịch vụ để thanh toán' : 'Select items to checkout') }}</span></button>
+                <button type="button" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-natural-border bg-white px-4 text-sm font-black text-natural-ink" (click)="continueShopping()"><svg lucideShoppingBag class="h-4 w-4"></svg><span>{{ isVi() ? 'Tiếp tục chọn dịch vụ' : 'Continue shopping' }}</span></button>
+                <button type="button" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-4 text-sm font-black text-white transition hover:bg-red-700" (click)="confirmClearOpen.set(true)"><svg lucideTrash2 class="h-4 w-4"></svg><span>{{ isVi() ? 'Xóa giỏ hàng' : 'Clear cart' }}</span></button>
+              </div>
+            </aside>
+          </div>
+        }
+      </div>
+
+      @if (confirmClearOpen()) {
+        <div class="fixed inset-0 z-[70] flex items-center justify-center bg-black/45 px-4 backdrop-blur-xs">
+          <div class="w-full max-w-sm rounded-2xl border border-natural-border bg-white p-5 shadow-2xl">
+            <div class="flex items-start gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600"><svg lucideTrash2 class="h-5 w-5"></svg></div>
+              <div>
+                <h2 class="font-black text-natural-ink">{{ isVi() ? 'Xóa toàn bộ giỏ hàng?' : 'Clear the whole cart?' }}</h2>
+                <p class="mt-1 text-sm leading-relaxed text-stone-500">{{ isVi() ? 'Các dịch vụ và lịch trình đã chọn sẽ bị xóa khỏi giỏ.' : 'All selected services and schedule details will be removed.' }}</p>
+              </div>
+            </div>
+            <div class="mt-5 grid grid-cols-2 gap-3">
+              <button type="button" class="rounded-xl border border-natural-border bg-white px-4 py-2.5 text-xs font-black text-natural-ink transition hover:bg-stone-50" (click)="confirmClearOpen.set(false)">{{ isVi() ? 'Giữ lại' : 'Keep cart' }}</button>
+              <button type="button" class="rounded-xl bg-red-600 px-4 py-2.5 text-xs font-black text-white transition hover:bg-red-700" (click)="cart.clearCart(); confirmClearOpen.set(false)">{{ isVi() ? 'Xóa giỏ' : 'Clear' }}</button>
+            </div>
+          </div>
+        </div>
+      }
+    </main>

@@ -1,0 +1,294 @@
+    <div class="space-y-0">
+      <!-- HERO -->
+      <div class="relative flex h-[340px] w-full items-center overflow-hidden sm:h-[480px] md:h-[600px]">
+        <img [src]="hero().image" alt="Province background" class="animate-kenburns absolute inset-0 h-full w-full select-none object-cover" />
+        <div class="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/35 to-black/15"></div>
+        <div class="absolute inset-0 z-10 bg-gradient-to-r from-black/55 via-transparent to-transparent"></div>
+        <div class="absolute inset-0 z-10 opacity-60 mix-blend-soft-light" style="background: radial-gradient(120% 90% at 15% 100%, rgba(227,176,75,0.45), transparent 60%);"></div>
+        <div class="absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-natural-bg/90 to-transparent"></div>
+        <div class="relative z-20 mx-auto w-full max-w-7xl px-4 text-white">
+          <div class="hero-stagger space-y-2.5 md:space-y-4">
+            <div class="flex items-center gap-3"><span class="h-px w-10 bg-natural-gold/80"></span><p class="text-gold-gradient font-serif text-base font-semibold italic tracking-wide md:text-2xl">Khám phá vẻ đẹp</p></div>
+            <h2 class="font-serif text-4xl font-black uppercase tracking-[0.06em] text-white sm:text-6xl md:text-8xl" style="text-shadow: 0 4px 30px rgba(0,0,0,0.55);">{{ hero().title }}</h2>
+            <p class="max-w-xl text-sm font-medium leading-relaxed text-stone-100/90 drop-shadow-md md:text-lg">{{ hero().subtitle }}</p>
+            <div class="pt-2"><button type="button" class="btn-sheen group inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-natural-gold via-amber-300 to-natural-gold-deep px-7 py-3 text-xs font-black uppercase tracking-widest text-stone-950 shadow-luxe-lg transition duration-200 hover:-translate-y-0.5 active:scale-95 sm:px-9 sm:py-3.5 sm:text-sm" (click)="scrollTo('featured-attractions-section')"><span>{{ t().exploreNow }}</span><span class="transition-transform duration-200 group-hover:translate-x-1">→</span></button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEARCH BAR -->
+      <div class="relative z-30 mx-auto max-w-7xl -translate-y-10 px-4 sm:-translate-y-14">
+        <div class="glass-panel flex flex-col items-stretch justify-between gap-4 rounded-3xl p-4 shadow-luxe-lg md:flex-row md:p-6">
+          <div class="flex-1 space-y-1 border-b border-stone-150 pb-3 md:border-b-0 md:border-r md:pb-0 md:pr-4">
+            <span class="block text-[10px] font-black uppercase tracking-wider text-stone-400">{{ t().heroSearchTitle }}</span>
+            <input type="text" [ngModel]="searchInput()" (ngModelChange)="searchInput.set($event)" [placeholder]="t().searchPlaceholder" class="w-full bg-transparent text-xs font-bold text-stone-900 outline-none placeholder:text-stone-400 sm:text-sm" />
+          </div>
+          <div class="flex-1 space-y-1 border-b border-stone-150 pb-3 md:border-b-0 md:border-r md:px-4 md:pb-0">
+            <span class="block text-[10px] font-black uppercase tracking-wider text-stone-400">{{ t().checkIn }}</span>
+            <input type="date" [min]="today" [ngModel]="checkIn()" (ngModelChange)="setCheckIn($event)" name="ci" class="w-full bg-transparent text-xs font-bold text-stone-700 outline-none sm:text-sm" />
+          </div>
+          <div class="flex-1 space-y-1 border-b border-stone-150 pb-3 md:border-b-0 md:border-r md:px-4 md:pb-0">
+            <span class="block text-[10px] font-black uppercase tracking-wider text-stone-400">{{ t().checkOut }}</span>
+            <input type="date" [min]="minCheckOut()" [ngModel]="checkOut()" (ngModelChange)="checkOut.set($event)" name="co" class="w-full bg-transparent text-xs font-bold text-stone-700 outline-none sm:text-sm" />
+          </div>
+          <div class="relative flex-1 space-y-1 border-b border-stone-150 pb-3 md:border-b-0 md:px-4 md:pb-0">
+            <span class="block text-[10px] font-black uppercase tracking-wider text-stone-400">{{ t().guestsNum }}</span>
+            <button type="button" class="group -m-1 flex w-full items-center justify-between rounded-lg p-1 text-left transition hover:bg-stone-50/50" (click)="showGuests.update((v) => !v)">
+              <span class="block text-xs font-bold text-stone-700 sm:text-sm">{{ i18n.isVi() ? guests() + ' Khách, ' + rooms() + ' Phòng' : guests() + ' Guests, ' + rooms() + ' Rooms' }}</span>
+              <svg lucideChevronDown class="h-4 w-4 text-stone-400 transition group-hover:text-stone-600"></svg>
+            </button>
+            @if (showGuests()) {
+              <div class="fixed inset-0 z-40" (click)="showGuests.set(false)"></div>
+              <div class="absolute left-0 top-full z-50 mt-2 w-64 space-y-4 rounded-2xl border border-natural-border bg-white p-4 shadow-xl md:right-0">
+                <div class="flex items-center justify-between">
+                  <div class="space-y-0.5"><span class="block text-xs font-bold text-stone-800">{{ i18n.isVi() ? 'Số khách' : 'Guests' }}</span><span class="block text-[10px] text-stone-500">{{ i18n.isVi() ? 'Người lớn & trẻ em' : 'Adults & children' }}</span></div>
+                  <div class="flex items-center gap-3"><button type="button" class="stepper" [disabled]="guests() <= 1" (click)="guests.set(max(1, guests() - 1))">-</button><span class="w-4 text-center text-xs font-bold text-stone-800">{{ guests() }}</span><button type="button" class="stepper-plus" (click)="guests.set(min(20, guests() + 1))">+</button></div>
+                </div>
+                <div class="flex items-center justify-between border-t border-stone-100 pt-3">
+                  <div class="space-y-0.5"><span class="block text-xs font-bold text-stone-800">{{ i18n.isVi() ? 'Số phòng' : 'Rooms' }}</span><span class="block text-[10px] text-stone-500">{{ i18n.isVi() ? 'Số phòng ngủ cần đặt' : 'Rooms needed' }}</span></div>
+                  <div class="flex items-center gap-3"><button type="button" class="stepper" [disabled]="rooms() <= 1" (click)="rooms.set(max(1, rooms() - 1))">-</button><span class="w-4 text-center text-xs font-bold text-stone-800">{{ rooms() }}</span><button type="button" class="stepper-plus" (click)="rooms.set(min(10, rooms() + 1))">+</button></div>
+                </div>
+                <button type="button" class="w-full rounded-xl bg-natural-accent py-2 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition hover:bg-natural-olive" (click)="showGuests.set(false)">{{ i18n.isVi() ? 'Áp dụng' : 'Apply' }}</button>
+              </div>
+            }
+          </div>
+          <button type="button" class="btn-sheen self-center shrink-0 rounded-2xl bg-gradient-to-br from-natural-gold via-amber-300 to-natural-gold-deep px-6 py-3 text-xs font-black uppercase tracking-wide text-stone-950 shadow-luxe transition duration-200 hover:-translate-y-0.5 hover:shadow-luxe-lg active:scale-95 md:w-fit md:text-sm" (click)="applySearch()">{{ t().searchBtn }}</button>
+        </div>
+      </div>
+
+      <!-- BREADCRUMB -->
+      <div class="mx-auto -mt-6 max-w-7xl px-4 pb-6">
+        <nav class="flex flex-wrap items-center gap-2 text-xs font-bold text-stone-500">
+          <a routerLink="/" class="transition hover:text-natural-accent">{{ i18n.isVi() ? 'Trang chủ' : 'Home' }}</a>
+          <span aria-hidden="true">/</span>
+          <a routerLink="/discover" class="transition hover:text-natural-accent">{{ i18n.isVi() ? 'Miền Trung' : 'Central Vietnam' }}</a>
+          <span aria-hidden="true">/</span>
+          <span class="text-natural-text" aria-current="page">{{ province()?.name || provinceId() }}</span>
+        </nav>
+      </div>
+
+      <!-- USPS -->
+      <div reveal class="mx-auto max-w-7xl px-4 pb-12">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          @for (usp of usps(); track usp.title; let i = $index) {
+            <div class="group flex h-full items-start gap-3.5 rounded-2xl border border-natural-border bg-white/70 p-4 transition duration-300 ease-out hover:-translate-y-1 hover:border-natural-gold/45 hover:shadow-luxe">
+              <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-natural-gold/25 to-natural-bronze/15 text-natural-bronze transition group-hover:from-natural-gold/40">
+                @switch (i) {
+                  @case (0) { <svg lucideShieldCheck class="h-5 w-5"></svg> }
+                  @case (1) { <svg lucideSparkles class="h-5 w-5"></svg> }
+                  @case (2) { <svg lucideHeadset class="h-5 w-5"></svg> }
+                  @default { <svg lucideBadgePercent class="h-5 w-5"></svg> }
+                }
+              </span>
+              <div class="space-y-1"><span class="block text-sm font-bold text-stone-900">{{ usp.title }}</span><p class="text-[11px] leading-relaxed text-stone-500">{{ usp.subtitle }}</p></div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- BLIND TRAVEL BANNER -->
+      <section reveal class="w-full border-y border-natural-border bg-[#1F261F] px-4 py-12 text-white shadow-inner">
+        <div class="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div class="max-w-2xl">
+            <span class="text-[11px] font-black uppercase tracking-[0.24em] text-natural-gold">{{ i18n.isVi() ? 'Hành trình ẩn số' : 'Blind Travel' }}</span>
+            <h2 class="mt-2 font-serif text-3xl font-black tracking-tight md:text-5xl">{{ i18n.isVi() ? 'Đi thẳng tới chuyến đi bất ngờ.' : 'Go straight to a surprise trip.' }}</h2>
+            <p class="mt-3 text-sm leading-relaxed text-white/70">{{ i18n.isVi() ? 'Khám phá một chuyến đi bất ngờ với điểm đến và combo phù hợp được VietCharm gợi ý sẵn.' : 'Skip the long brief. VietCharm will open a mystery journey with a ready-made suggested bundle.' }}</p>
+          </div>
+          <a routerLink="/blind-travel" class="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-natural-gold px-5 text-xs font-black uppercase tracking-wide text-natural-ink shadow-lg transition hover:bg-natural-gold-dark md:self-center"><svg lucideSparkles class="h-4 w-4"></svg><span>{{ i18n.isVi() ? 'Mở hành trình ẩn số' : 'Open Blind Travel' }}</span><svg lucideArrowRight class="h-4 w-4"></svg></a>
+        </div>
+      </section>
+
+      <!-- VISIT OTHER PROVINCES -->
+      <div class="border-y border-natural-border bg-natural-beige py-10 text-natural-text">
+        <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 md:flex-row">
+          <div>
+            <h4 class="flex items-center gap-1.5 font-serif text-lg font-bold uppercase text-natural-text"><svg lucideNavigation2 class="h-5 w-5 text-natural-accent"></svg><span>{{ t().visitOtherProvinces }}</span></h4>
+            <p class="mt-1 max-w-xl text-xs leading-relaxed text-natural-text/80">{{ i18n.isVi() ? 'Dễ dàng di chuyển bằng xe máy Sirius chỉ mất 1 tiếng từ Hội An đến các cây cầu nổi tiếng của Đà Nẵng hoặc cung điện nguy nga của Huế.' : 'Effortlessly commute by rented Sirius motorbikes within 1 hour between Hội An, Đà Nẵng beach and Cố Đô Huế.' }}</p>
+          </div>
+          <a routerLink="/discover" class="rounded-xl border border-natural-border bg-natural-bg px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-natural-accent shadow-xs transition hover:bg-natural-beige">{{ i18n.isVi() ? 'Xem điểm đến khác' : 'Explore other destinations' }}</a>
+        </div>
+      </div>
+
+      <!-- FEATURED ATTRACTIONS -->
+      <div reveal id="featured-attractions-section" class="mx-auto max-w-7xl px-4 py-16">
+        <div class="mb-8 flex items-end justify-between border-b border-amber-200/50 pb-4">
+          <div>
+            <span class="text-gold-gradient text-[11px] font-black uppercase tracking-[0.22em]">{{ i18n.isVi() ? 'Tuyển chọn nổi bật' : 'Handpicked' }}</span>
+            <h3 class="mt-1 font-serif text-xl font-black uppercase tracking-tight text-stone-900 md:text-3xl">{{ t().featuredSpots }}</h3>
+            <p class="mt-1 text-xs text-stone-500">{{ t().spotSubtitle }}</p>
+          </div>
+          <button type="button" class="group flex shrink-0 items-center gap-1 text-xs font-bold text-amber-700 transition hover:text-stone-900" (click)="ui.openAllServices('attractions', provinceId())">{{ i18n.isVi() ? 'Xem tất cả' : 'View all' }}<svg lucideArrowRight class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></svg></button>
+        </div>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          @for (spot of attractions(); track spot.id) {
+            <div class="group h-full cursor-pointer overflow-hidden rounded-2xl border border-stone-150 bg-white shadow-xs transition duration-300 ease-out hover:-translate-y-1.5 hover:border-natural-gold/45 hover:shadow-luxe-lg" (click)="ui.viewItem(attractionItem(spot))">
+              <div class="relative h-44 overflow-hidden">
+                <img [src]="spot.image" [alt]="spot.name" class="h-full w-full object-cover transition duration-[600ms] ease-out group-hover:scale-110" />
+                <button type="button" class="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-natural-border bg-natural-bg/95 shadow-sm backdrop-blur-md transition hover:scale-110" (click)="$event.stopPropagation(); ui.toggleFavorite(attractionItem(spot))"><svg lucideHeart class="h-4 w-4 transition duration-200" [class.text-rose-600]="ui.isFavorite(spot.id)" [class.fill-rose-600]="ui.isFavorite(spot.id)" [class.text-stone-400]="!ui.isFavorite(spot.id)"></svg></button>
+                <div class="absolute right-3 top-3 flex items-center gap-0.5 rounded-lg border border-stone-200 bg-white/90 px-2 py-0.5 text-[10px] font-bold text-stone-800 backdrop-blur-md"><svg lucideStar class="h-3.5 w-3.5 fill-amber-400 stroke-amber-400"></svg><span>{{ spot.rating }} ({{ spot.reviewsCount }})</span></div>
+              </div>
+              <div class="p-4"><h4 class="line-clamp-1 font-serif text-sm font-bold leading-snug tracking-tight text-stone-900 transition-colors group-hover:text-natural-accent">{{ spot.name }}</h4><p class="mt-1 line-clamp-2 text-[11px] leading-relaxed text-stone-500">{{ spot.description }}</p></div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- BOOKING DETAILS -->
+      <div class="w-full space-y-16 bg-natural-bg px-4 py-14">
+        <div class="mx-auto max-w-7xl space-y-16">
+          <!-- Hotels -->
+          <section reveal id="hotels-section" class="scroll-mt-20">
+            <div class="mb-8 flex items-end justify-between border-b border-natural-border pb-4">
+              <div>
+                <h3 class="font-serif text-xl font-bold uppercase tracking-tight text-natural-text md:text-2xl">{{ t().lovedHotels }}</h3>
+                <p class="mt-1 text-xs text-natural-text/70">{{ t().hotelSubtitle }}</p>
+                @if (query()) { <p class="mt-2 text-[11px] font-bold text-natural-accent">{{ i18n.isVi() ? 'Đang lọc theo: "' + query() + '"' : 'Filtered by: "' + query() + '"' }}</p> }
+              </div>
+              <button type="button" class="flex items-center gap-1 text-xs font-bold text-natural-accent transition hover:text-natural-olive" (click)="ui.openAllServices('hotels', provinceId())">{{ i18n.isVi() ? 'Xem tất cả' : 'View all' }}<svg lucideChevronRight class="h-4 w-4"></svg></button>
+            </div>
+            @if (filteredHotels().length === 0) { <p class="rounded-3xl border border-dashed border-natural-border bg-natural-cream py-10 text-center text-xs text-stone-400">{{ i18n.isVi() ? 'Không tìm thấy khách sạn phù hợp từ khóa hiện tại.' : 'No hotels match your current search.' }}</p> }
+            @else {
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                @for (hotel of filteredHotels().slice(0, 4); track hotel.id) {
+                  <div class="flex cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-natural-border bg-natural-beige-light shadow-xs transition duration-300 hover:border-natural-accent hover:shadow-xl" (click)="ui.viewItem(hotelItem(hotel))">
+                    <div class="relative h-48 overflow-hidden">
+                      <img [src]="hotel.image" [alt]="hotel.name" class="h-full w-full object-cover transition hover:scale-105" />
+                      <button type="button" class="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-natural-border bg-natural-bg/95 shadow-sm backdrop-blur-md transition hover:scale-110" (click)="$event.stopPropagation(); ui.toggleFavorite(hotelItem(hotel))"><svg lucideHeart class="h-4 w-4 transition duration-200" [class.text-rose-600]="ui.isFavorite(hotel.id)" [class.fill-rose-600]="ui.isFavorite(hotel.id)" [class.text-stone-400]="!ui.isFavorite(hotel.id)"></svg></button>
+                      <div class="absolute right-3 top-3 flex items-center gap-0.5 rounded-lg border border-natural-border bg-natural-bg/95 px-2 py-0.5 text-[10px] font-bold text-natural-text shadow-sm backdrop-blur-md"><svg lucideStar class="h-3.5 w-3.5 fill-natural-gold stroke-natural-gold"></svg><span>{{ hotel.rating }}</span></div>
+                    </div>
+                    <div class="flex flex-1 flex-col justify-between space-y-3 p-4">
+                      <div><h4 class="line-clamp-2 min-h-[40px] font-serif text-sm font-bold leading-snug tracking-tight text-natural-text">{{ hotel.name }}</h4><p class="mt-1 line-clamp-2 min-h-[32px] text-[11px] text-natural-text/80">{{ hotel.description }}</p></div>
+                      <div class="flex items-center justify-between border-t border-natural-border pt-2">
+                        <div><span class="mb-0.5 block text-[10px] font-bold uppercase text-natural-accent">{{ i18n.isVi() ? 'GIÁ CHỈ TỪ' : 'FROM ONLY' }}</span><span class="font-mono text-sm font-black text-natural-accent">{{ hotel.pricePerNight | number : '1.0-0' }}đ</span><span class="text-[10px] text-natural-text/60">{{ t().perNight }}</span></div>
+                        @if (cart.isInCart(hotel.id)) {
+                          <button type="button" class="flex items-center gap-1 rounded-xl border border-natural-border bg-natural-beige px-3 py-1.5 text-[11px] font-bold text-natural-text transition hover:bg-natural-border" (click)="$event.stopPropagation(); cart.removeItem(hotel.id)"><svg lucideCheckCircle2 class="h-3.5 w-3.5 text-emerald-600"></svg><span>{{ i18n.isVi() ? 'Đã thêm' : 'In Bundle' }}</span></button>
+                        } @else {
+                          <button type="button" class="rounded-xl bg-natural-accent px-3.5 py-2 text-[11px] font-bold text-white shadow-xs transition hover:bg-natural-olive" (click)="$event.stopPropagation(); ui.viewItem(hotelItem(hotel))">{{ i18n.isVi() ? 'Đặt phòng' : 'Book' }}</button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </section>
+
+          <!-- Vehicles -->
+          <section reveal id="rentals-section" class="scroll-mt-20">
+            <div class="mb-8 flex items-end justify-between border-b border-natural-border pb-4">
+              <div><h3 class="font-serif text-xl font-bold uppercase tracking-tight text-natural-text md:text-2xl">{{ t().rentVehicles }}</h3><p class="mt-1 text-xs text-natural-text/70">{{ i18n.isVi() ? 'Ô tô tự lái và xe máy đời mới, bảo dưỡng kỹ, giao xe tận nơi.' : 'Late-model self-drive cars & scooters, well-maintained and delivered to you.' }}</p></div>
+              <button type="button" class="flex items-center gap-1 text-xs font-bold text-natural-accent transition hover:text-natural-olive" (click)="ui.openAllServices('vehicles', provinceId())">{{ i18n.isVi() ? 'Xem tất cả' : 'View all' }}<svg lucideChevronRight class="h-4 w-4"></svg></button>
+            </div>
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              @for (veh of filteredVehicles().slice(0, 6); track veh.id) {
+                <div class="flex cursor-pointer items-center gap-4 overflow-hidden rounded-3xl border border-natural-border bg-natural-beige-light p-4 shadow-xs transition hover:border-natural-accent hover:shadow-lg" (click)="ui.viewItem(vehicleItem(veh))">
+                  <div class="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-natural-beige">
+                    <img [src]="veh.image" [alt]="veh.name" class="h-full w-full object-cover" />
+                    <button type="button" class="absolute left-1 top-1 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-white/95 shadow-sm transition hover:scale-110" (click)="$event.stopPropagation(); ui.toggleFavorite(vehicleItem(veh))"><svg lucideHeart class="h-3.5 w-3.5 transition duration-200" [class.text-rose-600]="ui.isFavorite(veh.id)" [class.fill-rose-600]="ui.isFavorite(veh.id)" [class.text-stone-400]="!ui.isFavorite(veh.id)"></svg></button>
+                    <div class="absolute bottom-1 right-1 rounded-full bg-black/70 p-1 text-white">@if (veh.type === 'motorbike') { <svg lucideBike class="h-3.5 w-3.5"></svg> } @else { <svg lucideCar class="h-3.5 w-3.5"></svg> }</div>
+                  </div>
+                  <div class="flex flex-1 flex-col justify-between space-y-2">
+                    <div><h4 class="font-serif text-xs font-bold leading-snug tracking-tight text-natural-text md:text-sm">{{ veh.name }}</h4><p class="line-clamp-1 text-[10px] leading-relaxed text-natural-text/75">{{ veh.specs }}</p></div>
+                    <div class="flex items-center justify-between border-t border-natural-border pt-1">
+                      <div><span class="font-mono text-xs font-bold text-natural-accent">{{ veh.pricePerDay | number : '1.0-0' }}đ</span><span class="text-[10px] text-natural-text/60">/{{ i18n.isVi() ? 'ngày' : 'day' }}</span></div>
+                      @if (cart.isInCart(veh.id)) {
+                        <button type="button" class="rounded-lg border border-natural-border bg-natural-beige px-2.5 py-1.5 text-[10px] font-bold text-natural-text transition hover:bg-natural-border" (click)="$event.stopPropagation(); cart.removeItem(veh.id)">{{ i18n.isVi() ? 'Bỏ chọn' : 'Remove' }}</button>
+                      } @else {
+                        <button type="button" class="rounded-lg bg-natural-accent px-3 py-1.5 text-[10px] font-bold text-white shadow-xs transition hover:bg-natural-olive" (click)="$event.stopPropagation(); ui.viewItem(vehicleItem(veh))">{{ i18n.isVi() ? 'Chọn thuê' : 'Rent Vehicle' }}</button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- Activities -->
+          <section reveal id="experiences-section" class="scroll-mt-20">
+            <div class="mb-8 flex flex-col items-start justify-between gap-4 border-b border-natural-border pb-4 md:flex-row md:items-end">
+              <div><h3 class="font-serif text-xl font-bold uppercase tracking-tight text-natural-text md:text-2xl">{{ t().activitiesTitle }}</h3><p class="mt-1 text-xs text-natural-text/70">{{ t().activitiesSubtitle }}</p></div>
+              <div class="flex items-center gap-3">
+                <button type="button" class="flex items-center gap-1 text-xs font-bold text-natural-accent transition hover:text-natural-olive" (click)="ui.openAllServices('activities', provinceId())">{{ i18n.isVi() ? 'Xem tất cả' : 'View all' }}<svg lucideChevronRight class="h-4 w-4"></svg></button>
+                <span class="rounded-full border border-natural-border bg-natural-beige px-3.5 py-1.5 text-xs font-bold text-natural-accent">{{ i18n.isVi() ? 'Tìm thấy ' + filteredActivities().length + ' hoạt động' : 'Found ' + filteredActivities().length + ' activities' }}</span>
+              </div>
+            </div>
+            <div class="mb-6 flex flex-col justify-between gap-4 rounded-2xl border border-natural-border bg-natural-cream p-4 text-xs sm:flex-row">
+              <div class="space-y-1.5">
+                <span class="block font-bold uppercase tracking-wider text-stone-500">{{ i18n.isVi() ? 'Phân loại chủ đề' : 'Filter by Theme' }}</span>
+                <div class="flex flex-wrap gap-1.5">
+                  @for (c of categoryOptions(); track c.id) { <button type="button" [class]="'rounded-lg px-3 py-1.5 font-semibold transition ' + (category() === c.id ? 'bg-natural-accent text-white' : 'border border-stone-150 bg-white text-stone-600 hover:bg-stone-50')" (click)="category.set(c.id)">{{ c.label }}</button> }
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <span class="block font-bold uppercase tracking-wider text-stone-500">{{ i18n.isVi() ? 'Lọc theo giá vé' : 'Filter by Budget' }}</span>
+                <div class="flex flex-wrap gap-1.5">
+                  @for (tier of tierOptions(); track tier.id) { <button type="button" [class]="'rounded-lg px-3 py-1.5 font-semibold transition ' + (priceTier() === tier.id ? 'bg-natural-accent text-white' : 'border border-stone-150 bg-white text-stone-600 hover:bg-stone-50')" (click)="priceTier.set(tier.id)">{{ tier.label }}</button> }
+                </div>
+              </div>
+            </div>
+            @if (filteredActivities().length === 0) {
+              <div class="rounded-3xl border border-dashed border-natural-border bg-natural-cream py-10 text-center text-xs text-stone-400"><svg lucideCompass class="mx-auto mb-2 h-8 w-8 text-stone-300"></svg><p>{{ i18n.isVi() ? 'Không có hoạt động nào phù hợp bộ lọc hiện tại. Thử chọn lại chủ đề hoặc ngân sách khác!' : 'No activities match the current filters. Expand your budget or category.' }}</p></div>
+            } @else {
+              <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                @for (act of filteredActivities().slice(0, 10); track act.id) {
+                  <div class="flex cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-natural-border bg-natural-beige-light shadow-xs transition duration-300 hover:border-natural-accent hover:shadow-lg" (click)="ui.viewItem(activityItem(act))">
+                    <div class="relative h-36 overflow-hidden">
+                      <img [src]="act.image" [alt]="act.name" class="h-full w-full object-cover transition hover:scale-105" />
+                      <button type="button" class="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/95 shadow-sm transition hover:scale-110" (click)="$event.stopPropagation(); ui.toggleFavorite(activityItem(act))"><svg lucideHeart class="h-3.5 w-3.5 transition duration-200" [class.text-rose-600]="ui.isFavorite(act.id)" [class.fill-rose-600]="ui.isFavorite(act.id)" [class.text-stone-400]="!ui.isFavorite(act.id)"></svg></button>
+                      <div class="absolute right-2 top-2 flex items-center gap-0.5 rounded bg-black/50 px-1.5 py-0.5 text-[9px] font-bold text-white"><svg lucideStar class="h-3 w-3 fill-amber-400 stroke-amber-400"></svg><span>{{ act.rating }}</span></div>
+                    </div>
+                    <div class="flex flex-1 flex-col justify-between space-y-2 p-3">
+                      <h4 class="line-clamp-2 min-h-[34px] font-serif text-xs font-bold leading-snug tracking-tight text-natural-text">{{ act.name }}</h4>
+                      <div class="flex items-center justify-between border-t border-natural-border pt-2">
+                        <div><span class="font-mono text-xs font-bold text-natural-accent">{{ act.price | number : '1.0-0' }}đ</span></div>
+                        <button type="button" class="rounded-lg bg-natural-accent px-2.5 py-1 text-[10px] font-bold text-white shadow-xs transition hover:bg-natural-olive" (click)="$event.stopPropagation(); ui.viewItem(activityItem(act))">{{ i18n.isVi() ? 'Xem' : 'View' }}</button>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </section>
+
+          <!-- Reviews -->
+          <section reveal id="reviews-section" class="rounded-3xl border border-natural-border bg-natural-beige p-6 md:p-8">
+            <h3 class="text-xl font-bold uppercase text-natural-text md:text-2xl">{{ i18n.isVi() ? 'Đánh giá từ khách hàng' : 'Customer Reviews' }}</h3>
+            <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
+              <div class="space-y-3">
+                @for (rev of reviews(); track rev.id) {
+                  <div class="rounded-2xl border border-natural-border bg-white p-4">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2"><img [src]="rev.avatar" [alt]="rev.author" class="h-8 w-8 rounded-full object-cover" /><div><h5 class="text-xs font-bold text-natural-text">{{ rev.author }}</h5><div class="text-amber-500">{{ stars(rev.rating) }}</div></div></div>
+                      <span class="text-[10px] text-stone-400">{{ rev.date }}</span>
+                    </div>
+                    <p class="mt-2 text-xs italic leading-relaxed text-stone-600">"{{ rev.comment }}"</p>
+                  </div>
+                }
+              </div>
+              <form class="h-fit space-y-3 rounded-2xl border border-natural-border bg-white p-5" (ngSubmit)="addReview()">
+                <h4 class="mb-1 border-b border-natural-border pb-2 font-serif text-sm font-bold uppercase text-natural-text">{{ i18n.isVi() ? 'Viết đánh giá' : 'Write a review' }}</h4>
+                <input type="text" required [ngModel]="revAuthor()" (ngModelChange)="revAuthor.set($event)" name="ra" [placeholder]="i18n.isVi() ? 'Tên của bạn...' : 'Your name...'" class="w-full rounded-xl border border-natural-border bg-natural-beige-light px-3 py-2 text-xs outline-none focus:border-natural-accent" />
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] font-bold uppercase text-stone-400">{{ i18n.isVi() ? 'Điểm:' : 'Rating:' }}</span>
+                  @for (n of [1,2,3,4,5]; track n) { <button type="button" (click)="revRating.set(n)"><svg lucideStar class="h-4 w-4" [class.text-amber-400]="n <= revRating()" [class.fill-amber-400]="n <= revRating()" [class.text-stone-300]="n > revRating()"></svg></button> }
+                </div>
+                <textarea required rows="3" [ngModel]="revComment()" (ngModelChange)="revComment.set($event)" name="rc" [placeholder]="i18n.isVi() ? 'Chia sẻ trải nghiệm của bạn...' : 'Share your experience...'" class="w-full resize-none rounded-xl border border-natural-border bg-natural-beige-light p-3 text-xs leading-relaxed outline-none focus:border-natural-accent"></textarea>
+                <button type="submit" class="w-full rounded-xl bg-natural-accent py-2.5 text-xs font-black uppercase tracking-widest text-white transition hover:bg-natural-olive">{{ i18n.isVi() ? 'Đăng đánh giá' : 'Submit Review' }}</button>
+              </form>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- NEWSLETTER -->
+      <div reveal class="w-full bg-natural-accent px-4 py-14 text-white shadow-inner">
+        <div class="mx-auto max-w-3xl space-y-6 text-center">
+          <div class="space-y-2"><h3 class="font-serif text-2xl font-bold tracking-tight text-natural-bg md:text-4xl">{{ t().promoBannerTitle }}</h3><p class="mx-auto max-w-xl text-xs leading-relaxed text-natural-beige/90 md:text-sm">{{ i18n.isVi() ? 'Đăng ký email để nhận gợi ý điểm đến, ưu đãi và lịch trình theo từng vùng cùng VietCharm.' : 'Subscribe for destination ideas, deals, and regional itineraries from VietCharm.' }}</p></div>
+          <form class="mx-auto flex max-w-md gap-2" (ngSubmit)="subscribe()">
+            <input type="email" required [ngModel]="subEmail()" (ngModelChange)="subEmail.set($event)" name="se" [placeholder]="t().subPlaceholder" class="flex-1 rounded-xl border border-natural-border bg-natural-bg px-4 py-3 text-xs font-medium text-natural-text outline-none placeholder:text-stone-400 md:text-sm" />
+            <button type="submit" class="whitespace-nowrap rounded-xl bg-natural-gold px-5 py-3 text-xs font-bold uppercase tracking-wider text-natural-text shadow-md transition hover:bg-natural-gold-dark md:text-sm">{{ i18n.isVi() ? 'Đăng ký' : 'Subscribe' }}</button>
+          </form>
+          @if (subscribed()) { <p class="mt-2 text-xs font-black text-emerald-100">✓ {{ i18n.isVi() ? 'Đăng ký thành công! Voucher ưu đãi 10% đã gửi đi.' : 'Subscribed successfully! 10% Coupon dispatched.' }}</p> }
+        </div>
+      </div>
+    </div>

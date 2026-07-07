@@ -1,0 +1,16 @@
+    <section class="mx-auto max-w-7xl px-4 py-10">
+      <div class="mb-7 flex items-end justify-between gap-4">
+        <div>
+          <p class="text-xs font-black uppercase tracking-[0.25em] text-natural-accent">History</p>
+          <h1 class="font-serif text-4xl font-black text-natural-ink">{{ i18n.isVi() ? 'Dịch vụ đã xem' : 'Recently viewed' }}</h1>
+        </div>
+        <button type="button" class="rounded-full border border-natural-border px-4 py-2 text-sm font-black" (click)="ui.clearRecentlyViewed()">{{ i18n.isVi() ? 'Xóa' : 'Clear' }}</button>
+      </div>
+      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        @for (item of ui.recentlyViewed(); track item.id) {
+          <app-item-card [item]="item" />
+        } @empty {
+          <p class="rounded-2xl border border-natural-border bg-white p-6 font-bold">{{ i18n.isVi() ? 'Bạn chưa xem dịch vụ nào.' : 'No viewed services yet.' }}</p>
+        }
+      </div>
+    </section>
