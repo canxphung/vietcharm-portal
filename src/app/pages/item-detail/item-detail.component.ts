@@ -1,5 +1,5 @@
-import { Component, computed, effect, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { afterNextRender, Component, computed, effect, ElementRef, signal, viewChild } from '@angular/core';
+import { DecimalPipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -82,7 +82,7 @@ function isoOffset(days: number): string {
 }
 
 @Component({
-  selector: 'app-details-overlay',
+  selector: 'app-item-detail-page',
   standalone: true,
   imports: [
     DecimalPipe,
@@ -106,10 +106,10 @@ function isoOffset(days: number): string {
     LucideStar,
     LucideShare2,
   ],
-  templateUrl: './details-overlay.component.html',
-  styleUrl: './details-overlay.component.css',
+  templateUrl: './item-detail.component.html',
+  styleUrl: './item-detail.component.css',
 })
-export class DetailsOverlayComponent {
+export class ItemDetailComponent {
   readonly today = isoOffset(0);
   readonly selectedDate = signal(isoOffset(1));
   readonly checkInDate = signal(isoOffset(1));
@@ -150,6 +150,7 @@ export class DetailsOverlayComponent {
   });
 
   private lastItemId: string | null = null;
+  private readonly reviewTextarea = viewChild<ElementRef<HTMLTextAreaElement>>('reviewTextarea');
 
   constructor(
     readonly ui: UiStateService,
@@ -159,7 +160,13 @@ export class DetailsOverlayComponent {
     private readonly catalog: CatalogService,
     private readonly toast: ToastService,
     private readonly router: Router,
+    private readonly location: Location,
   ) {
+    // Landed here directly (e.g. page refresh) with no item selected: send back to browsing.
+    if (!this.ui.selectedItem()) {
+      void this.router.navigateByUrl('/discover');
+    }
+
     // Reset booking state whenever a different item is opened.
     effect(() => {
       const item = this.ui.selectedItem();
@@ -175,6 +182,17 @@ export class DetailsOverlayComponent {
         this.successMsg.set(false);
       }
     });
+
+    // Arrived here to write a review: jump straight to the review form instead of making the user scroll.
+    if (this.ui.consumeScrollToReviews()) {
+      afterNextRender(() => {
+        // Run after the router's own "scroll to top" restoration settles, so our scroll wins the race.
+        setTimeout(() => {
+          document.getElementById('write-review-block')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          this.reviewTextarea()?.nativeElement.focus({ preventScroll: true });
+        }, 80);
+      });
+    }
   }
 
   max(a: number, b: number): number {
@@ -186,7 +204,7 @@ export class DetailsOverlayComponent {
   }
 
   back(): void {
-    this.ui.clearSelectedItem();
+    this.location.back();
   }
 
   typeLabel(item: ViewableItem): string {
@@ -311,7 +329,6 @@ export class DetailsOverlayComponent {
   checkout(item: ViewableItem): void {
     this.ui.requireAuth(() => {
       if (!this.cart.isInCart(this.cartKey(item))) this.addSelection(item);
-      this.ui.clearSelectedItem();
       void this.router.navigateByUrl('/checkout');
     }, this.isVi() ? 'Đăng nhập để thanh toán.' : 'Sign in to checkout.');
   }
@@ -361,6 +378,8 @@ export class DetailsOverlayComponent {
       this.catalog.addReview({
         id: `review-details-${Date.now()}`,
         itemId: item.id,
+        itemName: item.name,
+        itemImage: item.image,
         userEmail: user.email,
         author: user.fullName,
         avatar: user.avatar,

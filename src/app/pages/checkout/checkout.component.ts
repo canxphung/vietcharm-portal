@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -15,6 +15,7 @@ import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
+import { VoucherPickerComponent } from '@/components/voucher-picker/voucher-picker.component';
 
 type Gateway = 'vnpay' | 'momo' | 'visa';
 
@@ -25,6 +26,7 @@ type Gateway = 'vnpay' | 'momo' | 'visa';
     DecimalPipe,
     FormsModule,
     RouterLink,
+    VoucherPickerComponent,
     LucideArrowLeft,
     LucideCheckCircle2,
     LucideCreditCard,
@@ -37,40 +39,35 @@ type Gateway = 'vnpay' | 'momo' | 'visa';
   styleUrl: './checkout.component.css',
 })
 export class CheckoutComponent {
+  readonly cart = inject(CartService);
+  readonly i18n = inject(I18nService);
+  private readonly auth = inject(AuthService);
+  private readonly catalog = inject(CatalogService);
+  private readonly router = inject(Router);
+
   readonly step = signal<'review' | 'success'>('review');
   readonly gateway = signal<Gateway>('visa');
   readonly cardNo = signal('');
   readonly cardHolder = signal('');
   readonly paymentLoading = signal(false);
   readonly loadingText = signal('');
-  readonly voucherCode = signal('');
-  readonly voucherDiscount = signal(0);
-  readonly appliedVoucher = signal<string | null>(null);
-  readonly voucherError = signal('');
   readonly timestamp = new Date().toLocaleDateString('en-CA');
   readonly bookingRef = signal('');
 
   readonly isVi = computed(() => this.i18n.isVi());
   readonly t = computed(() => this.i18n.dictionary());
   readonly items = computed(() => this.cart.selectedItems());
-  readonly totalCost = computed(() => this.items().reduce((acc, item) => acc + item.price * item.quantity, 0));
-  readonly isBundleEligible = computed(() => {
-    const types = new Set(this.items().map((i) => i.type)).size;
-    return this.items().length >= 2 && types >= 2;
-  });
-  readonly discountAmount = computed(() => (this.isBundleEligible() ? Math.round(this.totalCost() * 0.15) : 0));
-  readonly basePayableAmount = computed(() => this.totalCost() - this.discountAmount());
-  readonly payableAmount = computed(() => Math.max(0, this.basePayableAmount() - this.voucherDiscount()));
+
+  // Delegate to the shared cart pricing/voucher state so cart and checkout always agree.
+  readonly totalCost = this.cart.totalCost;
+  readonly isBundleEligible = this.cart.isBundleEligible;
+  readonly discountAmount = this.cart.bundleDiscount;
+  readonly payableAmount = this.cart.payableAmount;
+  readonly voucherDiscount = this.cart.voucherDiscount;
 
   private loadingTimer?: ReturnType<typeof setInterval>;
 
-  constructor(
-    readonly cart: CartService,
-    readonly i18n: I18nService,
-    private readonly auth: AuthService,
-    private readonly catalog: CatalogService,
-    private readonly router: Router,
-  ) {
+  constructor() {
     if (this.items().length === 0) {
       void this.router.navigateByUrl('/cart');
     }
@@ -84,45 +81,8 @@ export class CheckoutComponent {
     );
   }
 
-  onVoucherInput(value: string): void {
-    this.voucherCode.set(value.toUpperCase());
-    this.voucherError.set('');
-  }
-
   onCardNo(value: string): void {
     this.cardNo.set(value.replace(/\D/g, '').substring(0, 16));
-  }
-
-  applyVoucher(): void {
-    const trimmed = this.voucherCode().trim().toUpperCase();
-    if (!trimmed) {
-      this.voucherError.set(this.isVi() ? 'Vui lòng nhập mã giảm giá!' : 'Please enter a promo code!');
-      return;
-    }
-    const base = this.basePayableAmount();
-    const voucher = this.catalog.vouchers().find((v) => v.code === trimmed && v.active);
-    if (!voucher) {
-      this.voucherError.set(this.isVi() ? 'Mã giảm giá này không hợp lệ hoặc đã hết hạn!' : 'Invalid voucher code or expired!');
-      return;
-    }
-    if (base < voucher.minSpend) {
-      this.voucherError.set(
-        this.isVi()
-          ? `Đơn hàng cần tối thiểu ${voucher.minSpend.toLocaleString('vi-VN')}đ để dùng mã này.`
-          : `This code requires a minimum order of ${voucher.minSpend.toLocaleString('en-US')}đ.`,
-      );
-      return;
-    }
-    const discount = voucher.discountType === 'percentage' ? Math.round((base * voucher.value) / 100) : voucher.value;
-    this.voucherDiscount.set(discount);
-    this.appliedVoucher.set(voucher.code);
-    this.voucherError.set('');
-  }
-
-  removeVoucher(): void {
-    this.appliedVoucher.set(null);
-    this.voucherDiscount.set(0);
-    this.voucherCode.set('');
   }
 
   submitPayment(): void {

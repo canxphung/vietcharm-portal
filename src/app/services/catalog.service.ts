@@ -62,6 +62,11 @@ export class CatalogService {
     return this.serviceReviews().filter((review) => review.itemId === itemId);
   }
 
+  reviewsByUser(userEmail: string): ServiceReview[] {
+    const normalized = userEmail.toLowerCase();
+    return this.serviceReviews().filter((review) => review.userEmail.toLowerCase() === normalized);
+  }
+
   canReview(itemId: string, userEmail: string): boolean {
     return this.canReviewAny([itemId], userEmail);
   }

@@ -130,6 +130,11 @@ export const routes: Routes = [
       import('./pages/support/support.component').then((m) => m.SupportComponent),
   },
   {
+    path: 'item-detail',
+    loadComponent: () =>
+      import('./pages/item-detail/item-detail.component').then((m) => m.ItemDetailComponent),
+  },
+  {
     path: '404',
     loadComponent: () =>
       import('./pages/not-found/not-found.component').then((m) => m.NotFoundComponent),

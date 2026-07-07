@@ -1,6 +1,5 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
   LucideAlertCircle,
@@ -46,6 +45,7 @@ import { I18nService } from '@/services/i18n.service';
 import { ToastService } from '@/services/toast.service';
 import { UiStateService } from '@/services/ui-state.service';
 import { LogoComponent } from '@/components/logo/logo.component';
+import { VoucherPickerComponent } from '@/components/voucher-picker/voucher-picker.component';
 
 @Component({
   selector: 'app-cart-page',
@@ -53,6 +53,7 @@ import { LogoComponent } from '@/components/logo/logo.component';
   imports: [
     DecimalPipe,
     RouterLink,
+    VoucherPickerComponent,
     LucideArrowLeft,
     LucideCalendarDays,
     LucideCar,
@@ -73,22 +74,19 @@ import { LogoComponent } from '@/components/logo/logo.component';
   styleUrl: './cart.component.css',
 })
 export class CartComponent {
+  readonly cart = inject(CartService);
+  readonly i18n = inject(I18nService);
+  private readonly ui = inject(UiStateService);
+  private readonly router = inject(Router);
+
   readonly confirmClearOpen = signal(false);
   readonly isVi = computed(() => this.i18n.isVi());
-  readonly totalCost = computed(() => this.cart.selectedItems().reduce((acc, item) => acc + item.price * item.quantity, 0));
-  readonly isBundleEligible = computed(() => {
-    const sel = this.cart.selectedItems();
-    return sel.length >= 2 && new Set(sel.map((i) => i.type)).size >= 2;
-  });
-  readonly bundleDiscount = computed(() => (this.isBundleEligible() ? Math.round(this.totalCost() * 0.15) : 0));
-  readonly payableAmount = computed(() => Math.max(0, this.totalCost() - this.bundleDiscount()));
 
-  constructor(
-    readonly cart: CartService,
-    readonly i18n: I18nService,
-    private readonly ui: UiStateService,
-    private readonly router: Router,
-  ) {}
+  // Shared with the checkout page so both agree on totals and any applied voucher.
+  readonly totalCost = this.cart.totalCost;
+  readonly isBundleEligible = this.cart.isBundleEligible;
+  readonly bundleDiscount = this.cart.bundleDiscount;
+  readonly payableAmount = this.cart.payableAmount;
 
   typeLabel(type: BookingCartItem['type']): string {
     if (type === 'hotel') return this.isVi() ? 'Khách sạn' : 'Hotel';

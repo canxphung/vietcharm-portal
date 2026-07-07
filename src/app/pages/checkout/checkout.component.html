@@ -56,24 +56,17 @@
             <!-- Payment panel -->
             <aside class="h-fit space-y-4 rounded-2xl border border-natural-border bg-white p-5 shadow-xs lg:sticky lg:top-32">
               <!-- Voucher -->
-              <div class="space-y-2.5 rounded-2xl border border-stone-200 bg-natural-cream p-4">
-                <label class="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-stone-700"><svg lucideTicket class="h-3.5 w-3.5 text-natural-accent"></svg><span>{{ isVi() ? 'Khuyến mãi & Mã giảm giá' : 'Promotional & Voucher Code' }}</span></label>
-                <div class="flex gap-2">
-                  <input type="text" [ngModel]="voucherCode()" (ngModelChange)="onVoucherInput($event)" [disabled]="!!appliedVoucher()" [placeholder]="isVi() ? 'Nhập mã: VIETCHARM15, HOIANWELCOME...' : 'Enter code (e.g., VIETCHARM15)'" class="flex-1 rounded-xl border border-stone-300 px-3.5 py-2 font-mono text-xs outline-none focus:border-natural-accent disabled:opacity-60" />
-                  @if (appliedVoucher()) {
-                    <button type="button" class="rounded-xl bg-red-50 px-3.5 py-2 text-xs font-bold text-red-600 transition hover:bg-red-100" (click)="removeVoucher()">{{ isVi() ? 'Xóa mã' : 'Remove' }}</button>
-                  } @else {
-                    <button type="button" class="rounded-xl bg-natural-accent px-4 py-2 text-xs font-bold text-white transition hover:bg-natural-olive" (click)="applyVoucher()">{{ isVi() ? 'Áp dụng' : 'Apply' }}</button>
-                  }
-                </div>
-                @if (voucherError()) { <p class="text-[10px] font-semibold text-red-500">{{ voucherError() }}</p> }
-                @if (appliedVoucher()) { <p class="text-[10px] font-semibold text-emerald-600">{{ isVi() ? '✓ Đã áp dụng mã ' + appliedVoucher() + ': Giảm thêm -' + (voucherDiscount() | number : '1.0-0') + 'đ!' : '✓ Code ' + appliedVoucher() + ' applied: Extra -' + (voucherDiscount() | number : '1.0-0') + 'đ off!' }}</p> }
-              </div>
+              <app-voucher-picker />
 
               <!-- Pricing summary -->
               <div class="space-y-1.5 rounded-2xl border border-amber-200/50 bg-amber-500/5 p-4 text-xs font-medium">
                 <div class="flex justify-between"><span class="text-stone-500">{{ isVi() ? 'Tổng tiền gốc' : 'Subtotal' }}</span><span class="font-mono font-bold" [class.line-through]="isBundleEligible()">{{ totalCost() | number : '1.0-0' }} đ</span></div>
-                <div class="flex justify-between font-bold" [class.text-emerald-600]="isBundleEligible()" [class.text-stone-400]="!isBundleEligible()"><span>{{ isBundleEligible() ? (isVi() ? 'Ưu đãi combo (15%)' : 'Bundle savings (15%)') : (isVi() ? 'Combo chưa đủ điều kiện' : 'Bundle not eligible') }}</span><span class="font-mono">-{{ discountAmount() | number : '1.0-0' }} đ</span></div>
+                @if (isBundleEligible()) {
+                  <div class="flex justify-between font-bold text-emerald-600">
+                    <span>{{ isVi() ? 'Ưu đãi combo (15%)' : 'Bundle savings (15%)' }}</span>
+                    <span class="font-mono">-{{ discountAmount() | number : '1.0-0' }} đ</span>
+                  </div>
+                }
                 @if (voucherDiscount() > 0) { <div class="flex justify-between font-extrabold text-emerald-700"><span>{{ isVi() ? 'Mã voucher' : 'Voucher' }}</span><span class="font-mono">-{{ voucherDiscount() | number : '1.0-0' }} đ</span></div> }
                 <div class="flex items-center justify-between border-t border-amber-200/50 pt-2">
                   <span class="text-[10px] font-bold uppercase text-stone-500">{{ isVi() ? 'CẦN THANH TOÁN' : 'PAYABLE TOTAL' }}</span>

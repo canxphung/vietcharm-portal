@@ -292,6 +292,8 @@ export class ProvinceDetailComponent {
       this.catalog.addReview({
         id: `rev-${Date.now()}`,
         itemId: this.provinceReviewId(),
+        itemName: this.province()?.name ?? this.provinceId(),
+        itemImage: this.hero().image,
         userEmail: user.email,
         author: user.fullName,
         avatar: user.avatar,

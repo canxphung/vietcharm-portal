@@ -21,6 +21,7 @@ export class UiStateService {
   readonly favorites = storedSignal<ViewableItem[]>(STORAGE_KEYS.favorites, []);
   readonly authModalOpen = signal(false);
   readonly authModalView = signal<AuthModalView>('login');
+  private readonly scrollToReviews = signal(false);
 
   constructor(
     private readonly auth: AuthService,
@@ -53,32 +54,22 @@ export class UiStateService {
     void this.router.navigate(['/services'], { queryParams: { tab, province: provinceId } });
   }
 
-  viewItem(item: ViewableItem): void {
-    if (typeof window !== 'undefined') {
-      window.sessionStorage.setItem(
-        STORAGE_KEYS.returnTarget,
-        JSON.stringify({ provinceId: this.selectedProvinceId(), itemId: item.id, scrollY: window.scrollY }),
-      );
-      window.scrollTo({ top: 0 });
-    }
+  viewItem(item: ViewableItem, options: { scrollToReview?: boolean } = {}): void {
     this.recentlyViewed.update((items) => [{ ...item, timestamp: Date.now() }, ...items.filter((x) => x.id !== item.id)].slice(0, 24));
     this.selectedItem.set(item);
+    this.scrollToReviews.set(!!options.scrollToReview);
+    void this.router.navigateByUrl('/item-detail');
+  }
+
+  /** Reads and clears the one-shot "scroll to the review form" request. */
+  consumeScrollToReviews(): boolean {
+    const value = this.scrollToReviews();
+    if (value) this.scrollToReviews.set(false);
+    return value;
   }
 
   clearSelectedItem(): void {
     this.selectedItem.set(null);
-    if (typeof window === 'undefined') return;
-    try {
-      const raw = window.sessionStorage.getItem(STORAGE_KEYS.returnTarget);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as { scrollY?: number };
-      if (typeof parsed.scrollY === 'number') {
-        window.requestAnimationFrame(() => window.scrollTo({ top: parsed.scrollY }));
-      }
-      window.sessionStorage.removeItem(STORAGE_KEYS.returnTarget);
-    } catch {
-      // Ignore malformed old session data.
-    }
   }
 
   clearRecentlyViewed(): void {

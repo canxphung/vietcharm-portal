@@ -1,0 +1,70 @@
+    <div class="space-y-2.5 rounded-2xl border border-stone-200 bg-natural-cream p-4">
+      <label class="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-stone-700"><svg lucideTicket class="h-3.5 w-3.5 text-natural-accent"></svg><span>{{ isVi() ? 'Khuyến mãi & Mã giảm giá' : 'Promotional & Voucher Code' }}</span></label>
+      @if (cart.appliedVoucher()) {
+        <div class="flex items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5">
+          <div class="min-w-0">
+            <p class="font-mono text-sm font-black text-emerald-700">{{ cart.appliedVoucher() }}</p>
+            <p class="text-[10px] font-semibold text-emerald-600">-{{ cart.voucherDiscount() | number : '1.0-0' }}đ</p>
+          </div>
+          <div class="flex shrink-0 gap-1.5">
+            <button type="button" class="rounded-lg border border-emerald-300 bg-white px-2.5 py-1.5 text-[10px] font-bold text-emerald-700 transition hover:bg-emerald-50" (click)="openPicker()">{{ isVi() ? 'Đổi mã' : 'Change' }}</button>
+            <button type="button" class="rounded-lg bg-red-50 px-2.5 py-1.5 text-[10px] font-bold text-red-600 transition hover:bg-red-100" (click)="cart.removeVoucher()">{{ isVi() ? 'Xóa' : 'Remove' }}</button>
+          </div>
+        </div>
+      } @else {
+        <button type="button" class="flex w-full items-center justify-between gap-2 rounded-xl border border-dashed border-natural-border bg-white px-3.5 py-2.5 text-left text-xs font-bold text-natural-accent transition hover:border-natural-accent hover:bg-natural-accent/5" (click)="openPicker()">
+          <span class="flex items-center gap-1.5"><svg lucideTicket class="h-4 w-4"></svg>{{ isVi() ? 'Chọn hoặc nhập mã giảm giá' : 'Choose or enter a voucher code' }}</span>
+          <span class="text-stone-400">›</span>
+        </button>
+      }
+    </div>
+
+    @if (open()) {
+      <div class="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 p-4 backdrop-blur-xs" (click)="close()">
+        <div class="flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-3xl bg-white shadow-2xl" (click)="$event.stopPropagation()">
+          <!-- Header -->
+          <div class="flex items-center justify-between border-b border-stone-150 px-5 py-4">
+            <h3 class="font-serif text-base font-black uppercase tracking-wide text-natural-ink">{{ isVi() ? 'Chọn mã giảm giá' : 'Choose a Voucher' }}</h3>
+            <button type="button" class="rounded-full p-1.5 text-stone-400 transition hover:bg-stone-100 hover:text-stone-700" (click)="close()"><svg lucideX class="h-5 w-5"></svg></button>
+          </div>
+
+          <!-- Manual entry -->
+          <div class="border-b border-stone-150 bg-stone-50 px-5 py-3.5">
+            <div class="flex gap-2">
+              <input type="text" [ngModel]="cart.voucherCode()" (ngModelChange)="cart.onVoucherInput($event)" [placeholder]="isVi() ? 'Nhập mã giảm giá...' : 'Enter voucher code...'" class="flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2 font-mono text-xs outline-none focus:border-natural-accent" />
+              <button type="button" class="shrink-0 rounded-xl bg-natural-accent px-4 py-2 text-xs font-bold text-white transition hover:bg-natural-olive" (click)="applyTyped()">{{ isVi() ? 'Áp dụng' : 'Apply' }}</button>
+            </div>
+            @if (cart.voucherError()) { <p class="mt-1.5 text-[11px] font-semibold text-red-500">{{ cart.voucherError() }}</p> }
+          </div>
+
+          <!-- Voucher list -->
+          <div class="flex-1 space-y-2.5 overflow-y-auto px-5 py-4">
+            @for (v of cart.availableVouchers(); track v.code) {
+              <button type="button" [class]="'flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition ' + (draftSelection() === v.code ? 'border-natural-accent bg-natural-accent/5 shadow-xs' : 'border-stone-150 bg-white hover:border-natural-accent/40')" (click)="selectCard(v.code)">
+                <div class="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-natural-ink text-white">
+                  <span class="font-mono text-xs font-black leading-none">{{ discountLabel(v) }}</span>
+                </div>
+                <div class="min-w-0 flex-1 space-y-0.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="rounded bg-natural-beige px-1.5 py-0.5 font-mono text-[10px] font-black text-natural-accent">{{ v.code }}</span>
+                  </div>
+                  <p class="line-clamp-2 text-[11px] leading-snug text-stone-600">{{ v.description }}</p>
+                  <p class="text-[10px] text-stone-400">{{ conditionLabel(v) }}</p>
+                </div>
+                <div [class]="'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ' + (draftSelection() === v.code ? 'border-natural-accent bg-natural-accent text-white' : 'border-stone-300')">
+                  @if (draftSelection() === v.code) { <svg lucideCheck class="h-3 w-3"></svg> }
+                </div>
+              </button>
+            } @empty {
+              <p class="py-8 text-center text-xs text-stone-400">{{ isVi() ? 'Hiện chưa có mã giảm giá nào khả dụng.' : 'No vouchers available right now.' }}</p>
+            }
+          </div>
+
+          <!-- Footer -->
+          <div class="flex items-center justify-between gap-3 border-t border-stone-150 px-5 py-4">
+            <span class="text-xs text-stone-500">{{ draftSelection() ? (isVi() ? 'Đã chọn: ' : 'Selected: ') + draftSelection() : (isVi() ? 'Chưa chọn mã nào' : 'No voucher selected') }}</span>
+            <button type="button" class="shrink-0 rounded-xl bg-natural-accent px-6 py-2.5 text-xs font-black uppercase tracking-wide text-white transition hover:bg-natural-olive" (click)="confirm()">{{ isVi() ? 'Áp dụng' : 'Apply' }}</button>
+          </div>
+        </div>
+      </div>
+    }

@@ -1,7 +1,6 @@
 import { Component, computed } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthModalComponent } from '@/components/auth-modal/auth-modal.component';
-import { DetailsOverlayComponent } from '@/components/details-overlay/details-overlay.component';
 import { FooterComponent } from '@/components/footer/footer.component';
 import { HeaderComponent } from '@/components/header/header.component';
 import { HelpPromoComponent } from '@/components/help-promo/help-promo.component';
@@ -12,7 +11,6 @@ import { ToastOutletComponent } from '@/components/toast-outlet/toast-outlet.com
   imports: [
     RouterOutlet,
     AuthModalComponent,
-    DetailsOverlayComponent,
     FooterComponent,
     HeaderComponent,
     HelpPromoComponent,

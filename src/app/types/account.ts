@@ -56,6 +56,8 @@ export interface SystemBooking {
 export interface ServiceReview {
   id: string;
   itemId: string;
+  itemName: string;
+  itemImage?: string;
   userEmail: string;
   author: string;
   avatar: string;

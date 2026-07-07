@@ -1,5 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import type { BookingCartItem } from '@/types';
+import { CatalogService } from './catalog.service';
 import { I18nService } from './i18n.service';
 import { ToastService } from './toast.service';
 
@@ -18,10 +19,72 @@ export class CartService {
   readonly total = computed(() => this.items().reduce((sum, item) => sum + item.price * item.quantity, 0));
   readonly selectedTotal = computed(() => this.selectedItems().reduce((sum, item) => sum + item.price * item.quantity, 0));
 
+  // Shared pricing so the cart and checkout pages always agree on totals.
+  readonly totalCost = computed(() => this.selectedItems().reduce((sum, item) => sum + item.price * item.quantity, 0));
+  readonly isBundleEligible = computed(() => {
+    const items = this.selectedItems();
+    return items.length >= 2 && new Set(items.map((item) => item.type)).size >= 2;
+  });
+  readonly bundleDiscount = computed(() => (this.isBundleEligible() ? Math.round(this.totalCost() * 0.15) : 0));
+  readonly basePayableAmount = computed(() => this.totalCost() - this.bundleDiscount());
+  readonly payableAmount = computed(() => Math.max(0, this.basePayableAmount() - this.voucherDiscount()));
+
+  // Shared voucher state so a code applied in the cart carries over to checkout.
+  readonly voucherCode = signal('');
+  readonly appliedVoucher = signal<string | null>(null);
+  readonly voucherDiscount = signal(0);
+  readonly voucherError = signal('');
+  readonly availableVouchers = computed(() => this.catalog.vouchers().filter((v) => v.active));
+
   constructor(
     private readonly i18n: I18nService,
     private readonly toast: ToastService,
+    private readonly catalog: CatalogService,
   ) {}
+
+  onVoucherInput(value: string): void {
+    this.voucherCode.set(value.toUpperCase());
+    this.voucherError.set('');
+  }
+
+  applyVoucher(): void {
+    const trimmed = this.voucherCode().trim().toUpperCase();
+    if (!trimmed) {
+      this.voucherError.set(this.i18n.isVi() ? 'Vui lòng nhập mã giảm giá!' : 'Please enter a promo code!');
+      return;
+    }
+    const voucher = this.catalog.vouchers().find((v) => v.code === trimmed && v.active);
+    if (!voucher) {
+      this.voucherError.set(this.i18n.isVi() ? 'Mã giảm giá này không hợp lệ hoặc đã hết hạn!' : 'Invalid voucher code or expired!');
+      return;
+    }
+    const base = this.basePayableAmount();
+    if (base < voucher.minSpend) {
+      this.voucherError.set(
+        this.i18n.isVi()
+          ? `Đơn hàng cần tối thiểu ${voucher.minSpend.toLocaleString('vi-VN')}đ để dùng mã này.`
+          : `This code requires a minimum order of ${voucher.minSpend.toLocaleString('en-US')}đ.`,
+      );
+      return;
+    }
+    const discount = voucher.discountType === 'percentage' ? Math.round((base * voucher.value) / 100) : voucher.value;
+    this.voucherDiscount.set(discount);
+    this.appliedVoucher.set(voucher.code);
+    this.voucherError.set('');
+  }
+
+  removeVoucher(): void {
+    this.appliedVoucher.set(null);
+    this.voucherDiscount.set(0);
+    this.voucherCode.set('');
+    this.voucherError.set('');
+  }
+
+  /** Picking a voucher from the list fills the code in and applies it immediately. */
+  selectVoucher(code: string): void {
+    this.voucherCode.set(code);
+    this.applyVoucher();
+  }
 
   isItemSelected(key: string): boolean {
     return !this.deselectedKeys().includes(key);
@@ -38,6 +101,7 @@ export class CartService {
   clearSelectedItems(): void {
     this.items.update((items) => items.filter((item) => this.deselectedKeys().includes(cartKey(item))));
     this.deselectedKeys.set([]);
+    this.removeVoucher();
   }
 
   addItem(item: BookingCartItem): void {
@@ -99,6 +163,7 @@ export class CartService {
     const deselectedSnapshot = this.deselectedKeys();
     this.items.set([]);
     this.deselectedKeys.set([]);
+    this.removeVoucher();
     this.toast.showToast({
       type: 'info',
       title: this.i18n.isVi() ? 'Đã xóa giỏ hàng' : 'Cart cleared',
