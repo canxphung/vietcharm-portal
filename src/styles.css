@@ -1,12 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @source "./app/**/*.{html,ts}";
 
 @theme {
-  /* Font Family Overrides */
+  /* Font Family Overrides — all three families ship full Vietnamese diacritic
+     coverage. Playfair Display was dropped: its variable-font instance breaks
+     mark positioning for stacked Vietnamese tone marks (ề, ắ, ữ, …). */
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif: "Noto Serif Display", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Custom Palette for Natural Tones theme */
   --color-natural-bg: #FDFCF8;
