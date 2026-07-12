@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -20,11 +21,11 @@ import {
   LucideSparkles,
   LucideStar,
 } from '@lucide/angular';
-import { activitiesByProvince, attractionsByProvince, hotelsByProvince, provinces, vehicles } from '@/data';
 import { getProvinceHero } from '@/constants/provinceHero';
-import type { ViewableItem } from '@/types';
+import type { Activity, Attraction, Hotel, ViewableItem } from '@/types';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
+import { CatalogDataService } from '@/services/catalog-data';
 import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
 import { ToastService } from '@/services/toast.service';
@@ -83,11 +84,12 @@ export class ProvinceDetailComponent {
   readonly cart = inject(CartService);
   readonly auth = inject(AuthService);
   readonly catalog = inject(CatalogService);
+  private readonly catalogData = inject(CatalogDataService);
   private readonly toast = inject(ToastService);
 
   private readonly params = toSignal(this.route.paramMap);
   readonly provinceId = computed(() => this.params()?.get('provinceId') ?? 'quang-nam');
-  readonly province = computed(() => provinces.find((p) => p.id === this.provinceId()));
+  readonly province = computed(() => this.catalogData.provinces().find((p) => p.id === this.provinceId()));
   readonly hero = computed(() => getProvinceHero(this.provinceId()));
   readonly t = computed(() => this.i18n.dictionary());
 
@@ -123,9 +125,20 @@ export class ProvinceDetailComponent {
   readonly subEmail = signal('');
   readonly subscribed = signal(false);
 
-  readonly attractions = computed(() => attractionsByProvince[this.provinceId()] ?? []);
-  readonly hotels = computed(() => hotelsByProvince[this.provinceId()] ?? []);
-  readonly activities = computed(() => activitiesByProvince[this.provinceId()] ?? []);
+  private readonly attractionsRes = httpResource<Attraction[]>(
+    () => `/api/attractions?provinceId=${this.provinceId()}`,
+    { defaultValue: [] },
+  );
+  private readonly hotelsRes = httpResource<Hotel[]>(() => `/api/hotels?provinceId=${this.provinceId()}`, {
+    defaultValue: [],
+  });
+  private readonly activitiesRes = httpResource<Activity[]>(
+    () => `/api/activities?provinceId=${this.provinceId()}`,
+    { defaultValue: [] },
+  );
+  readonly attractions = computed(() => this.attractionsRes.value());
+  readonly hotels = computed(() => this.hotelsRes.value());
+  readonly activities = computed(() => this.activitiesRes.value());
 
   readonly provinceReviewId = computed(() => `province-${this.provinceId()}`);
   readonly reviews = computed<DetailReview[]>(() => {
@@ -153,8 +166,9 @@ export class ProvinceDetailComponent {
   });
   readonly filteredVehicles = computed(() => {
     const q = this.query();
-    if (!q) return vehicles;
-    return vehicles.filter((v) => `${v.name} ${v.specs}`.toLowerCase().includes(q));
+    const list = this.catalogData.vehicles();
+    if (!q) return list;
+    return list.filter((v) => `${v.name} ${v.specs}`.toLowerCase().includes(q));
   });
   readonly filteredActivities = computed(() => {
     const q = this.query();
@@ -277,7 +291,7 @@ export class ProvinceDetailComponent {
   addReview(): void {
     const comment = this.revComment().trim();
     if (!comment) return;
-    this.ui.requireAuth(() => {
+    this.ui.requireAuth(async () => {
       const user = this.auth.currentUser()!;
       if (!this.canReview()) {
         this.toast.showToast({
@@ -289,7 +303,7 @@ export class ProvinceDetailComponent {
         });
         return;
       }
-      const milestoneVoucher = this.catalog.addReview({
+      const milestoneVoucher = await this.catalog.addReview({
         id: `rev-${Date.now()}`,
         itemId: this.provinceReviewId(),
         itemName: this.province()?.name ?? this.provinceId(),

@@ -1,4 +1,4 @@
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -34,12 +34,10 @@ import {
   LucideUsersRound,
   LucideWaves,
 } from '@lucide/angular';
-import { provinces } from '@/data';
-import { PREDEFINED_COMBOS } from '@/constants/seed/tourCombos';
-import { TOURIST_LOCATIONS } from '@/constants/seed/touristLocations';
-import type { BookingCartItem, PartnershipApplication, ViewableItem } from '@/types';
+import type { BookingCartItem, PartnershipApplication, TouristLocation, ViewableItem } from '@/types';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
+import { CatalogDataService } from '@/services/catalog-data';
 import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
 import { ToastService } from '@/services/toast.service';
@@ -82,10 +80,12 @@ interface AIResponse {
   styleUrl: './taxi.component.css',
 })
 export class TaxiComponent {
-  readonly locations = TOURIST_LOCATIONS;
+  private readonly catalogData = inject(CatalogDataService);
+  private readonly fallbackLocation: TouristLocation = { id: '', name: '', lat: 0, lng: 0 };
+  readonly locations = this.catalogData.touristLocations;
   readonly today = new Date().toISOString().split('T')[0];
-  readonly pickup = signal(TOURIST_LOCATIONS[0].id);
-  readonly dropoff = signal(TOURIST_LOCATIONS[2].id);
+  readonly pickup = signal('dad-airport');
+  readonly dropoff = signal('hoian-ancient');
   readonly vehicleType = signal<'vios-4' | 'xpander-7' | 'sirius-moto'>('vios-4');
   readonly bookingDate = signal(new Date().toISOString().split('T')[0]);
   readonly bookingTime = signal('14:00');
@@ -93,8 +93,12 @@ export class TaxiComponent {
   readonly contactPhone = signal('');
   private contactPhoneEdited = false;
 
-  readonly pickupLoc = computed(() => this.locations.find((l) => l.id === this.pickup()) ?? this.locations[0]);
-  readonly dropoffLoc = computed(() => this.locations.find((l) => l.id === this.dropoff()) ?? this.locations[2]);
+  readonly pickupLoc = computed(
+    () => this.locations().find((l) => l.id === this.pickup()) ?? this.locations()[0] ?? this.fallbackLocation,
+  );
+  readonly dropoffLoc = computed(
+    () => this.locations().find((l) => l.id === this.dropoff()) ?? this.locations()[2] ?? this.fallbackLocation,
+  );
   readonly distance = computed(() => {
     const latDiff = this.pickupLoc().lat - this.dropoffLoc().lat;
     const lngDiff = this.pickupLoc().lng - this.dropoffLoc().lng;

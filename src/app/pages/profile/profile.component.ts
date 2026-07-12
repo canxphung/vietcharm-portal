@@ -178,8 +178,8 @@ export class ProfileComponent {
     );
   }
 
-  confirmReceived(booking: SystemBooking, it: BookingCartItem): void {
-    this.catalog.confirmItemReceived(booking.id, this.itemKey(it));
+  async confirmReceived(booking: SystemBooking, it: BookingCartItem): Promise<void> {
+    await this.catalog.confirmItemReceived(booking.id, this.itemKey(it));
     this.toast.showToast({
       type: 'success',
       title: this.i18n.isVi() ? 'Đã xác nhận nhận dịch vụ' : 'Receipt confirmed',
@@ -211,9 +211,9 @@ export class ProfileComponent {
     this.reportingKey.set(null);
   }
 
-  submitReport(user: UserAccount, booking: SystemBooking, it: BookingCartItem): void {
+  async submitReport(user: UserAccount, booking: SystemBooking, it: BookingCartItem): Promise<void> {
     if (!this.reportMessage().trim()) return;
-    this.catalog.addComplaint({
+    await this.catalog.addComplaint({
       id: `cmp-${Date.now()}`,
       bookingId: booking.id,
       itemId: it.id,
@@ -258,7 +258,7 @@ export class ProfileComponent {
     this.draftAvatar.set(`https://picsum.photos/id/${Math.floor(Math.random() * 1000)}/150/150`);
   }
 
-  save(user: UserAccount): void {
+  async save(user: UserAccount): Promise<void> {
     const nextUsername = this.draftUsername().trim() || user.username;
     const isTaken = this.auth
       .users()
@@ -268,7 +268,7 @@ export class ProfileComponent {
       return;
     }
     this.usernameError.set('');
-    this.auth.updateProfile({
+    await this.auth.updateProfile({
       ...user,
       fullName: this.draftFullName() || user.fullName,
       email: this.draftEmail() || user.email,

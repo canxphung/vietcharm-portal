@@ -1,21 +1,39 @@
-import { activitiesByProvince, attractionsByProvince, hotelsByProvince, provinces, vehicles } from '@/data';
-import type { ServiceTab } from '@/constants/views';
-import type { Province, ViewableItem } from '@/types';
+import { Injectable, computed } from '@angular/core';
+import { httpResource } from '@angular/common/http';
+import type { Activity, Attraction, Hotel, Province, TourCombo, TouristLocation, Vehicle, ViewableItem } from '@/types';
 
-export function provinceById(id: string): Province {
-  return provinces.find((province) => province.id === id) ?? provinces[0];
+/** Live catalog reference data (provinces, vehicles, tour combos, tourist locations) fetched once from the API and shared app-wide. */
+@Injectable({ providedIn: 'root' })
+export class CatalogDataService {
+  private readonly provincesRes = httpResource<Province[]>(() => '/api/provinces', { defaultValue: [] });
+  readonly provinces = computed(() => this.provincesRes.value());
+
+  private readonly vehiclesRes = httpResource<Vehicle[]>(() => '/api/vehicles', { defaultValue: [] });
+  readonly vehicles = computed(() => this.vehiclesRes.value());
+
+  private readonly tourCombosRes = httpResource<TourCombo[]>(() => '/api/tour-combos', { defaultValue: [] });
+  readonly tourCombos = computed(() => this.tourCombosRes.value());
+
+  private readonly touristLocationsRes = httpResource<TouristLocation[]>(() => '/api/tourist-locations', {
+    defaultValue: [],
+  });
+  readonly touristLocations = computed(() => this.touristLocationsRes.value());
+
+  provinceById(id: string): Province | undefined {
+    return this.provinces().find((province) => province.id === id) ?? this.provinces()[0];
+  }
 }
 
-export function attractionItems(provinceId: string): ViewableItem[] {
-  return (attractionsByProvince[provinceId] ?? []).map((item, index) => ({
+export function toAttractionItems(list: Attraction[]): ViewableItem[] {
+  return list.map((item, index) => ({
     ...item,
     type: 'attraction',
     price: index === 0 ? 120000 : 80000,
   }));
 }
 
-export function hotelItems(provinceId: string): ViewableItem[] {
-  return (hotelsByProvince[provinceId] ?? []).map((item) => ({
+export function toHotelItems(list: Hotel[]): ViewableItem[] {
+  return list.map((item) => ({
     id: item.id,
     type: 'hotel',
     name: item.name,
@@ -27,15 +45,12 @@ export function hotelItems(provinceId: string): ViewableItem[] {
   }));
 }
 
-export function activityItems(provinceId: string): ViewableItem[] {
-  return (activitiesByProvince[provinceId] ?? []).map((item) => ({
-    ...item,
-    type: 'activity',
-  }));
+export function toActivityItems(list: Activity[]): ViewableItem[] {
+  return list.map((item) => ({ ...item, type: 'activity' }));
 }
 
-export function vehicleItems(): ViewableItem[] {
-  return vehicles.map((item) => ({
+export function toVehicleItems(list: Vehicle[]): ViewableItem[] {
+  return list.map((item) => ({
     id: item.id,
     type: 'vehicle',
     name: item.name,
@@ -45,24 +60,4 @@ export function vehicleItems(): ViewableItem[] {
     specs: item.specs,
     rating: item.rating,
   }));
-}
-
-export function itemsForTab(tab: ServiceTab, provinceId: string): ViewableItem[] {
-  if (tab === 'hotels') return hotelItems(provinceId);
-  if (tab === 'vehicles') return vehicleItems();
-  if (tab === 'activities') return activityItems(provinceId);
-  return attractionItems(provinceId);
-}
-
-export function allProvinceItems(provinceId: string): ViewableItem[] {
-  return [
-    ...attractionItems(provinceId),
-    ...hotelItems(provinceId),
-    ...activityItems(provinceId),
-    ...vehicleItems().slice(0, 6),
-  ];
-}
-
-export function allCatalogItems(): ViewableItem[] {
-  return provinces.flatMap((province) => allProvinceItems(province.id));
 }

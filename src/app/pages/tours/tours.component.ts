@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -34,11 +34,9 @@ import {
   LucideUsersRound,
   LucideWaves,
 } from '@lucide/angular';
-import { provinces } from '@/data';
-import { PREDEFINED_COMBOS } from '@/constants/seed/tourCombos';
-import { TOURIST_LOCATIONS } from '@/constants/seed/touristLocations';
-import type { BookingCartItem, PartnershipApplication, ViewableItem } from '@/types';
+import type { BookingCartItem, PartnershipApplication, TourCombo, ViewableItem } from '@/types';
 import { CartService } from '@/services/cart.service';
+import { CatalogDataService } from '@/services/catalog-data';
 import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
 import { ToastService } from '@/services/toast.service';
@@ -81,14 +79,15 @@ interface AIResponse {
   styleUrl: './tours.component.css',
 })
 export class ToursComponent {
-  readonly combos = PREDEFINED_COMBOS;
+  private readonly catalogData = inject(CatalogDataService);
+  readonly combos = this.catalogData.tourCombos;
 
   constructor(
     readonly i18n: I18nService,
     readonly ui: UiStateService,
   ) {}
 
-  asItem(combo: (typeof PREDEFINED_COMBOS)[number]): ViewableItem {
+  asItem(combo: TourCombo): ViewableItem {
     return {
       id: combo.id,
       type: 'activity',
@@ -99,7 +98,7 @@ export class ToursComponent {
     };
   }
 
-  view(combo: (typeof PREDEFINED_COMBOS)[number]): void {
+  view(combo: TourCombo): void {
     this.ui.viewItem(this.asItem(combo));
   }
 }

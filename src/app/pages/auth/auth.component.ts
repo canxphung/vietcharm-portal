@@ -168,8 +168,8 @@ export class AuthComponent {
       createdAt: new Date().toISOString().split('T')[0],
     };
     this.successMsg.set(this.isVi() ? 'Tạo tài khoản thành công! Đang đưa bạn về trang chủ...' : 'Account created! Taking you home...');
-    setTimeout(() => {
-      this.auth.register(newUser);
+    setTimeout(async () => {
+      await this.auth.register(newUser);
       this.navigateHome();
     }, 800);
   }
@@ -189,8 +189,8 @@ export class AuthComponent {
       createdAt: new Date().toISOString().split('T')[0],
     };
     this.successMsg.set(this.isVi() ? `Đã liên kết với ${platform} thành công!` : `Authorized with ${platform}!`);
-    setTimeout(() => {
-      this.auth.register(socialUser);
+    setTimeout(async () => {
+      await this.auth.register(socialUser);
       this.navigateHome();
     }, 700);
   }
@@ -222,13 +222,14 @@ export class AuthComponent {
     this.successMsg.set(this.isVi() ? 'Xác minh thành công. Hãy đặt mật khẩu mới.' : 'Code verified. Choose a new password.');
   }
 
-  handleSaveNewPassword(): void {
+  async handleSaveNewPassword(): Promise<void> {
     this.errorMsg.set('');
     if (this.newPassword().trim().length < 6) {
       this.errorMsg.set(this.isVi() ? 'Mật khẩu mới phải từ 6 ký tự trở lên.' : 'Password must be at least 6 characters.');
       return;
     }
-    if (!this.auth.updatePasswordByEmail(this.forgotEmail(), this.newPassword().trim())) {
+    const updated = await this.auth.updatePasswordByEmail(this.forgotEmail(), this.newPassword().trim());
+    if (!updated) {
       this.errorMsg.set(this.isVi() ? 'Không tìm thấy tài khoản để cập nhật mật khẩu.' : 'No account found to update.');
       return;
     }

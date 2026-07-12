@@ -8,6 +8,14 @@ import hotelsRouter from './routes/hotels';
 import activitiesRouter from './routes/activities';
 import vehiclesRouter from './routes/vehicles';
 import reviewsRouter from './routes/reviews';
+import touristLocationsRouter from './routes/touristLocations';
+import tourCombosRouter from './routes/tourCombos';
+import usersRouter from './routes/users';
+import bookingsRouter from './routes/bookings';
+import vouchersRouter from './routes/vouchers';
+import partnershipsRouter from './routes/partnerships';
+import serviceReviewsRouter from './routes/serviceReviews';
+import complaintsRouter from './routes/complaints';
 
 /** Shared Express app mounted by both `server.ts` (standalone) and `api/[...catchall].ts` (Vercel). */
 export const app = express();
@@ -22,6 +30,14 @@ app.use('/api/hotels', hotelsRouter);
 app.use('/api/activities', activitiesRouter);
 app.use('/api/vehicles', vehiclesRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/tourist-locations', touristLocationsRouter);
+app.use('/api/tour-combos', tourCombosRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/bookings', bookingsRouter);
+app.use('/api/vouchers', vouchersRouter);
+app.use('/api/partnerships', partnershipsRouter);
+app.use('/api/service-reviews', serviceReviewsRouter);
+app.use('/api/complaints', complaintsRouter);
 
 app.post('/api/ai/itinerary', async (req, res) => {
   const { prompt, province = 'quang-nam', budget = 3000000, language = 'vi' } = req.body ?? {};

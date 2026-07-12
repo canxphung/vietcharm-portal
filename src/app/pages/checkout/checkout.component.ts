@@ -120,15 +120,15 @@ export class CheckoutComponent {
       idx++;
       if (idx < steps.length) this.loadingText.set(steps[idx]);
     }, 850);
-    setTimeout(() => {
+    setTimeout(async () => {
       if (this.loadingTimer) clearInterval(this.loadingTimer);
       this.paymentLoading.set(false);
-      this.finalizeBooking();
+      await this.finalizeBooking();
       this.step.set('success');
     }, 4500);
   }
 
-  private finalizeBooking(): void {
+  private async finalizeBooking(): Promise<void> {
     const user = this.auth.currentUser();
     const idLabel = this.isVi() ? 'CCCD thuê xe' : 'Rental ID';
     const idValue = this.vehicleIdNumber().trim();
@@ -137,7 +137,7 @@ export class CheckoutComponent {
         ? { ...item, details: item.details ? `${item.details} | ${idLabel}: ${idValue}` : `${idLabel}: ${idValue}` }
         : item,
     );
-    const booking = this.catalog.createBookingFromCart(
+    const booking = await this.catalog.createBookingFromCart(
       user?.email ?? '',
       user?.fullName ?? '',
       items,

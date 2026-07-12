@@ -12,6 +12,25 @@ export interface Province {
   tagline: string;
 }
 
+export interface TouristLocation {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+}
+
+export interface TourCombo {
+  id: string;
+  name: string;
+  image: string;
+  days: string;
+  price: number;
+  oldPrice: number;
+  includes: string[];
+  rating: number;
+  tag: string;
+}
+
 export interface Attraction {
   id: string;
   name: string;
