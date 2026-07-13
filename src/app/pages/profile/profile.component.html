@@ -40,6 +40,7 @@
                 </div>
                 <div><label class="mb-1 block text-xs font-bold uppercase text-stone-500">{{ i18n.isVi() ? 'Số điện thoại' : 'Phone' }}</label><input type="text" [ngModel]="draftPhone()" (ngModelChange)="draftPhone.set($event)" name="ph" class="w-full rounded-lg border border-natural-border bg-white px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-natural-accent" /></div>
                 <div><label class="mb-1 block text-xs font-bold uppercase text-stone-500">{{ i18n.isVi() ? 'Giới thiệu bản thân' : 'Biography' }}</label><textarea rows="3" [ngModel]="draftBio()" (ngModelChange)="draftBio.set($event)" name="bio" class="w-full rounded-lg border border-natural-border bg-white px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-natural-accent"></textarea></div>
+                @if (editError()) { <p class="rounded-lg border border-red-200 bg-red-50 p-2.5 text-[11px] font-semibold leading-relaxed text-red-700">{{ editError() }}</p> }
                 <button type="submit" class="w-full rounded-xl bg-natural-gold py-2.5 text-xs font-black uppercase tracking-wider text-natural-text transition hover:bg-natural-gold-dark">{{ i18n.isVi() ? 'Lưu thay đổi' : 'Save Changes' }}</button>
               </form>
             } @else {
