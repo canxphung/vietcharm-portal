@@ -7,6 +7,7 @@ export interface AttractionDocument {
   name: string;
   image: string;
   description: string;
+  discountPercent: number;
   rating: number;
   reviewsCount: string;
   lat: number;
@@ -20,6 +21,7 @@ const attractionSchema = new Schema<AttractionDocument>(
     name: { type: String, required: true },
     image: { type: String, required: true },
     description: { type: String, required: true },
+    discountPercent: { type: Number, min: 0, max: 90, default: 0 },
     rating: { type: Number, required: true },
     reviewsCount: { type: String, required: true },
     lat: { type: Number, required: true },

@@ -54,10 +54,15 @@ const GALLERY_FALLBACKS: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=80',
     'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=900&q=80',
   ],
-  vehicle: [
+  'vehicle-motorbike': [
     'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1524591652733-73fa1ae7b5ee?auto=format&fit=crop&w=900&q=80',
+  ],
+  'vehicle-car': [
     'https://images.unsplash.com/photo-1550355291-bbee04a92027?auto=format&fit=crop&w=900&q=80',
     'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=900&q=80',
+    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80',
   ],
   activity: [
     'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=900&q=80',
@@ -236,6 +241,8 @@ export class ItemDetailComponent {
 
   private modifier(): number {
     const p = this.selectedPackage();
+    const persistedModifier = this.ui.selectedItem()?.rentalPackages?.find((pkg) => pkg.key === p)?.priceModifier;
+    if (persistedModifier) return persistedModifier;
     return p === 'premium' ? 1.3 : p === 'luxury' ? 1.6 : 1.0;
   }
 
@@ -271,6 +278,41 @@ export class ItemDetailComponent {
 
   packages(): Array<{ key: PackageKey; name: string; desc: string; modifierLabel: string }> {
     const vi = this.isVi();
+    const item = this.ui.selectedItem();
+    if (item?.type === 'vehicle') {
+      if (item.rentalPackages?.length) {
+        return item.rentalPackages.map((pkg) => ({
+          key: pkg.key,
+          modifierLabel: pkg.priceModifier === 1 ? '100%' : `+${Math.round((pkg.priceModifier - 1) * 100)}%`,
+          name: vi ? pkg.nameVi : pkg.nameEn,
+          desc: vi ? pkg.descriptionVi : pkg.descriptionEn,
+        }));
+      }
+      const motorbike = this.isMotorbike(item);
+      return [
+        {
+          key: 'standard', modifierLabel: '100%',
+          name: vi ? 'Gói Tự Lái Tiêu Chuẩn' : 'Standard Self-drive',
+          desc: motorbike
+            ? (vi ? 'Xe đã kiểm tra, 2 mũ bảo hiểm, áo mưa, khóa chống trộm và bảo hiểm bắt buộc.' : 'Inspected bike, 2 helmets, raincoats, anti-theft lock, and compulsory insurance.')
+            : (vi ? 'Xe đã kiểm tra kỹ thuật, bảo hiểm bắt buộc và định mức 200 km/ngày.' : 'Fully inspected car, compulsory insurance, and 200 km/day allowance.'),
+        },
+        {
+          key: 'premium', modifierLabel: '+30%',
+          name: vi ? 'Gói Giao Nhận Tận Nơi' : 'Door-to-door Delivery',
+          desc: motorbike
+            ? (vi ? 'Giao và nhận xe trong Hội An, kèm giá đỡ điện thoại và hỗ trợ cứu hộ ưu tiên.' : 'Hoi An delivery and collection, phone holder, and priority roadside support.')
+            : (vi ? 'Giao và nhận xe tận nơi trong Hội An, thêm tài xế phụ và ghế trẻ em theo yêu cầu.' : 'Hoi An door-to-door delivery, an additional driver, and a child seat on request.'),
+        },
+        {
+          key: 'luxury', modifierLabel: '+60%',
+          name: vi ? 'Gói An Tâm Toàn Diện' : 'Complete Protection',
+          desc: vi
+            ? 'Bảo vệ thiệt hại mở rộng, giảm mức cọc, cứu hộ 24/7 và ưu tiên đổi xe khi có sự cố.'
+            : 'Extended damage cover, reduced deposit, 24/7 roadside assistance, and priority replacement vehicle.',
+        },
+      ];
+    }
     return [
       { key: 'standard', modifierLabel: '100%', name: vi ? 'Gói Tiêu Chuẩn (Cơ bản)' : 'Standard Package', desc: vi ? 'Dịch vụ tham quan cơ bản đầy đủ tiện ích và bảo hiểm du lịch.' : 'Full standard admission/service and complimentary travel insurance.' },
       { key: 'premium', modifierLabel: '+30%', name: vi ? 'Gói Cao Cấp (Premium VIP)' : 'Premium VIP Experience', desc: vi ? 'Có đưa đón riêng biệt, lối đi VIP không chờ đợi, tặng voucher ẩm thực 200k.' : 'Private pickup, VIP fast-track entry, 200k VND dining voucher included.' },
@@ -425,16 +467,32 @@ export class ItemDetailComponent {
   }
 
   gallery(item: ViewableItem): Array<{ src: string; label: string }> {
-    const fallback = GALLERY_FALLBACKS[item.type] ?? GALLERY_FALLBACKS['activity'];
-    const labels = this.isVi()
-      ? ['Góc nhìn chính', 'Không gian trải nghiệm', 'Chi tiết đáng chú ý', 'Khoảnh khắc nên thử']
-      : ['Main view', 'Experience space', 'Notable detail', 'Worth-trying moment'];
-    return [item.image, ...fallback].slice(0, 4).map((src, i) => ({ src, label: labels[i] }));
+    const galleryKey = item.type === 'vehicle'
+      ? `vehicle-${this.isMotorbike(item) ? 'motorbike' : 'car'}`
+      : item.type;
+    const fallback = GALLERY_FALLBACKS[galleryKey] ?? GALLERY_FALLBACKS['activity'];
+    const galleryImages = item.gallery?.length ? item.gallery : fallback;
+    const labels = item.type === 'vehicle'
+      ? (this.isVi()
+          ? ['Góc nhìn chính', 'Thiết kế xe', 'Trang bị đi kèm', 'Trải nghiệm vận hành']
+          : ['Main view', 'Vehicle design', 'Included equipment', 'Driving experience'])
+      : (this.isVi()
+          ? ['Góc nhìn chính', 'Không gian trải nghiệm', 'Chi tiết đáng chú ý', 'Khoảnh khắc nên thử']
+          : ['Main view', 'Experience space', 'Notable detail', 'Worth-trying moment']);
+    return [item.image, ...galleryImages].slice(0, 4).map((src, i) => ({ src, label: labels[i] }));
   }
 
   highlights(item: ViewableItem): string[] {
     if (item.highlights?.length) return item.highlights;
     const vi = this.isVi();
+    if (item.type === 'vehicle') {
+      return [
+        vi ? 'Xe được kiểm tra phanh, lốp, đèn và nhiên liệu trước khi bàn giao.' : 'Brakes, tires, lights, and fuel are checked before every handover.',
+        vi ? 'Điều khoản tiền cọc, nhiên liệu và giới hạn quãng đường được thông báo rõ ràng.' : 'Deposit, fuel, and mileage terms are clearly disclosed.',
+        vi ? 'Hỗ trợ cứu hộ 24/7 và đổi xe nếu phát sinh lỗi kỹ thuật từ nhà cung cấp.' : '24/7 roadside assistance and replacement for provider-side technical faults.',
+        vi ? 'Miễn phí thay đổi thời gian nhận xe trước 24 giờ.' : 'Free pickup-time changes up to 24 hours in advance.',
+      ];
+    }
     return [
       vi ? 'Đội ngũ hỗ trợ chuyên nghiệp sẵn sàng 24/7 phục vụ quý khách.' : '24/7 Professional support staff ready to assist you.',
       vi ? 'Bao gồm bảo hiểm lữ hành toàn diện theo chuẩn quốc tế.' : 'Comprehensive international standard travel insurance included.',
@@ -445,6 +503,14 @@ export class ItemDetailComponent {
 
   quickFacts(item: ViewableItem): Array<{ icon: string; label: string; value: string }> {
     const vi = this.isVi();
+    if (item.type === 'vehicle') {
+      return [
+        { icon: 'clock', label: vi ? 'Thời gian thuê' : 'Rental duration', value: vi ? `${this.nights()} ngày, có thể gia hạn` : `${this.nights()} days, extendable` },
+        { icon: 'map', label: vi ? 'Giao nhận xe' : 'Pickup & return', value: vi ? 'Chọn điểm nhận và trả linh hoạt' : 'Flexible pickup and return points' },
+        { icon: 'shield', label: vi ? 'Thủ tục' : 'Requirements', value: vi ? 'GPLX phù hợp và tiền cọc' : 'Valid license and security deposit' },
+        { icon: 'sparkles', label: vi ? 'Bao gồm' : 'Included', value: this.isMotorbike(item) ? (vi ? '2 mũ bảo hiểm và khóa xe' : '2 helmets and bike lock') : (vi ? 'Bảo hiểm bắt buộc và cứu hộ' : 'Compulsory insurance and roadside support') },
+      ];
+    }
     return [
       { icon: 'clock', label: vi ? 'Thời lượng' : 'Duration', value: item.type === 'hotel' ? (vi ? `${this.nights()} đêm lưu trú` : `${this.nights()} night stay`) : item.duration || (vi ? 'Linh hoạt theo lịch' : 'Flexible timing') },
       { icon: 'map', label: vi ? 'Di chuyển' : 'Getting there', value: item.distance ? (vi ? `Cách trung tâm ${item.distance}` : `${item.distance} from center`) : vi ? 'Dễ ghép vào tuyến đang chọn' : 'Easy to add to the selected route' },
@@ -458,5 +524,10 @@ export class ItemDetailComponent {
     if (item.type === 'hotel') return [vi ? 'Thêm xe đưa đón sân bay để ngày đầu nhẹ hơn.' : 'Add an airport transfer to make day one easier.', vi ? 'Ghép một hoạt động buổi chiều gần khách sạn.' : 'Pair it with a nearby afternoon experience.'];
     if (item.type === 'vehicle') return [vi ? 'Chọn khách sạn cùng khu để tối ưu giờ nhận xe.' : 'Choose a stay in the same area to simplify pickup.', vi ? 'Thêm điểm dừng ăn uống địa phương trên tuyến.' : 'Add a local food stop along the route.'];
     return [vi ? 'Ghép khách sạn gần điểm khởi hành để không vội buổi sáng.' : 'Pair with a stay near the pickup point.', vi ? 'Thêm xe riêng nếu đi gia đình hoặc nhóm đông.' : 'Add private transport for families or larger groups.'];
+  }
+
+  isMotorbike(item: ViewableItem): boolean {
+    if (item.vehicleType) return item.vehicleType === 'motorbike';
+    return /xe máy|motorbike|motorcycle|scooter|yamaha|honda|sirius|vision|airblade|exciter/i.test(item.name);
   }
 }

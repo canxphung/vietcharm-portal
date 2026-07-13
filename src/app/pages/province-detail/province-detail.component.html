@@ -170,11 +170,12 @@
                       <img [src]="hotel.image" [alt]="hotel.name" class="h-full w-full object-cover transition hover:scale-105" />
                       <button type="button" class="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-natural-border bg-natural-bg/95 shadow-sm backdrop-blur-md transition hover:scale-110" (click)="$event.stopPropagation(); ui.toggleFavorite(hotelItem(hotel))"><svg lucideHeart class="h-4 w-4 transition duration-200" [class.text-rose-600]="ui.isFavorite(hotel.id)" [class.fill-rose-600]="ui.isFavorite(hotel.id)" [class.text-stone-400]="!ui.isFavorite(hotel.id)"></svg></button>
                       <div class="absolute right-3 top-3 flex items-center gap-0.5 rounded-lg border border-natural-border bg-natural-bg/95 px-2 py-0.5 text-[10px] font-bold text-natural-text shadow-sm backdrop-blur-md"><svg lucideStar class="h-3.5 w-3.5 fill-natural-gold stroke-natural-gold"></svg><span>{{ hotel.rating }}</span></div>
+                      @if (hotel.discountPercent) { <span class="absolute bottom-3 right-3 rounded-lg bg-rose-600 px-2.5 py-1 text-xs font-black text-white shadow-md">-{{ hotel.discountPercent }}%</span> }
                     </div>
                     <div class="flex flex-1 flex-col justify-between space-y-3 p-4">
                       <div><h4 class="line-clamp-2 min-h-[40px] font-serif text-sm font-bold leading-snug tracking-tight text-natural-text">{{ hotel.name }}</h4><p class="mt-1 line-clamp-2 min-h-[32px] text-[11px] text-natural-text/80">{{ hotel.description }}</p></div>
                       <div class="flex items-center justify-between border-t border-natural-border pt-2">
-                        <div><span class="mb-0.5 block text-[10px] font-bold uppercase text-natural-accent">{{ i18n.isVi() ? 'GIÁ CHỈ TỪ' : 'FROM ONLY' }}</span><span class="font-mono text-sm font-black text-natural-accent">{{ hotel.pricePerNight | number : '1.0-0' }}đ</span><span class="text-[10px] text-natural-text/60">{{ t().perNight }}</span></div>
+                        <div><span class="mb-0.5 block text-[10px] font-bold uppercase text-natural-accent">{{ i18n.isVi() ? 'GIÁ CHỈ TỪ' : 'FROM ONLY' }}</span>@if (hotel.discountPercent) { <span class="mr-1 text-[10px] text-stone-400 line-through">{{ hotel.pricePerNight | number : '1.0-0' }}đ</span> }<span class="font-mono text-sm font-black" [class.text-rose-600]="hotel.discountPercent" [class.text-natural-accent]="!hotel.discountPercent">{{ salePrice(hotel.pricePerNight, hotel.discountPercent) | number : '1.0-0' }}đ</span><span class="text-[10px] text-natural-text/60">{{ t().perNight }}</span></div>
                         @if (cart.isInCart(hotel.id)) {
                           <button type="button" class="flex items-center gap-1 rounded-xl border border-natural-border bg-natural-beige px-3 py-1.5 text-[11px] font-bold text-natural-text transition hover:bg-natural-border" (click)="$event.stopPropagation(); cart.removeItem(hotel.id)"><svg lucideCheckCircle2 class="h-3.5 w-3.5 text-emerald-600"></svg><span>{{ i18n.isVi() ? 'Đã thêm' : 'In Bundle' }}</span></button>
                         } @else {
@@ -200,12 +201,13 @@
                   <div class="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-natural-beige">
                     <img [src]="veh.image" [alt]="veh.name" class="h-full w-full object-cover" />
                     <button type="button" class="absolute left-1 top-1 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-white/95 shadow-sm transition hover:scale-110" (click)="$event.stopPropagation(); ui.toggleFavorite(vehicleItem(veh))"><svg lucideHeart class="h-3.5 w-3.5 transition duration-200" [class.text-rose-600]="ui.isFavorite(veh.id)" [class.fill-rose-600]="ui.isFavorite(veh.id)" [class.text-stone-400]="!ui.isFavorite(veh.id)"></svg></button>
+                    @if (veh.discountPercent) { <span class="absolute right-1 top-1 rounded-md bg-rose-600 px-1.5 py-0.5 text-[9px] font-black text-white">-{{ veh.discountPercent }}%</span> }
                     <div class="absolute bottom-1 right-1 rounded-full bg-black/70 p-1 text-white">@if (veh.type === 'motorbike') { <svg lucideBike class="h-3.5 w-3.5"></svg> } @else { <svg lucideCar class="h-3.5 w-3.5"></svg> }</div>
                   </div>
                   <div class="flex flex-1 flex-col justify-between space-y-2">
                     <div><h4 class="font-serif text-xs font-bold leading-snug tracking-tight text-natural-text md:text-sm">{{ veh.name }}</h4><p class="line-clamp-1 text-[10px] leading-relaxed text-natural-text/75">{{ veh.specs }}</p></div>
                     <div class="flex items-center justify-between border-t border-natural-border pt-1">
-                      <div><span class="font-mono text-xs font-bold text-natural-accent">{{ veh.pricePerDay | number : '1.0-0' }}đ</span><span class="text-[10px] text-natural-text/60">/{{ i18n.isVi() ? 'ngày' : 'day' }}</span></div>
+                      <div>@if (veh.discountPercent) { <span class="mr-1 text-[9px] text-stone-400 line-through">{{ veh.pricePerDay | number : '1.0-0' }}đ</span> }<span class="font-mono text-xs font-bold" [class.text-rose-600]="veh.discountPercent" [class.text-natural-accent]="!veh.discountPercent">{{ salePrice(veh.pricePerDay, veh.discountPercent) | number : '1.0-0' }}đ</span><span class="text-[10px] text-natural-text/60">/{{ i18n.isVi() ? 'ngày' : 'day' }}</span></div>
                       @if (cart.isInCart(veh.id)) {
                         <button type="button" class="rounded-lg border border-natural-border bg-natural-beige px-2.5 py-1.5 text-[10px] font-bold text-natural-text transition hover:bg-natural-border" (click)="$event.stopPropagation(); cart.removeItem(veh.id)">{{ i18n.isVi() ? 'Bỏ chọn' : 'Remove' }}</button>
                       } @else {
@@ -251,11 +253,12 @@
                       <img [src]="act.image" [alt]="act.name" class="h-full w-full object-cover transition hover:scale-105" />
                       <button type="button" class="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/95 shadow-sm transition hover:scale-110" (click)="$event.stopPropagation(); ui.toggleFavorite(activityItem(act))"><svg lucideHeart class="h-3.5 w-3.5 transition duration-200" [class.text-rose-600]="ui.isFavorite(act.id)" [class.fill-rose-600]="ui.isFavorite(act.id)" [class.text-stone-400]="!ui.isFavorite(act.id)"></svg></button>
                       <div class="absolute right-2 top-2 flex items-center gap-0.5 rounded bg-black/50 px-1.5 py-0.5 text-[9px] font-bold text-white"><svg lucideStar class="h-3 w-3 fill-amber-400 stroke-amber-400"></svg><span>{{ act.rating }}</span></div>
+                      @if (act.discountPercent) { <span class="absolute bottom-2 right-2 rounded-md bg-rose-600 px-2 py-0.5 text-[10px] font-black text-white">-{{ act.discountPercent }}%</span> }
                     </div>
                     <div class="flex flex-1 flex-col justify-between space-y-2 p-3">
                       <h4 class="line-clamp-2 min-h-[34px] font-serif text-xs font-bold leading-snug tracking-tight text-natural-text">{{ act.name }}</h4>
                       <div class="flex items-center justify-between border-t border-natural-border pt-2">
-                        <div><span class="font-mono text-xs font-bold text-natural-accent">{{ act.price | number : '1.0-0' }}đ</span></div>
+                        <div>@if (act.discountPercent) { <span class="mr-1 text-[9px] text-stone-400 line-through">{{ act.price | number : '1.0-0' }}đ</span> }<span class="font-mono text-xs font-bold" [class.text-rose-600]="act.discountPercent" [class.text-natural-accent]="!act.discountPercent">{{ salePrice(act.price, act.discountPercent) | number : '1.0-0' }}đ</span></div>
                         <button type="button" class="rounded-lg bg-natural-accent px-2.5 py-1 text-[10px] font-bold text-white shadow-xs transition hover:bg-natural-olive" (click)="$event.stopPropagation(); ui.viewItem(activityItem(act))">{{ i18n.isVi() ? 'Xem' : 'View' }}</button>
                       </div>
                     </div>

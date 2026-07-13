@@ -7,6 +7,7 @@ export interface ActivityDocument {
   name: string;
   image: string;
   price: number;
+  discountPercent: number;
   description: string;
   rating: number;
   reviewsCount: string;
@@ -21,6 +22,7 @@ const activitySchema = new Schema<ActivityDocument>(
     name: { type: String, required: true },
     image: { type: String, required: true },
     price: { type: Number, required: true },
+    discountPercent: { type: Number, min: 0, max: 90, default: 0 },
     description: { type: String, required: true },
     rating: { type: Number, required: true },
     reviewsCount: { type: String, required: true },

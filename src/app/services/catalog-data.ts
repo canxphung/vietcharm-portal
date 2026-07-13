@@ -1,6 +1,7 @@
 import { Injectable, computed } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import type { Activity, Attraction, Hotel, Province, TourCombo, TouristLocation, Vehicle, ViewableItem } from '@/types';
+import { withDiscountPricing } from '@/utils/hot-deals';
 
 /** Live catalog reference data (provinces, vehicles, tour combos, tourist locations) fetched once from the API and shared app-wide. */
 @Injectable({ providedIn: 'root' })
@@ -25,7 +26,7 @@ export class CatalogDataService {
 }
 
 export function toAttractionItems(list: Attraction[]): ViewableItem[] {
-  return list.map((item, index) => ({
+  return list.map((item, index) => withDiscountPricing({
     ...item,
     type: 'attraction',
     price: index === 0 ? 120000 : 80000,
@@ -33,12 +34,14 @@ export function toAttractionItems(list: Attraction[]): ViewableItem[] {
 }
 
 export function toHotelItems(list: Hotel[]): ViewableItem[] {
-  return list.map((item) => ({
+  return list.map((item) => withDiscountPricing({
     id: item.id,
+    provinceId: item.provinceId,
     type: 'hotel',
     name: item.name,
     image: item.image,
     price: item.pricePerNight,
+    discountPercent: item.discountPercent,
     description: item.description,
     rating: item.rating,
     reviewsCount: item.reviewsCount,
@@ -46,19 +49,22 @@ export function toHotelItems(list: Hotel[]): ViewableItem[] {
 }
 
 export function toActivityItems(list: Activity[]): ViewableItem[] {
-  return list.map((item) => ({ ...item, type: 'activity' }));
+  return list.map((item) => withDiscountPricing({ ...item, type: 'activity' }));
 }
 
 export function toVehicleItems(list: Vehicle[]): ViewableItem[] {
-  return list.map((item) => ({
+  return list.map((item) => withDiscountPricing({
     id: item.id,
     type: 'vehicle',
     name: item.name,
     image: item.image,
+    gallery: item.gallery,
     price: item.pricePerDay,
+    discountPercent: item.discountPercent,
     description: item.specs,
     specs: item.specs,
     rating: item.rating,
     vehicleType: item.type,
+    rentalPackages: item.rentalPackages,
   }));
 }

@@ -34,10 +34,13 @@
             </div>
             <ul class="space-y-2.5 text-xs">
               <li><button type="button" class="foot-link" (click)="ui.selectProvince('quang-nam')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Khám phá Hội An' : 'Explore Hoi An' }}</span></button></li>
+              <li><a routerLink="/nearby-places" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Địa điểm lân cận' : 'Nearby Places' }}</span></a></li>
               <li><button type="button" class="foot-link" (click)="ui.openAllServices('hotels')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Khách sạn' : 'Hotels' }}</span></button></li>
-              <li><button type="button" class="foot-link" (click)="ui.openAllServices('vehicles')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Thuê xe' : 'Car Rental' }}</span></button></li>
+              <li><button type="button" class="foot-link" (click)="ui.openAllServices('vehicles')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Phương tiện di chuyển' : 'Transportation' }}</span></button></li>
               <li><button type="button" class="foot-link" (click)="ui.openAllServices('activities')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hoạt động & vui chơi' : 'Experiences & Tours' }}</span></button></li>
-              <li><a routerLink="/tours" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Combo tiết kiệm' : 'Saver Combos' }}</span></a></li>
+              <li><a routerLink="/tours" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Khuyến mãi & ưu đãi' : 'Promotions & Deals' }}</span></a></li>
+              <li><a routerLink="/trip-room" class="foot-link"><span class="arrow">›</span><span>Trip Room</span></a></li>
+              <li><a routerLink="/blind-travel" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hành trình ẩn số' : 'Blind Travel' }}</span></a></li>
               <li><a routerLink="/handbook" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Cẩm nang du lịch' : 'Travel Handbook' }}</span></a></li>
             </ul>
           </div>

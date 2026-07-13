@@ -17,6 +17,9 @@ import partnershipsRouter from './routes/partnerships';
 import serviceReviewsRouter from './routes/serviceReviews';
 import complaintsRouter from './routes/complaints';
 import tripRoomsRouter from './routes/tripRooms';
+import handbookEntriesRouter from './routes/handbookEntries';
+import nearbyPlacesRouter from './routes/nearbyPlaces';
+import supportPagesRouter from './routes/supportPages';
 
 /** Shared Express app mounted by both `server.ts` (standalone) and `api/[...catchall].ts` (Vercel). */
 export const app = express();
@@ -40,6 +43,9 @@ app.use('/api/partnerships', partnershipsRouter);
 app.use('/api/service-reviews', serviceReviewsRouter);
 app.use('/api/complaints', complaintsRouter);
 app.use('/api/trip-rooms', tripRoomsRouter);
+app.use('/api/handbook-entries', handbookEntriesRouter);
+app.use('/api/nearby-places', nearbyPlacesRouter);
+app.use('/api/support-pages', supportPagesRouter);
 
 app.post('/api/itinerary', async (req, res) => {
   const { province = 'quang-nam', budget = 3000000, language = 'vi' } = req.body ?? {};

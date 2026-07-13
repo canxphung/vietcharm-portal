@@ -19,6 +19,88 @@ export interface TouristLocation {
   lng: number;
 }
 
+export interface HandbookEntry {
+  id: string;
+  order: number;
+  labelVi: string;
+  labelEn: string;
+  titleVi: string;
+  titleEn: string;
+  image: string;
+  paragraphsVi: string[];
+  paragraphsEn: string[];
+}
+
+export interface NearbyPlaceReview {
+  id: string;
+  author: string;
+  avatar: string;
+  rating: number;
+  date: string;
+  comment: string;
+}
+
+export interface NearbyPlace {
+  id: string;
+  order: number;
+  nameVi: string;
+  nameEn: string;
+  categoryVi: string;
+  categoryEn: string;
+  descriptionVi: string;
+  descriptionEn: string;
+  distance: string;
+  duration: string;
+  coordinates: { x: number; y: number };
+  images: string[];
+  reviews: NearbyPlaceReview[];
+  rating: number;
+  totalReviews: number;
+  historyVi: string;
+  historyEn: string;
+}
+
+export type SupportTopicId =
+  | 'help'
+  | 'faq'
+  | 'booking-guide'
+  | 'refund'
+  | 'terms'
+  | 'privacy'
+  | 'about'
+  | 'careers'
+  | 'partners'
+  | 'blog'
+  | 'contact';
+
+export interface SupportSection {
+  headingVi: string;
+  headingEn: string;
+  bodyVi: string;
+  bodyEn: string;
+}
+
+export interface SupportFaqEntry {
+  qVi: string;
+  qEn: string;
+  aVi: string;
+  aEn: string;
+}
+
+export interface SupportTopic {
+  id: SupportTopicId;
+  order: number;
+  group: 'support' | 'about';
+  groupVi: string;
+  groupEn: string;
+  titleVi: string;
+  titleEn: string;
+  introVi: string;
+  introEn: string;
+  sections: SupportSection[];
+  faqs: SupportFaqEntry[];
+}
+
 export interface TourCombo {
   id: string;
   name: string;
@@ -33,9 +115,11 @@ export interface TourCombo {
 
 export interface Attraction {
   id: string;
+  provinceId?: string;
   name: string;
   image: string;
   description: string;
+  discountPercent?: number;
   rating: number;
   reviewsCount: string;
   lat: number;
@@ -44,11 +128,13 @@ export interface Attraction {
 
 export interface Hotel {
   id: string;
+  provinceId?: string;
   name: string;
   image: string;
   rating: number;
   reviewsCount: string;
   pricePerNight: number;
+  discountPercent?: number;
   description: string;
   lat: number;
   lng: number;
@@ -56,9 +142,11 @@ export interface Hotel {
 
 export interface Activity {
   id: string;
+  provinceId?: string;
   name: string;
   image: string;
   price: number;
+  discountPercent?: number;
   description: string;
   rating: number;
   reviewsCount: string;
@@ -66,14 +154,26 @@ export interface Activity {
   lng: number;
 }
 
+export interface VehicleRentalPackage {
+  key: 'standard' | 'premium' | 'luxury';
+  priceModifier: number;
+  nameVi: string;
+  nameEn: string;
+  descriptionVi: string;
+  descriptionEn: string;
+}
+
 export interface Vehicle {
   id: string;
   name: string;
   type: 'motorbike' | 'car';
   pricePerDay: number;
+  discountPercent?: number;
   image: string;
+  gallery?: string[];
   specs: string;
   rating: number;
+  rentalPackages?: VehicleRentalPackage[];
 }
 
 export interface BookingCartItem {
@@ -117,16 +217,21 @@ export interface Review {
 /** A lightweight item that can be previewed, favorited, or shown in "recently viewed". */
 export interface ViewableItem {
   id: string;
+  provinceId?: string;
   type: string;
   name: string;
   image: string;
   price: number;
+  originalPrice?: number;
+  discountPercent?: number;
   description?: string;
   timestamp?: number;
   rating?: number;
   reviewsCount?: string;
   specs?: string;
   vehicleType?: 'motorbike' | 'car';
+  gallery?: string[];
+  rentalPackages?: VehicleRentalPackage[];
   inclusions?: string[];
   duration?: string;
   distance?: string;
