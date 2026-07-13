@@ -1,156 +1,383 @@
-    <main class="py-8 md:py-10">
-      <div class="mx-auto max-w-6xl px-4">
-        @if (step() === 'review') {
-          <div class="mb-6 space-y-2">
-            <a routerLink="/cart" class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-natural-accent transition hover:text-natural-olive">
-              <svg lucideArrowLeft class="h-4 w-4"></svg><span>{{ isVi() ? 'Quay lại giỏ hàng' : 'Back to cart' }}</span>
-            </a>
-            <h1 class="text-3xl font-black tracking-tight text-natural-ink md:text-4xl">{{ isVi() ? 'Thanh toán' : 'Checkout' }}</h1>
-            <p class="max-w-2xl text-sm leading-relaxed text-stone-500">{{ isVi() ? 'Kiểm tra chi tiết đơn hàng, áp dụng mã giảm giá và chọn phương thức thanh toán để hoàn tất đặt chỗ.' : 'Review your order details, apply a promo code, and choose a payment method to complete your booking.' }}</p>
-          </div>
-
-          @if (paymentLoading()) {
-            <div class="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-white/95 p-6 text-center backdrop-blur-xs">
-              <div class="relative h-14 w-14">
-                <div class="h-14 w-14 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
-                <svg lucideLock class="absolute inset-0 m-auto h-5 w-5 animate-pulse text-emerald-500"></svg>
-              </div>
-              <h4 class="mt-6 text-sm font-black text-stone-900">{{ isVi() ? 'Đang xử lý thanh toán...' : 'Processing payment...' }}</h4>
-              <p class="mt-2 max-w-sm whitespace-pre-wrap font-mono text-xs leading-relaxed text-stone-500">{{ loadingText() }}</p>
-            </div>
-          }
-
-          <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-            <!-- Order summary -->
-            <section class="space-y-4">
-              <div class="rounded-2xl border border-natural-border bg-white p-5 shadow-xs">
-                <h2 class="mb-4 text-sm font-black uppercase tracking-wider text-natural-ink">{{ isVi() ? 'Chi tiết đơn hàng' : 'Order details' }}</h2>
-                @if (items().length === 0) {
-                  <div class="space-y-3 py-8 text-center">
-                    <svg lucideTicket class="mx-auto h-10 w-10 text-stone-300"></svg>
-                    <p class="text-xs text-stone-500">{{ isVi() ? 'Không có dịch vụ nào được chọn.' : 'No selected services.' }}</p>
-                  </div>
-                } @else {
-                  <ul class="space-y-3">
-                    @for (item of items(); track item.cartKey || item.id) {
-                      <li class="flex items-center gap-3 rounded-xl border border-stone-150 bg-stone-50 p-3">
-                        <img [src]="item.image" [alt]="item.name" class="h-14 w-14 shrink-0 rounded-lg border border-stone-200 object-cover" />
-                        <div class="min-w-0 flex-1">
-                          <h5 class="line-clamp-1 text-sm font-bold text-stone-900">{{ item.name }}</h5>
-                          @if (item.details) { <p class="mt-0.5 line-clamp-1 text-[11px] text-stone-500">{{ item.details }}</p> }
-                          <span class="mt-1 inline-block rounded bg-amber-100/50 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-natural-bronze">x{{ item.quantity }}</span>
-                        </div>
-                        <span class="shrink-0 font-mono text-xs font-bold text-stone-800">{{ item.price * item.quantity | number : '1.0-0' }} đ</span>
-                      </li>
-                    }
-                  </ul>
-                }
-              </div>
-
-              <div class="flex gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-xs leading-relaxed text-emerald-800">
-                <svg lucideCheckCircle2 class="h-5 w-5 shrink-0 text-emerald-600"></svg>
-                <p>{{ isVi() ? 'Sau khi thanh toán thành công, mã đặt chỗ và chi tiết dịch vụ sẽ xuất hiện trên phiếu xác nhận và trong hồ sơ của bạn.' : 'After successful payment, your booking code and service details will appear on the confirmation ticket and in your profile.' }}</p>
-              </div>
-            </section>
-
-            <!-- Payment panel -->
-            <aside class="h-fit space-y-4 rounded-2xl border border-natural-border bg-white p-5 shadow-xs lg:sticky lg:top-32">
-              <!-- Voucher -->
-              <app-voucher-picker />
-
-              <!-- Pricing summary -->
-              <div class="space-y-1.5 rounded-2xl border border-amber-200/50 bg-amber-500/5 p-4 text-xs font-medium">
-                <div class="flex justify-between"><span class="text-stone-500">{{ isVi() ? 'Tổng tiền gốc' : 'Subtotal' }}</span><span class="font-mono font-bold" [class.line-through]="isBundleEligible()">{{ totalCost() | number : '1.0-0' }} đ</span></div>
-                @if (isBundleEligible()) {
-                  <div class="flex justify-between font-bold text-emerald-600">
-                    <span>{{ isVi() ? 'Ưu đãi combo (15%)' : 'Bundle savings (15%)' }}</span>
-                    <span class="font-mono">-{{ discountAmount() | number : '1.0-0' }} đ</span>
-                  </div>
-                }
-                @if (voucherDiscount() > 0) { <div class="flex justify-between font-extrabold text-emerald-700"><span>{{ isVi() ? 'Mã voucher' : 'Voucher' }}</span><span class="font-mono">-{{ voucherDiscount() | number : '1.0-0' }} đ</span></div> }
-                <div class="flex items-center justify-between border-t border-amber-200/50 pt-2">
-                  <span class="text-[10px] font-bold uppercase text-stone-500">{{ isVi() ? 'CẦN THANH TOÁN' : 'PAYABLE TOTAL' }}</span>
-                  <span class="font-mono text-xl font-black text-natural-bronze">{{ payableAmount() | number : '1.0-0' }} đ</span>
-                </div>
-              </div>
-
-              <!-- Gateway -->
-              <div class="grid grid-cols-3 gap-2">
-                <button type="button" [class]="gatewayClass('visa')" (click)="gateway.set('visa')"><svg lucideCreditCard class="h-5 w-5 text-amber-700"></svg><span class="text-[10px] font-bold">Thẻ Quốc Tế</span></button>
-                <button type="button" [class]="gatewayClass('vnpay')" (click)="gateway.set('vnpay')"><svg lucideQrCode class="h-5 w-5 text-blue-700"></svg><span class="text-[10px] font-bold">VNPAY QR</span></button>
-                <button type="button" [class]="gatewayClass('momo')" (click)="gateway.set('momo')"><svg lucideSmartphone class="h-5 w-5 text-pink-700"></svg><span class="text-[10px] font-bold">Ví MoMo</span></button>
-              </div>
-
-              <form class="space-y-3" (ngSubmit)="submitPayment()">
-                @if (gateway() === 'visa') {
-                  <div class="space-y-2.5">
-                    <div>
-                      <label class="mb-1 block text-[11px] font-bold text-stone-600">{{ isVi() ? 'Số thẻ Visa / Mastercard / JCB' : 'Credit Card Number' }}</label>
-                      <input type="text" [ngModel]="cardNo()" (ngModelChange)="onCardNo($event)" name="cardNo" placeholder="4221 0953 8412 5593" required class="w-full rounded border border-stone-300 px-3 py-2 text-xs outline-none focus:border-amber-400" />
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                      <div><label class="mb-1 block text-[11px] font-bold text-stone-600">{{ isVi() ? 'Ngày hết hạn' : 'Expiration date' }}</label><input type="text" name="exp" placeholder="12/28" required class="w-full rounded border border-stone-300 px-3 py-2 text-center text-xs outline-none focus:border-amber-400" /></div>
-                      <div><label class="mb-1 block text-[11px] font-bold text-stone-600">CVC / CVV</label><input type="password" name="cvc" placeholder="***" maxlength="3" required class="w-full rounded border border-stone-300 px-3 py-2 text-center text-xs outline-none focus:border-amber-400" /></div>
-                    </div>
-                    <div><label class="mb-1 block text-[11px] font-bold text-stone-600">{{ isVi() ? 'Chủ tài khoản (Không dấu)' : 'Cardholder Name' }}</label><input type="text" [ngModel]="cardHolder()" (ngModelChange)="cardHolder.set($event.toUpperCase())" name="holder" placeholder="NGUYEN VAN A" required class="w-full rounded border border-stone-300 px-3 py-2 text-xs outline-none focus:border-amber-400" /></div>
-                  </div>
-                } @else {
-                  <div class="space-y-2 rounded-xl border border-stone-150 bg-stone-50 py-4 text-center">
-                    <svg lucideSmartphone class="mx-auto h-8 w-8 animate-bounce text-natural-bronze"></svg>
-                    <h5 class="text-xs font-bold text-stone-900">{{ isVi() ? 'Cổng quét QR chuyển khoản tức thì' : 'Instant Scan Code Dispatch' }}</h5>
-                    <p class="mx-auto max-w-sm text-[11px] leading-relaxed text-stone-500">{{ isVi() ? 'Sau khi xác nhận, VietCharm sẽ tạo mã QR để bạn tiếp tục thanh toán bằng ứng dụng đã chọn.' : 'After confirmation, VietCharm will generate a QR code for your selected payment app.' }}</p>
-                  </div>
-                }
-
-                @if (hasVehicleItem()) {
-                  <div class="space-y-1.5 rounded-xl border border-amber-200 bg-amber-50/50 p-3">
-                    <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-700">{{ isVi() ? 'Số CCCD/CMND (bắt buộc để thuê xe)' : 'ID Card Number (required to rent a vehicle)' }}</label>
-                    <input type="text" [ngModel]="vehicleIdNumber()" (ngModelChange)="onVehicleIdInput($event)" name="vehicleId" [placeholder]="isVi() ? 'VD: 012345678901' : 'e.g. 012345678901'" class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-bold text-stone-700 outline-none focus:border-natural-accent" />
-                    <p class="text-[10px] leading-relaxed text-amber-800">{{ isVi() ? 'VietCharm giữ thông tin CCCD làm căn cứ giao nhận xe, không dùng cho mục đích khác.' : 'VietCharm keeps your ID on file only to verify vehicle hand-over, never for other purposes.' }}</p>
-                    @if (vehicleIdError()) { <p class="text-[10px] font-bold text-red-600">{{ vehicleIdError() }}</p> }
-                  </div>
-                }
-
-                <button type="submit" [disabled]="items().length === 0" class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-center text-xs font-black text-white shadow-md transition hover:bg-emerald-600 disabled:opacity-50"><svg lucideLock class="h-4 w-4"></svg><span>{{ (isVi() ? 'XÁC NHẬN THANH TOÁN ' : 'CONFIRM PAYMENT ') + (payableAmount() | number : '1.0-0') + ' đ' }}</span></button>
-              </form>
-            </aside>
-          </div>
-        }
-
-        @if (step() === 'success') {
-          <div class="mx-auto max-w-lg space-y-6 py-8 text-center">
-            <div class="mx-auto flex h-16 w-16 animate-bounce items-center justify-center rounded-full border-2 border-emerald-300 bg-emerald-100 text-emerald-600 shadow-lg"><svg lucideCheckCircle2 class="h-10 w-10"></svg></div>
-            <div>
-              <h1 class="text-2xl font-black tracking-tight text-emerald-600 md:text-3xl">{{ t().paymentSuccess }}</h1>
-              <p class="mt-1 text-[11px] font-bold uppercase tracking-widest text-stone-500">{{ isVi() ? 'Mã số đặt chỗ: ' + bookingRef() : 'Booking reference: ' + bookingRef() }}</p>
-            </div>
-
-            <div class="relative mx-auto max-w-sm rounded-2xl border-2 border-dashed border-amber-300 bg-[#FAF9F5] p-6 text-left shadow-md">
-              <div class="mb-4 flex items-center justify-between border-b border-stone-200 pb-3 text-xs">
-                <div><h4 class="font-black tracking-tight text-stone-900">{{ t().eTicket }}</h4><span class="text-[9px] font-black uppercase text-natural-bronze">{{ isVi() ? 'Mạng đối tác VietCharm' : 'VietCharm partner network' }}</span></div>
-                <svg lucideTicket class="h-5 w-5 text-amber-500"></svg>
-              </div>
-              <div class="space-y-3.5 text-xs">
-                <div>
-                  <p class="text-[10px] font-bold uppercase text-stone-400">{{ isVi() ? 'DANH SÁCH DỊCH VỤ' : 'LOADED SERVICES' }}</p>
-                  <div class="mt-1 space-y-1 text-[11px] font-medium text-stone-700">
-                    @for (item of items(); track item.cartKey || item.id) {
-                      <div class="flex justify-between"><span class="line-clamp-1 max-w-[200px]">● {{ item.name }}</span><span class="font-mono font-bold text-stone-900">x{{ item.quantity }}</span></div>
-                    }
-                  </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 border-t border-stone-200 pt-3 text-[11px]">
-                  <div><span class="block text-[9px] font-bold uppercase text-stone-400">{{ isVi() ? 'TRẠNG THÁI' : 'STATUS' }}</span><span class="mt-0.5 flex items-center gap-0.5 font-black text-emerald-600"><svg lucideLock class="h-3.5 w-3.5"></svg>{{ isVi() ? 'ĐÃ XÁC NHẬN' : 'CONFIRMED' }}</span></div>
-                  <div><span class="block text-[9px] font-bold uppercase text-stone-400">{{ isVi() ? 'THỜI GIAN ĐẶT' : 'TIMESTAMP' }}</span><span class="mt-0.5 block font-mono font-bold text-stone-800">{{ timestamp }}</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="mx-auto flex max-w-sm gap-4 pt-2">
-              <button type="button" class="w-1/2 rounded-xl border border-stone-200 py-2.5 text-xs font-bold text-stone-700 shadow-xs transition hover:bg-stone-50" (click)="print()">{{ isVi() ? 'In hóa đơn' : 'Print ticket' }}</button>
-              <button type="button" class="w-1/2 rounded-xl bg-natural-ink-soft py-2.5 text-xs font-black text-white shadow-md transition hover:bg-[#2A2835]" (click)="finish()">{{ isVi() ? 'Xem hồ sơ đặt chỗ' : 'View my bookings' }}</button>
-            </div>
-          </div>
-        }
+<main class="py-8 md:py-10">
+  <div class="mx-auto max-w-6xl px-4">
+    @if (step() === 'review') {
+      <div class="mb-6 space-y-2">
+        <a
+          routerLink="/cart"
+          class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-natural-accent transition hover:text-natural-olive"
+        >
+          <svg lucideArrowLeft class="h-4 w-4"></svg
+          ><span>{{ isVi() ? 'Quay lại giỏ hàng' : 'Back to cart' }}</span>
+        </a>
+        <h1 class="text-3xl font-black tracking-tight text-natural-ink md:text-4xl">
+          {{ isVi() ? 'Thanh toán' : 'Checkout' }}
+        </h1>
+        <p class="max-w-2xl text-sm leading-relaxed text-stone-500">
+          {{
+            isVi()
+              ? 'Kiểm tra chi tiết đơn hàng, áp dụng mã giảm giá và chọn phương thức thanh toán để hoàn tất đặt chỗ.'
+              : 'Review your order details, apply a promo code, and choose a payment method to complete your booking.'
+          }}
+        </p>
       </div>
-    </main>
+
+      @if (paymentLoading()) {
+        <div
+          class="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-white/95 p-6 text-center backdrop-blur-xs"
+        >
+          <div class="relative h-14 w-14">
+            <div
+              class="h-14 w-14 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"
+            ></div>
+            <svg
+              lucideLock
+              class="absolute inset-0 m-auto h-5 w-5 animate-pulse text-emerald-500"
+            ></svg>
+          </div>
+          <h4 class="mt-6 text-sm font-black text-stone-900">
+            {{ isVi() ? 'Đang xử lý thanh toán...' : 'Processing payment...' }}
+          </h4>
+          <p
+            class="mt-2 max-w-sm whitespace-pre-wrap font-mono text-xs leading-relaxed text-stone-500"
+          >
+            {{ loadingText() }}
+          </p>
+        </div>
+      }
+
+      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <!-- Order summary -->
+        <section class="space-y-4">
+          <div class="rounded-2xl border border-natural-border bg-white p-5 shadow-xs">
+            <h2 class="mb-4 text-sm font-black uppercase tracking-wider text-natural-ink">
+              {{ isVi() ? 'Chi tiết đơn hàng' : 'Order details' }}
+            </h2>
+            @if (items().length === 0) {
+              <div class="space-y-3 py-8 text-center">
+                <svg lucideTicket class="mx-auto h-10 w-10 text-stone-300"></svg>
+                <p class="text-xs text-stone-500">
+                  {{ isVi() ? 'Không có dịch vụ nào được chọn.' : 'No selected services.' }}
+                </p>
+              </div>
+            } @else {
+              <ul class="space-y-3">
+                @for (item of items(); track item.cartKey || item.id) {
+                  <li
+                    class="flex items-center gap-3 rounded-xl border border-stone-150 bg-stone-50 p-3"
+                  >
+                    <img
+                      [src]="item.image"
+                      [alt]="item.name"
+                      class="h-14 w-14 shrink-0 rounded-lg border border-stone-200 object-cover"
+                    />
+                    <div class="min-w-0 flex-1">
+                      <h5 class="line-clamp-1 text-sm font-bold text-stone-900">{{ item.name }}</h5>
+                      @if (item.details) {
+                        <p class="mt-0.5 line-clamp-1 text-[11px] text-stone-500">
+                          {{ item.details }}
+                        </p>
+                      }
+                      <span
+                        class="mt-1 inline-block rounded bg-amber-100/50 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-natural-bronze"
+                        >x{{ item.quantity }}</span
+                      >
+                    </div>
+                    <span class="shrink-0 font-mono text-xs font-bold text-stone-800"
+                      >{{ item.price * item.quantity | number: '1.0-0' }} đ</span
+                    >
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+
+          <div
+            class="flex gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-xs leading-relaxed text-emerald-800"
+          >
+            <svg lucideCheckCircle2 class="h-5 w-5 shrink-0 text-emerald-600"></svg>
+            <p>
+              {{
+                isVi()
+                  ? 'Sau khi thanh toán thành công, mã đặt chỗ và chi tiết dịch vụ sẽ xuất hiện trên phiếu xác nhận và trong hồ sơ của bạn.'
+                  : 'After successful payment, your booking code and service details will appear on the confirmation ticket and in your profile.'
+              }}
+            </p>
+          </div>
+        </section>
+
+        <!-- Payment panel -->
+        <aside
+          class="h-fit space-y-4 rounded-2xl border border-natural-border bg-white p-5 shadow-xs lg:sticky lg:top-32"
+        >
+          <!-- Voucher -->
+          <app-voucher-picker />
+
+          <!-- Pricing summary -->
+          <div
+            class="space-y-1.5 rounded-2xl border border-amber-200/50 bg-amber-500/5 p-4 text-xs font-medium"
+          >
+            <div class="flex justify-between">
+              <span class="text-stone-500">{{ isVi() ? 'Tổng tiền gốc' : 'Subtotal' }}</span
+              ><span class="font-mono font-bold" [class.line-through]="isBundleEligible()"
+                >{{ totalCost() | number: '1.0-0' }} đ</span
+              >
+            </div>
+            @if (isBundleEligible()) {
+              <div class="flex justify-between font-bold text-emerald-600">
+                <span>{{ isVi() ? 'Ưu đãi combo (15%)' : 'Bundle savings (15%)' }}</span>
+                <span class="font-mono">-{{ discountAmount() | number: '1.0-0' }} đ</span>
+              </div>
+            }
+            @if (voucherDiscount() > 0) {
+              <div class="flex justify-between font-extrabold text-emerald-700">
+                <span>{{ isVi() ? 'Mã voucher' : 'Voucher' }}</span
+                ><span class="font-mono">-{{ voucherDiscount() | number: '1.0-0' }} đ</span>
+              </div>
+            }
+            <div class="flex items-center justify-between border-t border-amber-200/50 pt-2">
+              <span class="text-[10px] font-bold uppercase text-stone-500">{{
+                isVi() ? 'CẦN THANH TOÁN' : 'PAYABLE TOTAL'
+              }}</span>
+              <span class="font-mono text-xl font-black text-natural-bronze"
+                >{{ payableAmount() | number: '1.0-0' }} đ</span
+              >
+            </div>
+          </div>
+
+          <!-- Gateway -->
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" [class]="gatewayClass('visa')" (click)="gateway.set('visa')">
+              <svg lucideCreditCard class="h-5 w-5 text-amber-700"></svg
+              ><span class="text-[10px] font-bold">Thẻ Quốc Tế</span>
+            </button>
+            <button type="button" [class]="gatewayClass('vnpay')" (click)="gateway.set('vnpay')">
+              <svg lucideQrCode class="h-5 w-5 text-blue-700"></svg
+              ><span class="text-[10px] font-bold">VNPAY QR</span>
+            </button>
+            <button type="button" [class]="gatewayClass('momo')" (click)="gateway.set('momo')">
+              <svg lucideSmartphone class="h-5 w-5 text-pink-700"></svg
+              ><span class="text-[10px] font-bold">Ví MoMo</span>
+            </button>
+          </div>
+
+          <form class="space-y-3" (ngSubmit)="submitPayment()">
+            @if (gateway() === 'visa') {
+              <div class="space-y-2.5">
+                <div>
+                  <label class="mb-1 block text-[11px] font-bold text-stone-600">{{
+                    isVi() ? 'Số thẻ Visa / Mastercard / JCB' : 'Credit Card Number'
+                  }}</label>
+                  <input
+                    type="text"
+                    [ngModel]="cardNo()"
+                    (ngModelChange)="onCardNo($event)"
+                    name="cardNo"
+                    placeholder="4221 0953 8412 5593"
+                    required
+                    class="w-full rounded border border-stone-300 px-3 py-2 text-xs outline-none focus:border-amber-400"
+                  />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="mb-1 block text-[11px] font-bold text-stone-600">{{
+                      isVi() ? 'Ngày hết hạn' : 'Expiration date'
+                    }}</label
+                    ><input
+                      type="text"
+                      name="exp"
+                      placeholder="12/28"
+                      required
+                      class="w-full rounded border border-stone-300 px-3 py-2 text-center text-xs outline-none focus:border-amber-400"
+                    />
+                  </div>
+                  <div>
+                    <label class="mb-1 block text-[11px] font-bold text-stone-600">CVC / CVV</label
+                    ><input
+                      type="password"
+                      name="cvc"
+                      placeholder="***"
+                      maxlength="3"
+                      required
+                      class="w-full rounded border border-stone-300 px-3 py-2 text-center text-xs outline-none focus:border-amber-400"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="mb-1 block text-[11px] font-bold text-stone-600">{{
+                    isVi() ? 'Chủ tài khoản (Không dấu)' : 'Cardholder Name'
+                  }}</label
+                  ><input
+                    type="text"
+                    [ngModel]="cardHolder()"
+                    (ngModelChange)="cardHolder.set($event.toUpperCase())"
+                    name="holder"
+                    placeholder="NGUYEN VAN A"
+                    required
+                    class="w-full rounded border border-stone-300 px-3 py-2 text-xs outline-none focus:border-amber-400"
+                  />
+                </div>
+              </div>
+            } @else {
+              <div
+                class="space-y-2 rounded-xl border border-stone-150 bg-stone-50 py-4 text-center"
+              >
+                <svg
+                  lucideSmartphone
+                  class="mx-auto h-8 w-8 animate-bounce text-natural-bronze"
+                ></svg>
+                <h5 class="text-xs font-bold text-stone-900">
+                  {{ isVi() ? 'Cổng quét QR chuyển khoản tức thì' : 'Instant Scan Code Dispatch' }}
+                </h5>
+                <p class="mx-auto max-w-sm text-[11px] leading-relaxed text-stone-500">
+                  {{
+                    isVi()
+                      ? 'Sau khi xác nhận, VietCharm sẽ tạo mã QR để bạn tiếp tục thanh toán bằng ứng dụng đã chọn.'
+                      : 'After confirmation, VietCharm will generate a QR code for your selected payment app.'
+                  }}
+                </p>
+              </div>
+            }
+
+            @if (hasVehicleItem()) {
+              <div class="space-y-1.5 rounded-xl border border-amber-200 bg-amber-50/50 p-3">
+                <label
+                  class="block text-[11px] font-bold uppercase tracking-wider text-stone-700"
+                  >{{
+                    isVi()
+                      ? 'Số CCCD/CMND (bắt buộc để thuê xe)'
+                      : 'ID Card Number (required to rent a vehicle)'
+                  }}</label
+                >
+                <input
+                  type="text"
+                  [ngModel]="vehicleIdNumber()"
+                  (ngModelChange)="onVehicleIdInput($event)"
+                  name="vehicleId"
+                  [placeholder]="isVi() ? 'VD: 012345678901' : 'e.g. 012345678901'"
+                  class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-bold text-stone-700 outline-none focus:border-natural-accent"
+                />
+                <p class="text-[10px] leading-relaxed text-amber-800">
+                  {{
+                    isVi()
+                      ? 'VietCharm giữ thông tin CCCD làm căn cứ giao nhận xe, không dùng cho mục đích khác.'
+                      : 'VietCharm keeps your ID on file only to verify vehicle hand-over, never for other purposes.'
+                  }}
+                </p>
+                @if (vehicleIdError()) {
+                  <p class="text-[10px] font-bold text-red-600">{{ vehicleIdError() }}</p>
+                }
+              </div>
+            }
+
+            @if (paymentError()) {
+              <p
+                class="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-[11px] font-bold leading-relaxed text-red-700"
+                role="alert"
+              >
+                {{ paymentError() }}
+              </p>
+            }
+
+            <button
+              type="submit"
+              [disabled]="items().length === 0 || paymentLoading()"
+              class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-center text-xs font-black text-white shadow-md transition hover:bg-emerald-600 disabled:opacity-50"
+            >
+              <svg lucideLock class="h-4 w-4"></svg
+              ><span>{{
+                (isVi() ? 'XÁC NHẬN THANH TOÁN ' : 'CONFIRM PAYMENT ') +
+                  (payableAmount() | number: '1.0-0') +
+                  ' đ'
+              }}</span>
+            </button>
+          </form>
+        </aside>
+      </div>
+    }
+
+    @if (step() === 'success') {
+      <div class="mx-auto max-w-lg space-y-6 py-8 text-center">
+        <div
+          class="mx-auto flex h-16 w-16 animate-bounce items-center justify-center rounded-full border-2 border-emerald-300 bg-emerald-100 text-emerald-600 shadow-lg"
+        >
+          <svg lucideCheckCircle2 class="h-10 w-10"></svg>
+        </div>
+        <div>
+          <h1 class="text-2xl font-black tracking-tight text-emerald-600 md:text-3xl">
+            {{ t().paymentSuccess }}
+          </h1>
+          <p class="mt-1 text-[11px] font-bold uppercase tracking-widest text-stone-500">
+            {{ isVi() ? 'Mã số đặt chỗ: ' + bookingRef() : 'Booking reference: ' + bookingRef() }}
+          </p>
+        </div>
+
+        <div
+          class="relative mx-auto max-w-sm rounded-2xl border-2 border-dashed border-amber-300 bg-[#FAF9F5] p-6 text-left shadow-md"
+        >
+          <div
+            class="mb-4 flex items-center justify-between border-b border-stone-200 pb-3 text-xs"
+          >
+            <div>
+              <h4 class="font-black tracking-tight text-stone-900">{{ t().eTicket }}</h4>
+              <span class="text-[9px] font-black uppercase text-natural-bronze">{{
+                isVi() ? 'Mạng đối tác VietCharm' : 'VietCharm partner network'
+              }}</span>
+            </div>
+            <svg lucideTicket class="h-5 w-5 text-amber-500"></svg>
+          </div>
+          <div class="space-y-3.5 text-xs">
+            <div>
+              <p class="text-[10px] font-bold uppercase text-stone-400">
+                {{ isVi() ? 'DANH SÁCH DỊCH VỤ' : 'LOADED SERVICES' }}
+              </p>
+              <div class="mt-1 space-y-1 text-[11px] font-medium text-stone-700">
+                @for (item of completedItems(); track item.cartKey || item.id) {
+                  <div class="flex justify-between">
+                    <span class="line-clamp-1 max-w-[200px]">● {{ item.name }}</span
+                    ><span class="font-mono font-bold text-stone-900">x{{ item.quantity }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 border-t border-stone-200 pt-3 text-[11px]">
+              <div>
+                <span class="block text-[9px] font-bold uppercase text-stone-400">{{
+                  isVi() ? 'TRẠNG THÁI' : 'STATUS'
+                }}</span
+                ><span class="mt-0.5 flex items-center gap-0.5 font-black text-emerald-600"
+                  ><svg lucideLock class="h-3.5 w-3.5"></svg
+                  >{{ isVi() ? 'ĐÃ XÁC NHẬN' : 'CONFIRMED' }}</span
+                >
+              </div>
+              <div>
+                <span class="block text-[9px] font-bold uppercase text-stone-400">{{
+                  isVi() ? 'THỜI GIAN ĐẶT' : 'TIMESTAMP'
+                }}</span
+                ><span class="mt-0.5 block font-mono font-bold text-stone-800">{{
+                  timestamp
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mx-auto flex max-w-sm gap-4 pt-2">
+          <button
+            type="button"
+            class="w-1/2 rounded-xl border border-stone-200 py-2.5 text-xs font-bold text-stone-700 shadow-xs transition hover:bg-stone-50"
+            (click)="print()"
+          >
+            {{ isVi() ? 'In hóa đơn' : 'Print ticket' }}
+          </button>
+          <button
+            type="button"
+            class="w-1/2 rounded-xl bg-natural-ink-soft py-2.5 text-xs font-black text-white shadow-md transition hover:bg-[#2A2835]"
+            (click)="finish()"
+          >
+            {{ isVi() ? 'Xem hồ sơ đặt chỗ' : 'View my bookings' }}
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</main>

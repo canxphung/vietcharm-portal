@@ -11,6 +11,7 @@
     "seed:service-discounts": "node scripts/seed-service-discounts.mjs",
     "seed:trip-rooms": "node scripts/seed-trip-rooms.mjs",
     "seed:vehicle-details": "node scripts/seed-vehicle-details.mjs",
+    "seed:content-pages": "node scripts/seed-content-pages.mjs",
     "test": "ng test"
   },
   "private": true,

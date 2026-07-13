@@ -1,0 +1,82 @@
+<dialog
+  #quickViewDialog
+  class="quick-view-native"
+  [attr.aria-label]="i18n.isVi() ? 'Xem nhanh dịch vụ' : 'Service quick view'"
+  (cancel)="onCancel($event)"
+  (click)="onDialogClick($event)"
+>
+  <section class="quick-view-dialog">
+    <button
+      type="button"
+      class="quick-view-close"
+      autofocus
+      [attr.aria-label]="i18n.isVi() ? 'Đóng cửa sổ' : 'Close dialog'"
+      (click)="close()"
+    >
+      <svg lucideX></svg>
+    </button>
+
+    <div class="quick-view-media">
+      <img [src]="item().image" [alt]="item().name" />
+      <span class="quick-view-type">{{ typeLabel() }}</span>
+      @if (item().discountPercent) {
+        <span class="quick-view-discount">-{{ item().discountPercent }}%</span>
+      }
+    </div>
+
+    <div class="quick-view-content">
+      <span class="quick-view-eyebrow">{{
+        i18n.isVi() ? 'Xem nhanh dịch vụ' : 'Quick service preview'
+      }}</span>
+      <h2>{{ item().name }}</h2>
+
+      <div class="quick-view-rating">
+        <svg lucideStar></svg>
+        <strong>{{ item().rating || 4.8 }}</strong>
+        <span>({{ item().reviewsCount || (i18n.isVi() ? 'mới' : 'new') }})</span>
+      </div>
+
+      <p class="quick-view-description">{{ item().description || item().specs }}</p>
+
+      <div class="quick-view-price-row">
+        <div>
+          <small>{{ i18n.isVi() ? 'Giá tham khảo' : 'Estimated price' }}</small>
+          @if ((item().originalPrice ?? 0) > item().price) {
+            <span class="quick-view-original-price">{{ item().originalPrice | vnd }}</span>
+          }
+          <strong [class.discounted]="item().discountPercent">{{ item().price | vnd }}</strong>
+        </div>
+        <button
+          type="button"
+          class="quick-view-favorite"
+          [class.favorite-active]="ui.isFavorite(item().id)"
+          [attr.aria-label]="i18n.isVi() ? 'Yêu thích dịch vụ' : 'Favorite service'"
+          (click)="ui.toggleFavorite(item())"
+        >
+          <svg lucideHeart></svg>
+        </button>
+      </div>
+
+      <div class="quick-view-actions">
+        <button type="button" class="quick-view-detail" (click)="viewDetails()">
+          {{ i18n.isVi() ? 'Xem đầy đủ' : 'Full details' }}
+          <svg lucideArrowRight></svg>
+        </button>
+        <button
+          type="button"
+          class="quick-view-cart btn-sheen"
+          [disabled]="added()"
+          (click)="addToCart()"
+        >
+          @if (added()) {
+            <svg lucideCheck></svg>
+            {{ i18n.isVi() ? 'Đã thêm' : 'Added' }}
+          } @else {
+            <svg lucideShoppingBag></svg>
+            {{ i18n.isVi() ? 'Thêm vào giỏ' : 'Add to cart' }}
+          }
+        </button>
+      </div>
+    </div>
+  </section>
+</dialog>
