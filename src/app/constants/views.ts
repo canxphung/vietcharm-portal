@@ -8,7 +8,7 @@ export type ViewId =
   | 'regions'
   | 'provinces'
   | 'province'
-  | 'ai-explorer'
+  | 'trip-planner'
   | 'blind-travel'
   | 'trip-room'
   | 'group-blind-travel'

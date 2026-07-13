@@ -1,55 +1,50 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import type { BookingCartItem, PartnershipApplication, ViewableItem } from '@/types';
+import type { BookingCartItem } from '@/types';
 import { CartService } from '@/services/cart.service';
-import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
-import { ToastService } from '@/services/toast.service';
-import { UiStateService } from '@/services/ui-state.service';
-import { VndPipe } from '@/pipes/vnd.pipe';
 
-interface AIActivity {
+interface TripActivity {
   time: string;
   attractionName: string;
   description: string;
   costVND: number;
 }
 
-interface AIDay {
+interface TripDay {
   dayNumber: number;
   title: string;
-  activities: AIActivity[];
+  activities: TripActivity[];
 }
 
-interface AIItinerary {
+interface TripPlan {
   itineraryTitle: string;
   estimatedSavingsPercent: number;
   totalCostEstimate: number;
-  days: AIDay[];
+  days: TripDay[];
   savingTips: string[];
 }
 
-interface AIResponse {
+interface TripPlanResponse {
   success: boolean;
   source?: string;
-  data?: AIItinerary;
-  fallback?: AIItinerary;
+  data?: TripPlan;
+  fallback?: TripPlan;
 }
 
 @Component({
-  selector: 'app-ai-explorer-page',
+  selector: 'app-trip-planner-page',
   standalone: true,
   imports: [
     FormsModule,
     DecimalPipe,
   ],
-  templateUrl: './ai-explorer.component.html',
-  styleUrl: './ai-explorer.component.css',
+  templateUrl: './trip-planner.component.html',
+  styleUrl: './trip-planner.component.css',
 })
-export class AiExplorerComponent {
+export class TripPlannerComponent {
   readonly isVi = computed(() => this.i18n.isVi());
   readonly budget = signal(3500000);
   readonly province = signal('quang-nam');
@@ -60,7 +55,7 @@ export class AiExplorerComponent {
   readonly customPrompt = signal('');
   readonly loading = signal(false);
   readonly loadingStep = signal('');
-  readonly itinerary = signal<AIItinerary | null>(null);
+  readonly itinerary = signal<TripPlan | null>(null);
   readonly successMsg = signal(false);
 
   private loadingTimer?: ReturnType<typeof setInterval>;
@@ -121,7 +116,7 @@ export class AiExplorerComponent {
     }, 900);
 
     this.http
-      .post<AIResponse>('/api/itinerary', {
+      .post<TripPlanResponse>('/api/itinerary', {
         province: this.province(),
         budget: this.budget(),
         days: this.daysCount(),
@@ -146,16 +141,16 @@ export class AiExplorerComponent {
   applyCombo(): void {
     const p = this.province();
     const vi = this.isVi();
-    const hotelName = p === 'quang-nam' ? 'La Siesta Hoi An Resort (AI Combo Deal)' : p === 'da-nang' ? 'Tiamo Sea View Hotel (AI Combo)' : p === 'thua-thien-hue' ? 'Silk Path Grand Hue (AI Approved)' : p === 'binh-dinh' ? 'Anya Premier Hotel Quy Nhơn (AI Combo)' : 'Crown Plaza Nha Trang (AI Combo)';
+    const hotelName = p === 'quang-nam' ? 'La Siesta Hoi An Resort (Combo tiết kiệm)' : p === 'da-nang' ? 'Tiamo Sea View Hotel (Combo tiết kiệm)' : p === 'thua-thien-hue' ? 'Silk Path Grand Hue (Combo chọn lọc)' : p === 'binh-dinh' ? 'Anya Premier Hotel Quy Nhơn (Combo tiết kiệm)' : 'Crown Plaza Nha Trang (Combo tiết kiệm)';
     const hotelPrice = p === 'quang-nam' ? 1800000 : p === 'da-nang' ? 850000 : p === 'thua-thien-hue' ? 1300000 : p === 'binh-dinh' ? 1200000 : 1500000;
-    const vehName = p === 'quang-nam' ? 'Honda Vision 110cc (AI Save Pack)' : p === 'da-nang' ? 'Toyota Vios Private Car (AI Save)' : p === 'thua-thien-hue' ? 'Honda AirBlade 125cc (AI Save)' : p === 'binh-dinh' ? 'Yamaha Exciter 150cc (AI Save)' : 'Mitsubishi Xpander Self-drive (AI Save)';
+    const vehName = p === 'quang-nam' ? 'Honda Vision 110cc (Gói tiết kiệm)' : p === 'da-nang' ? 'Toyota Vios Private Car (Gói tiết kiệm)' : p === 'thua-thien-hue' ? 'Honda AirBlade 125cc (Gói tiết kiệm)' : p === 'binh-dinh' ? 'Yamaha Exciter 150cc (Gói tiết kiệm)' : 'Mitsubishi Xpander Self-drive (Gói tiết kiệm)';
     const vehPrice = p === 'quang-nam' ? 130000 : p === 'da-nang' ? 800000 : p === 'thua-thien-hue' ? 150000 : p === 'binh-dinh' ? 140000 : 900000;
-    const actName = p === 'quang-nam' ? 'Lặn Ngắm San Hô Cù Lao Chàm (AI Deal)' : p === 'da-nang' ? 'Vé Cáp Treo Bà Nà (AI Deal)' : p === 'thua-thien-hue' ? 'Food Tour Xích Lô Huế Về Đêm (AI Deal)' : p === 'binh-dinh' ? 'Tour Cano Kỳ Co Ngắm San Hô (AI Deal)' : 'Tour Cano 3 Đảo VIP Vịnh Nha Trang (AI Deal)';
+    const actName = p === 'quang-nam' ? 'Lặn Ngắm San Hô Cù Lao Chàm (Giá combo)' : p === 'da-nang' ? 'Vé Cáp Treo Bà Nà (Giá combo)' : p === 'thua-thien-hue' ? 'Food Tour Xích Lô Huế Về Đêm (Giá combo)' : p === 'binh-dinh' ? 'Tour Cano Kỳ Co Ngắm San Hô (Giá combo)' : 'Tour Cano 3 Đảo VIP Vịnh Nha Trang (Giá combo)';
     const actPrice = p === 'quang-nam' ? 550000 : p === 'da-nang' ? 850000 : p === 'thua-thien-hue' ? 450000 : p === 'binh-dinh' ? 690000 : 750000;
     const items: BookingCartItem[] = [
-      { id: `ai-hotel-${p}`, type: 'hotel', name: hotelName, price: hotelPrice, quantity: 1, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80', details: vi ? 'Ưu đãi đặt trực tiếp theo đề xuất AI' : 'AI-optimized lodging plan' },
-      { id: `ai-vehicle-${p}`, type: 'vehicle', name: vehName, price: vehPrice, quantity: 1, image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=400&q=80', details: vi ? 'Phương tiện di chuyển phù hợp nhất' : 'Best custom vehicle recommendation' },
-      { id: `ai-activity-${p}`, type: 'activity', name: actName, price: actPrice, quantity: 2, image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80', details: vi ? 'Tham quan theo lộ trình tối ưu' : 'Highly structured tour access' },
+      { id: `plan-hotel-${p}`, type: 'hotel', name: hotelName, price: hotelPrice, quantity: 1, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80', details: vi ? 'Lưu trú được ghép theo ngân sách và lựa chọn của bạn' : 'Stay matched to your selected budget and preferences' },
+      { id: `plan-vehicle-${p}`, type: 'vehicle', name: vehName, price: vehPrice, quantity: 1, image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=400&q=80', details: vi ? 'Phương tiện phù hợp với tuyến và nhóm khách đã chọn' : 'Transport matched to the selected route and group size' },
+      { id: `plan-activity-${p}`, type: 'activity', name: actName, price: actPrice, quantity: 2, image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80', details: vi ? 'Hoạt động có sẵn trong gói lịch trình mẫu' : 'Available activity included in the sample trip plan' },
     ];
     this.cart.addCombo(items);
     this.successMsg.set(true);

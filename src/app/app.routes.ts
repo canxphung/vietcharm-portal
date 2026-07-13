@@ -75,9 +75,9 @@ export const routes: Routes = [
       import('./pages/admin/admin.component').then((m) => m.AdminComponent),
   },
   {
-    path: 'ai-explorer',
+    path: 'trip-planner',
     loadComponent: () =>
-      import('./pages/ai-explorer/ai-explorer.component').then((m) => m.AiExplorerComponent),
+      import('./pages/trip-planner/trip-planner.component').then((m) => m.TripPlannerComponent),
   },
   {
     path: 'blind-travel',

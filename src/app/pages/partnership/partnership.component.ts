@@ -1,43 +1,8 @@
-import { Component, computed, input, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import type { BookingCartItem, PartnershipApplication, ViewableItem } from '@/types';
-import { CartService } from '@/services/cart.service';
+import type { PartnershipApplication } from '@/types';
 import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
-import { ToastService } from '@/services/toast.service';
-import { UiStateService } from '@/services/ui-state.service';
-import { VndPipe } from '@/pipes/vnd.pipe';
-
-interface AIActivity {
-  time: string;
-  attractionName: string;
-  description: string;
-  costVND: number;
-}
-
-interface AIDay {
-  dayNumber: number;
-  title: string;
-  activities: AIActivity[];
-}
-
-interface AIItinerary {
-  itineraryTitle: string;
-  estimatedSavingsPercent: number;
-  totalCostEstimate: number;
-  days: AIDay[];
-  savingTips: string[];
-}
-
-interface AIResponse {
-  success: boolean;
-  source?: string;
-  data?: AIItinerary;
-  fallback?: AIItinerary;
-}
 
 @Component({
   selector: 'app-partnership-page',

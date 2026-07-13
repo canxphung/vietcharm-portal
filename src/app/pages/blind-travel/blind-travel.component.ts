@@ -1,43 +1,11 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import type { BookingCartItem, PartnershipApplication, ViewableItem } from '@/types';
+import type { BookingCartItem } from '@/types';
 import { CartService } from '@/services/cart.service';
-import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
-import { ToastService } from '@/services/toast.service';
 import { UiStateService } from '@/services/ui-state.service';
-import { VndPipe } from '@/pipes/vnd.pipe';
-
-interface AIActivity {
-  time: string;
-  attractionName: string;
-  description: string;
-  costVND: number;
-}
-
-interface AIDay {
-  dayNumber: number;
-  title: string;
-  activities: AIActivity[];
-}
-
-interface AIItinerary {
-  itineraryTitle: string;
-  estimatedSavingsPercent: number;
-  totalCostEstimate: number;
-  days: AIDay[];
-  savingTips: string[];
-}
-
-interface AIResponse {
-  success: boolean;
-  source?: string;
-  data?: AIItinerary;
-  fallback?: AIItinerary;
-}
 
 interface MysteryDestination {
   regionVi: string;
@@ -170,16 +138,16 @@ export class BlindTravelComponent {
     const vi = this.isVi();
     const steps = vi
       ? [
-          { icon: 'bi-stars', text: 'Phân tích tâm lý & gu du lịch thế hệ mới...' },
-          { icon: 'bi-car-front', text: 'Sắp xếp xe riêng đưa đón khứ hồi tận nơi...' },
-          { icon: 'bi-building', text: 'Gửi mã đặt chỗ kín tới hệ thống Resort Di sản 5 sao đối tác...' },
-          { icon: 'bi-gift', text: 'Đóng gói phong thư bất ngờ chứa mã đặt chỗ độc bản...' },
+          { icon: 'bi-stars', text: 'Đối chiếu ngân sách và gu du lịch với các gói mẫu đang có...' },
+          { icon: 'bi-car-front', text: 'Chuẩn bị thông tin phương tiện trong gói mẫu...' },
+          { icon: 'bi-building', text: 'Chuẩn bị thông tin nơi lưu trú trong gói mẫu...' },
+          { icon: 'bi-gift', text: 'Đóng gói nội dung chuyến đi bất ngờ để bạn xem trước...' },
         ]
       : [
-          { icon: 'bi-stars', text: 'Analyzing psychological desires & generational taste...' },
-          { icon: 'bi-car-front', text: 'Arranging private roundtrip door-to-door transfers...' },
-          { icon: 'bi-building', text: 'Securing hidden inventory at boutique heritage villas...' },
-          { icon: 'bi-gift', text: 'Packing your mystery oracle card in the lockbox...' },
+          { icon: 'bi-stars', text: 'Matching your budget and preferences with available sample bundles...' },
+          { icon: 'bi-car-front', text: 'Preparing the transport details in the sample bundle...' },
+          { icon: 'bi-building', text: 'Preparing the stay details in the sample bundle...' },
+          { icon: 'bi-gift', text: 'Packing the surprise trip details for your review...' },
         ];
     let idx = 0;
     this.loadingStepIcon.set(steps[0].icon);
@@ -198,7 +166,7 @@ export class BlindTravelComponent {
       const selected = v === 'sea' || v === 'glamping' || v === 'adventure' || v === 'fisherman' ? this.destinations()[1] : this.destinations()[0];
       this.mysteryDest.set(selected);
       this.stage.set('sealed-box');
-      this.alert(vi ? 'Đã tạo thành công Lá Số Hành Trình Ẩn Số!' : 'Mystery Journey Oracle compiled successfully!');
+      this.alert(vi ? 'Gói hành trình ẩn số đã sẵn sàng để xem!' : 'Your sample mystery trip is ready to view!');
     }, 3500);
   }
 
