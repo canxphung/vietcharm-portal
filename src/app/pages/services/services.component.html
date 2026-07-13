@@ -1,131 +1,300 @@
-    <div class="min-h-screen w-full bg-natural-bg px-4 py-8">
-      <div class="mx-auto max-w-7xl space-y-8">
-        <div>
-          <a routerLink="/discover" class="inline-flex items-center justify-center gap-2 rounded-full border border-natural-border bg-white px-4 py-2.5 text-xs font-black uppercase tracking-wide text-natural-accent shadow-xs transition hover:bg-natural-beige hover:text-natural-olive">
-            <svg lucideArrowLeft class="h-4 w-4"></svg><span>{{ i18n.isVi() ? 'Quay lại' : 'Back' }}</span>
-          </a>
-        </div>
+<div class="services-page min-h-screen w-full px-4 py-7 md:py-10">
+  <div class="ambient-orb ambient-orb-one" aria-hidden="true"></div>
+  <div class="ambient-orb ambient-orb-two" aria-hidden="true"></div>
 
-        <div class="max-w-3xl">
-          <span class="text-[11px] font-black uppercase tracking-[0.22em] text-natural-accent">{{ i18n.isVi() ? 'Danh mục dịch vụ' : 'Service catalog' }}</span>
-          <h1 class="mt-2 font-serif text-3xl font-black tracking-tight text-natural-ink md:text-4xl">{{ heading() }}</h1>
-          <p class="mt-2 text-sm leading-relaxed text-stone-600">{{ scopeDescription() }}</p>
-        </div>
+  <div class="relative z-10 mx-auto max-w-7xl">
+    <a routerLink="/discover" class="back-link">
+      <svg lucideArrowLeft class="h-4 w-4"></svg>
+      <span>{{ i18n.isVi() ? 'Quay lại' : 'Back' }}</span>
+    </a>
 
-        <!-- Tabs -->
-        <div class="flex flex-wrap gap-2">
-          @for (tab of tabs; track tab.id) {
-            <button type="button" class="rounded-full border px-4 py-2 text-sm font-black transition" [class.border-natural-accent]="activeTab() === tab.id" [class.bg-natural-accent]="activeTab() === tab.id" [class.text-white]="activeTab() === tab.id" [class.border-natural-border]="activeTab() !== tab.id" (click)="setTab(tab.id)">
-              {{ i18n.isVi() ? tab.vi : tab.en }}
-            </button>
-          }
-        </div>
+    <header class="catalog-intro mt-8 max-w-4xl">
+      <span class="intro-kicker">{{ i18n.isVi() ? 'Danh mục dịch vụ' : 'Service catalog' }}</span>
+      <h1 class="mt-2.5 font-serif text-3xl font-black tracking-tight text-natural-ink md:text-4xl">{{ heading() }}</h1>
+      <p class="mt-1.5 max-w-3xl text-sm leading-6 text-stone-600">{{ scopeDescription() }}</p>
+    </header>
 
-        <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <!-- Filter sidebar -->
-          <aside class="self-start rounded-3xl border border-natural-border bg-natural-cream p-5 lg:sticky lg:top-28">
-            <div class="flex items-center justify-between">
-              <h3 class="flex items-center gap-2 font-serif text-base font-black text-natural-text"><svg lucideSlidersHorizontal class="h-4 w-4 text-natural-accent"></svg>{{ i18n.isVi() ? 'Bộ lọc' : 'Filters' }}</h3>
-              <button type="button" class="text-[11px] font-bold uppercase tracking-wide text-stone-400 transition hover:text-natural-accent" (click)="resetFilters()">{{ i18n.isVi() ? 'Đặt lại' : 'Reset' }}</button>
-            </div>
-            <div class="mt-5 space-y-5">
-              <div class="space-y-1.5">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Tìm kiếm' : 'Search' }}</label>
-                <div class="relative">
-                  <svg lucideSearch class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"></svg>
-                  <input type="text" [ngModel]="query()" (ngModelChange)="query.set($event)" [placeholder]="i18n.isVi() ? 'Nhập tên, mô tả...' : 'Type name, location...'" class="w-full rounded-xl border border-stone-200 bg-white px-9 py-2.5 text-sm focus:border-natural-accent focus:outline-none" />
-                </div>
-              </div>
+    <nav class="catalog-tabs mt-6" [attr.aria-label]="i18n.isVi() ? 'Loại dịch vụ' : 'Service type'">
+      @for (tab of tabs; track tab.id) {
+        <button type="button" class="catalog-tab" [class.catalog-tab-active]="activeTab() === tab.id" (click)="setTab(tab.id)">
+          {{ i18n.isVi() ? tab.vi : tab.en }}
+        </button>
+      }
+    </nav>
 
-              @if (activeTab() !== 'vehicles') {
-                <div class="space-y-1.5">
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Tỉnh thành' : 'Province' }}</label>
-                  <select [ngModel]="province()" (ngModelChange)="province.set($event)" class="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-natural-text focus:border-natural-accent focus:outline-none">
-                    <option value="all">{{ i18n.isVi() ? 'Tất cả tỉnh thành' : 'All provinces' }}</option>
-                    @for (p of provinces(); track p.id) { <option [value]="p.id">{{ p.name }}</option> }
-                  </select>
-                </div>
-              }
+    <div class="search-dock search-dock-compact mt-3">
+      <div class="search-dock-field search-dock-dates">
+        <svg lucideCalendarDays class="h-5 w-5"></svg>
+        <label>
+          <small>{{ activeTab() === 'hotels' ? (i18n.isVi() ? 'Ngày nhận phòng' : 'Check-in') : (i18n.isVi() ? 'Ngày sử dụng' : 'Service date') }}</small>
+          <input type="date" [ngModel]="checkInDate()" (ngModelChange)="checkInDate.set($event)" />
+        </label>
+        @if (activeTab() === 'hotels') {
+          <span class="date-divider">→</span>
+          <label>
+            <small>{{ i18n.isVi() ? 'Ngày trả phòng' : 'Check-out' }}</small>
+            <input type="date" [ngModel]="checkOutDate()" (ngModelChange)="checkOutDate.set($event)" />
+          </label>
+        }
+      </div>
+      <label class="search-dock-field search-dock-guests">
+        <svg lucideUsersRound class="h-5 w-5"></svg>
+        <span>
+          <small>{{ activeTab() === 'hotels' ? (i18n.isVi() ? 'Số khách & phòng' : 'Guests & rooms') : (i18n.isVi() ? 'Số người' : 'Travelers') }}</small>
+          <strong>{{ guests() }} {{ i18n.isVi() ? 'người' : 'guests' }}@if (activeTab() === 'hotels') {, {{ rooms() }} {{ i18n.isVi() ? 'phòng' : 'room' }}}</strong>
+        </span>
+        <select [ngModel]="guests() + '-' + rooms()" (ngModelChange)="updateOccupancy($event)" [attr.aria-label]="i18n.isVi() ? 'Số khách và phòng' : 'Guests and rooms'">
+          <option value="1-1">{{ i18n.isVi() ? '1 người, 1 phòng' : '1 guest, 1 room' }}</option>
+          <option value="2-1">{{ i18n.isVi() ? '2 người, 1 phòng' : '2 guests, 1 room' }}</option>
+          <option value="3-1">{{ i18n.isVi() ? '3 người, 1 phòng' : '3 guests, 1 room' }}</option>
+          <option value="4-2">{{ i18n.isVi() ? '4 người, 2 phòng' : '4 guests, 2 rooms' }}</option>
+          <option value="6-2">{{ i18n.isVi() ? '6 người, 2 phòng' : '6 guests, 2 rooms' }}</option>
+        </select>
+      </label>
+      <button type="button" class="search-dock-button" (click)="applySearch()"><svg lucideSearch class="h-5 w-5"></svg><span>{{ i18n.isVi() ? 'Tìm kiếm' : 'Search' }}</span></button>
+    </div>
 
-              @if (activeTab() === 'activities' || activeTab() === 'attractions') {
-                <div class="space-y-2">
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Chủ đề' : 'Theme' }}</label>
-                  <div class="flex flex-col gap-1.5">
-                    @for (cat of activityCategories(); track cat.id) {
-                      <button type="button" [class]="'w-full rounded-xl px-3 py-2 text-left text-xs font-bold transition ' + (category() === cat.id ? 'bg-natural-accent text-white' : 'border border-stone-200 bg-white text-stone-600 hover:bg-stone-100')" (click)="category.set(cat.id)">{{ cat.label }}</button>
-                    }
-                  </div>
-                </div>
-              }
+    @if (filterOpen()) {
+      <button type="button" class="filter-backdrop lg:hidden" [attr.aria-label]="i18n.isVi() ? 'Đóng bộ lọc' : 'Close filters'" (click)="closeFilters()"></button>
+    }
 
-              @if (activeTab() === 'vehicles') {
-                <div class="space-y-2">
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Loại phương tiện' : 'Vehicle type' }}</label>
-                  <div class="flex gap-1.5">
-                    @for (opt of vehicleTypeOptions(); track opt.id) {
-                      <button type="button" [class]="'flex-1 rounded-xl px-3 py-2 text-xs font-bold transition ' + (vehicleType() === opt.id ? 'bg-natural-accent text-white' : 'border border-stone-200 bg-white text-stone-600 hover:bg-stone-100')" (click)="vehicleType.set(opt.id)">{{ opt.label }}</button>
-                    }
-                  </div>
-                </div>
-              }
-
-              @if (activeTab() !== 'attractions') {
-                <div class="space-y-1.5">
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Khoảng giá' : 'Price range' }}</label>
-                  <select [ngModel]="priceRange()" (ngModelChange)="priceRange.set($event)" class="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-natural-text focus:border-natural-accent focus:outline-none">
-                    @for (opt of priceOptions(); track opt.id) { <option [value]="opt.id">{{ opt.label }}</option> }
-                  </select>
-                </div>
-              }
-
-              <div class="space-y-1.5">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Đánh giá tối thiểu' : 'Minimum rating' }}</label>
-                <select [ngModel]="minRating()" (ngModelChange)="minRating.set(+$event)" class="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-natural-text focus:border-natural-accent focus:outline-none">
-                  @for (opt of ratingOptions(); track opt.value) { <option [value]="opt.value">{{ opt.label }}</option> }
-                </select>
-              </div>
-            </div>
-          </aside>
-
-          <!-- Results -->
-          <div class="min-w-0 space-y-6">
-            <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-natural-border bg-white px-4 py-3 shadow-xs">
-              <p class="text-sm text-stone-500">{{ i18n.isVi() ? 'Kết quả: ' : 'Results: ' }}<span class="font-black text-natural-accent">{{ filteredItems().length }}</span></p>
-              <div class="flex items-center gap-2">
-                <span class="hidden text-[11px] font-bold uppercase tracking-wide text-stone-400 sm:inline">{{ i18n.isVi() ? 'Sắp xếp theo' : 'Sort by' }}</span>
-                <div class="relative">
-                  <svg lucideArrowUpDown class="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400"></svg>
-                  <select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)" class="rounded-xl border border-stone-200 bg-white py-2 pl-8 pr-3 text-xs font-semibold focus:border-natural-accent focus:outline-none">
-                    <option value="default">{{ i18n.isVi() ? 'Mặc định phổ biến' : 'Popularity / Default' }}</option>
-                    @if (activeTab() !== 'attractions') {
-                      <option value="price-asc">{{ i18n.isVi() ? 'Giá tiền: Thấp đến Cao' : 'Price: Low to High' }}</option>
-                      <option value="price-desc">{{ i18n.isVi() ? 'Giá tiền: Cao đến Thấp' : 'Price: High to Low' }}</option>
-                    }
-                    <option value="rating-desc">{{ i18n.isVi() ? 'Đánh giá: Cao nhất' : 'Rating: Top Rated' }}</option>
-                    <option value="reviews-desc">{{ i18n.isVi() ? 'Phổ biến nhất (Nhiều đánh giá)' : 'Most Reviewed' }}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            @if (filteredItems().length === 0) {
-              <div class="rounded-3xl border border-dashed border-natural-border bg-white p-10 text-center">
-                <p class="font-serif text-xl font-black text-natural-ink">{{ i18n.isVi() ? 'Không tìm thấy dịch vụ phù hợp' : 'No matching services found' }}</p>
-                <p class="mt-2 text-sm text-stone-500">{{ i18n.isVi() ? 'Thử đổi bộ lọc hoặc đặt lại để xem thêm.' : 'Try changing the filters or reset to see more.' }}</p>
-              </div>
-            } @else {
-              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                @for (item of visibleItems(); track item.id) {
-                  <app-item-card [item]="item" [cta]="i18n.isVi() ? 'Thêm vào giỏ' : 'Add to cart'" />
-                }
-              </div>
-              @if (filteredItems().length > visibleCount()) {
-                <div class="flex justify-center pt-2">
-                  <button type="button" class="rounded-full border border-natural-border bg-white px-6 py-3 text-sm font-black text-natural-accent shadow-xs transition hover:bg-natural-beige" (click)="visibleCount.set(visibleCount() + 9)">{{ i18n.isVi() ? 'Xem thêm dịch vụ' : 'Load more services' }}</button>
-                </div>
-              }
-            }
+    <div class="mt-6 grid grid-cols-1 items-start gap-7 lg:grid-cols-[310px_minmax(0,1fr)]">
+      <aside class="filter-shell" [class.filter-drawer-open]="filterOpen()" aria-label="Filters">
+        <div class="filter-head">
+          <div>
+            <span class="filter-eyebrow">{{ i18n.isVi() ? 'Tinh chỉnh hành trình' : 'Refine your journey' }}</span>
+            <h2 class="mt-1 flex items-center gap-2 font-serif text-xl font-black text-natural-ink">
+              <svg lucideSlidersHorizontal class="h-5 w-5 text-natural-gold-dark"></svg>{{ i18n.isVi() ? 'Bộ lọc' : 'Filters' }}
+            </h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="filter-reset-top" [disabled]="activeFilterCount() === 0" (click)="resetFilters()">{{ i18n.isVi() ? 'Đặt lại' : 'Reset' }}</button>
           </div>
         </div>
-      </div>
+
+        <div class="filter-body">
+          @if (activeTab() !== 'vehicles') {
+            <section class="filter-section pt-0">
+              <span class="filter-label"><svg lucideMapPin class="h-3.5 w-3.5"></svg>{{ i18n.isVi() ? 'Điểm đến' : 'Destination' }}</span>
+              <div class="mt-3 space-y-1">
+                <button type="button" class="filter-option" [class.filter-option-active]="province() === 'all'" (click)="province.set('all')"><span class="option-radio"><span></span></span>{{ i18n.isVi() ? 'Tất cả tỉnh thành' : 'All provinces' }}</button>
+                @for (p of (isFilterSectionExpanded('provinces') ? provinces() : provinces().slice(0, 4)); track p.id) {
+                  <button type="button" class="filter-option" [class.filter-option-active]="province() === p.id" (click)="province.set(p.id)"><span class="option-radio"><span></span></span>{{ p.name }}</button>
+                }
+              </div>
+              @if (provinces().length > 4) {
+                <button type="button" class="detail-toggle" (click)="toggleFilterSection('provinces')">{{ isFilterSectionExpanded('provinces') ? (i18n.isVi() ? 'Thu gọn' : 'Show less') : (i18n.isVi() ? 'Xem tất cả (' + provinces().length + ')' : 'View all (' + provinces().length + ')') }}</button>
+              }
+            </section>
+          }
+
+          @if (activeTab() !== 'attractions') {
+            <section class="filter-section">
+              <div class="flex items-center justify-between gap-2">
+                <span class="filter-label">{{ i18n.isVi() ? 'Ngân sách của bạn' : 'Your budget' }}</span>
+                <div class="flex items-center gap-2">
+                  @if (minPrice() > 0 || maxPrice() !== priceMaxLimit) {
+                    <button type="button" class="price-reset" (click)="resetPrice()">{{ i18n.isVi() ? 'Xóa' : 'Clear' }}</button>
+                  }
+                  <button type="button" class="detail-toggle detail-toggle-inline" (click)="toggleFilterSection('budget')">{{ isFilterSectionExpanded('budget') ? (i18n.isVi() ? 'Thu gọn' : 'Collapse') : (i18n.isVi() ? 'Chi tiết' : 'Details') }}</button>
+                </div>
+              </div>
+              @if (isFilterSectionExpanded('budget')) {
+              <div class="budget-inputs mt-4">
+                <label>
+                  <span>{{ i18n.isVi() ? 'Từ' : 'Min' }}</span>
+                  <div><input type="text" inputmode="numeric" [value]="minPriceDraft() ?? formatPriceInput(minPrice())" (focus)="minPriceDraft.set(formatPriceInput(minPrice()))" (input)="updatePriceDraft('min', $any($event.target))" (blur)="commitMinPriceInput()" (keydown.enter)="$any($event.target).blur()" [attr.aria-label]="i18n.isVi() ? 'Giá tối thiểu' : 'Minimum price'" /><small>đ</small></div>
+                </label>
+                <span class="budget-separator">–</span>
+                <label>
+                  <span>{{ i18n.isVi() ? 'Đến' : 'Max' }}</span>
+                  <div><input type="text" inputmode="numeric" [value]="maxPriceDraft() ?? formatPriceInput(maxPrice())" (focus)="maxPriceDraft.set(formatPriceInput(maxPrice()))" (input)="updatePriceDraft('max', $any($event.target))" (blur)="commitMaxPriceInput()" (keydown.enter)="$any($event.target).blur()" [attr.aria-label]="i18n.isVi() ? 'Giá tối đa' : 'Maximum price'" /><small>đ</small></div>
+                </label>
+              </div>
+              <div class="price-slider mt-5">
+                <div class="price-slider-track"></div>
+                <div class="price-slider-fill" [style.left.%]="minPricePercent()" [style.right.%]="100 - maxPricePercent()"></div>
+                <input class="price-range price-range-min" type="range" min="0" [max]="priceMaxLimit" [step]="priceStep" [ngModel]="minPrice() > priceMaxLimit ? priceMaxLimit : minPrice()" (ngModelChange)="setMinPrice($event)" [attr.aria-label]="i18n.isVi() ? 'Giá tối thiểu' : 'Minimum price'" />
+                <input class="price-range price-range-max" type="range" min="0" [max]="priceMaxLimit" [step]="priceStep" [ngModel]="maxPrice() > priceMaxLimit ? priceMaxLimit : maxPrice()" (ngModelChange)="setMaxPrice($event)" [attr.aria-label]="i18n.isVi() ? 'Giá tối đa' : 'Maximum price'" />
+              </div>
+              <div class="mt-2 flex items-center justify-between text-[10px] font-bold text-stone-400">
+                <span>{{ formatPrice(0) }}</span><span>{{ formatPrice(priceMaxLimit) }}+</span>
+              </div>
+              <div class="price-presets mt-4">
+                <button type="button" [class.price-preset-active]="isPricePreset(0, 5000000)" (click)="setPricePreset(0, 5000000)"><span>₫</span>{{ i18n.isVi() ? 'Dưới 5 triệu' : 'Under 5M' }}</button>
+                <button type="button" [class.price-preset-active]="isPricePreset(5000000, 15000000)" (click)="setPricePreset(5000000, 15000000)"><span>₫</span>{{ i18n.isVi() ? '5 – 15 triệu' : '5 – 15M' }}</button>
+                <button type="button" [class.price-preset-active]="isPricePreset(15000000, 30000000)" (click)="setPricePreset(15000000, 30000000)"><span>₫</span>{{ i18n.isVi() ? '15 – 30 triệu' : '15 – 30M' }}</button>
+                <button type="button" [class.price-preset-active]="isPricePreset(30000000, priceMaxLimit)" (click)="setPricePreset(30000000, priceMaxLimit)"><span>◆</span>{{ i18n.isVi() ? 'Trên 30 triệu' : 'Over 30M' }}</button>
+              </div>
+              } @else {
+                <button type="button" class="budget-summary mt-3" (click)="toggleFilterSection('budget')">
+                  <span>{{ formatPrice(minPrice()) }}</span><span class="budget-summary-line"></span><span>{{ maxPrice() === priceMaxLimit ? formatPrice(priceMaxLimit) + '+' : formatPrice(maxPrice()) }}</span>
+                </button>
+              }
+            </section>
+          }
+
+          @if (activeTab() === 'hotels') {
+            <section class="filter-section">
+              <span class="filter-label">{{ i18n.isVi() ? 'Bộ lọc phổ biến' : 'Popular filters' }}</span>
+              <div class="mt-3 space-y-1">
+                @for (opt of popularOptions(); track opt.id) {
+                  <button type="button" class="check-option" [class.check-option-active]="isHotelFilterSelected('popular', opt.id)" (click)="toggleHotelFilter('popular', opt.id)"><span class="option-check">✓</span>{{ i18n.isVi() ? opt.vi : opt.en }}</button>
+                }
+              </div>
+            </section>
+
+            <section class="filter-section">
+              <span class="filter-label">{{ i18n.isVi() ? 'Hạng sao' : 'Star rating' }}</span>
+              <div class="mt-3 grid grid-cols-4 gap-2">
+                @for (star of ['2', '3', '4', '5']; track star) {
+                  <button type="button" class="star-tile" [class.star-tile-active]="isHotelFilterSelected('stars', star)" (click)="toggleHotelFilter('stars', star)">{{ star === '2' ? '≤2' : star }} <svg lucideStar class="h-3.5 w-3.5 fill-current"></svg></button>
+                }
+              </div>
+            </section>
+
+            <section class="filter-section">
+              <span class="filter-label">{{ i18n.isVi() ? 'Khu vực' : 'Area' }}</span>
+              <div class="mt-3 space-y-1">
+                @for (opt of (isFilterSectionExpanded('areas') ? hotelAreaOptions() : hotelAreaOptions().slice(0, 3)); track opt.id) {
+                  <button type="button" class="check-option" [class.check-option-active]="isHotelFilterSelected('areas', opt.id)" (click)="toggleHotelFilter('areas', opt.id)"><span class="option-check">✓</span>{{ i18n.isVi() ? opt.vi : opt.en }}</button>
+                }
+              </div>
+              <button type="button" class="detail-toggle" (click)="toggleFilterSection('areas')">{{ isFilterSectionExpanded('areas') ? (i18n.isVi() ? 'Thu gọn' : 'Show less') : (i18n.isVi() ? 'Xem tất cả (' + hotelAreaOptions().length + ')' : 'View all (' + hotelAreaOptions().length + ')') }}</button>
+            </section>
+
+            <section class="filter-section">
+              <span class="filter-label"><svg lucideHotel class="h-3.5 w-3.5"></svg>{{ i18n.isVi() ? 'Loại chỗ nghỉ' : 'Property type' }}</span>
+              <div class="mt-3 space-y-1">
+                @for (opt of (isFilterSectionExpanded('types') ? hotelTypeOptions() : hotelTypeOptions().slice(0, 3)); track opt.id) {
+                  <button type="button" class="check-option" [class.check-option-active]="isHotelFilterSelected('types', opt.id)" (click)="toggleHotelFilter('types', opt.id)"><span class="option-check">✓</span>{{ i18n.isVi() ? opt.vi : opt.en }}</button>
+                }
+              </div>
+              <button type="button" class="detail-toggle" (click)="toggleFilterSection('types')">{{ isFilterSectionExpanded('types') ? (i18n.isVi() ? 'Thu gọn' : 'Show less') : (i18n.isVi() ? 'Xem tất cả (' + hotelTypeOptions().length + ')' : 'View all (' + hotelTypeOptions().length + ')') }}</button>
+            </section>
+
+            <section class="filter-section">
+              <span class="filter-label"><svg lucideShieldCheck class="h-3.5 w-3.5"></svg>{{ i18n.isVi() ? 'Chính sách chỗ lưu trú' : 'Property policies' }}</span>
+              <div class="mt-3 space-y-1">
+                @for (opt of hotelPolicyOptions(); track opt.id) {
+                  <button type="button" class="check-option" [class.check-option-active]="isHotelFilterSelected('policies', opt.id)" (click)="toggleHotelFilter('policies', opt.id)"><span class="option-check">✓</span>{{ i18n.isVi() ? opt.vi : opt.en }}</button>
+                }
+              </div>
+            </section>
+
+            <section class="filter-section">
+              <span class="filter-label">{{ i18n.isVi() ? 'Tiện nghi phòng' : 'Room amenities' }}</span>
+              <div class="mt-3 space-y-1">
+                @for (opt of (isFilterSectionExpanded('amenities') ? hotelAmenityOptions() : hotelAmenityOptions().slice(0, 3)); track opt.id) {
+                  <button type="button" class="check-option" [class.check-option-active]="isHotelFilterSelected('amenities', opt.id)" (click)="toggleHotelFilter('amenities', opt.id)"><span class="option-check">✓</span>{{ i18n.isVi() ? opt.vi : opt.en }}</button>
+                }
+              </div>
+              <button type="button" class="detail-toggle" (click)="toggleFilterSection('amenities')">{{ isFilterSectionExpanded('amenities') ? (i18n.isVi() ? 'Thu gọn' : 'Show less') : (i18n.isVi() ? 'Xem tất cả (' + hotelAmenityOptions().length + ')' : 'View all (' + hotelAmenityOptions().length + ')') }}</button>
+            </section>
+          }
+
+          @if (activeTab() === 'activities' || activeTab() === 'attractions') {
+            <section class="filter-section">
+              <span class="filter-label">{{ i18n.isVi() ? 'Chủ đề trải nghiệm' : 'Experience theme' }}</span>
+              <div class="mt-3 space-y-2">
+                @for (cat of (isFilterSectionExpanded('categories') ? activityCategories() : activityCategories().slice(0, 4)); track cat.id) {
+                  <button type="button" class="filter-option" [class.filter-option-active]="category() === cat.id" [attr.aria-pressed]="category() === cat.id" (click)="category.set(cat.id)">
+                    <span class="option-radio"><span></span></span><span>{{ cat.label }}</span>
+                  </button>
+                }
+              </div>
+              <button type="button" class="detail-toggle" (click)="toggleFilterSection('categories')">{{ isFilterSectionExpanded('categories') ? (i18n.isVi() ? 'Thu gọn' : 'Show less') : (i18n.isVi() ? 'Xem tất cả (' + activityCategories().length + ')' : 'View all (' + activityCategories().length + ')') }}</button>
+            </section>
+          }
+
+          @if (activeTab() === 'vehicles') {
+            <section class="filter-section">
+              <span class="filter-label">{{ i18n.isVi() ? 'Loại phương tiện' : 'Vehicle type' }}</span>
+              <div class="mt-3 grid grid-cols-3 gap-2">
+                @for (opt of vehicleTypeOptions(); track opt.id) {
+                  <button type="button" class="choice-tile" [class.choice-tile-active]="vehicleType() === opt.id" (click)="vehicleType.set(opt.id)">{{ opt.label }}</button>
+                }
+              </div>
+            </section>
+          }
+
+          <section class="filter-section">
+            <span class="filter-label">{{ i18n.isVi() ? 'Điểm đánh giá' : 'Guest rating' }}</span>
+            <div class="mt-3 grid grid-cols-4 gap-2">
+              @for (opt of ratingOptions(); track opt.value) {
+                <button type="button" class="rating-tile" [class.rating-tile-active]="minRating() === opt.value" (click)="minRating.set(opt.value)">
+                  @if (opt.value === 0) { <span>{{ i18n.isVi() ? 'Tất cả' : 'Any' }}</span> } @else { <svg lucideStar class="h-3.5 w-3.5 fill-current"></svg><span>{{ opt.value }}+</span> }
+                </button>
+              }
+            </div>
+          </section>
+        </div>
+
+        <div class="filter-actions lg:hidden">
+          <button type="button" class="apply-button" (click)="closeFilters()">{{ i18n.isVi() ? 'Xem ' + filteredItems().length + ' kết quả' : 'Show ' + filteredItems().length + ' results' }}</button>
+        </div>
+      </aside>
+
+      <main id="catalog-results" class="min-w-0 scroll-mt-28 space-y-5">
+        <div class="result-toolbar">
+          <div>
+            <p class="text-sm text-stone-500"><span class="font-black text-natural-ink">{{ filteredItems().length }}</span> {{ i18n.isVi() ? 'lựa chọn phù hợp' : 'matching choices' }}</p>
+            <p class="mt-0.5 hidden text-xs text-stone-400 sm:block">{{ i18n.isVi() ? 'Giá tốt và trải nghiệm được cộng đồng yêu thích' : 'Great value and community-loved experiences' }}</p>
+          </div>
+          <label class="sort-control">
+            <span class="hidden text-[10px] font-black uppercase tracking-wide text-stone-400 xl:inline">{{ i18n.isVi() ? 'Sắp xếp theo' : 'Sort by' }}</span>
+            <svg lucideArrowUpDown class="h-3.5 w-3.5"></svg>
+            <select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)" [attr.aria-label]="i18n.isVi() ? 'Sắp xếp theo' : 'Sort by'">
+              <option value="default">{{ i18n.isVi() ? 'Mặc định phổ biến' : 'Popularity / Default' }}</option>
+              @if (activeTab() !== 'attractions') {
+                <option value="price-asc">{{ i18n.isVi() ? 'Giá tiền: Thấp đến Cao' : 'Price: Low to High' }}</option>
+                <option value="price-desc">{{ i18n.isVi() ? 'Giá tiền: Cao đến Thấp' : 'Price: High to Low' }}</option>
+              }
+              <option value="rating-desc">{{ i18n.isVi() ? 'Đánh giá: Cao nhất' : 'Rating: Top Rated' }}</option>
+              <option value="reviews-desc">{{ i18n.isVi() ? 'Phổ biến nhất (Nhiều đánh giá)' : 'Most Reviewed' }}</option>
+            </select>
+            <svg lucideChevronDown class="h-3.5 w-3.5"></svg>
+          </label>
+        </div>
+
+        @if (activeFilterCount() > 0) {
+          <div class="active-filters" aria-live="polite">
+            <span class="active-filter-title">{{ i18n.isVi() ? 'Đang lọc:' : 'Active:' }}</span>
+            @if (query()) { <button type="button" class="filter-chip" (click)="query.set('')">“{{ query() }}” <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (province() !== 'all') { <button type="button" class="filter-chip" (click)="province.set('all')">{{ selectedProvinceName() }} <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (category() !== 'all') { <button type="button" class="filter-chip" (click)="category.set('all')">{{ categoryLabel(category()) }} <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (minPrice() > 0 || maxPrice() !== priceMaxLimit) { <button type="button" class="filter-chip" (click)="resetPrice()">{{ formatPrice(minPrice()) }} – {{ maxPrice() === priceMaxLimit ? formatPrice(priceMaxLimit) + '+' : formatPrice(maxPrice()) }} <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (minRating() > 0) { <button type="button" class="filter-chip" (click)="minRating.set(0)"><svg lucideStar class="h-3 w-3 fill-current"></svg>{{ minRating() }}+ <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (vehicleType() !== 'all') { <button type="button" class="filter-chip" (click)="vehicleType.set('all')">{{ vehicleType() === 'car' ? (i18n.isVi() ? 'Ô tô' : 'Car') : (i18n.isVi() ? 'Xe máy' : 'Motorbike') }} <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (popularFilters().length) { <button type="button" class="filter-chip" (click)="clearHotelFilter('popular')">{{ popularFilters().length }} {{ i18n.isVi() ? 'bộ lọc phổ biến' : 'popular filters' }} <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (hotelStars().length) { <button type="button" class="filter-chip" (click)="clearHotelFilter('stars')">{{ hotelStars().join(', ') }}★ <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (hotelAreas().length) { <button type="button" class="filter-chip" (click)="clearHotelFilter('areas')">{{ hotelAreas().length }} {{ i18n.isVi() ? 'khu vực' : 'areas' }} <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (hotelTypes().length) { <button type="button" class="filter-chip" (click)="clearHotelFilter('types')">{{ hotelTypes().length }} {{ i18n.isVi() ? 'loại chỗ nghỉ' : 'property types' }} <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (hotelPolicies().length) { <button type="button" class="filter-chip" (click)="clearHotelFilter('policies')">{{ hotelPolicies().length }} {{ i18n.isVi() ? 'chính sách' : 'policies' }} <svg lucideX class="h-3 w-3"></svg></button> }
+            @if (hotelAmenities().length) { <button type="button" class="filter-chip" (click)="clearHotelFilter('amenities')">{{ hotelAmenities().length }} {{ i18n.isVi() ? 'tiện nghi' : 'amenities' }} <svg lucideX class="h-3 w-3"></svg></button> }
+          </div>
+        }
+
+        @if (filteredItems().length === 0) {
+          <div class="empty-state">
+            <span class="empty-icon"><svg lucideSearch class="h-6 w-6"></svg></span>
+            <p class="font-serif text-xl font-black text-natural-ink">{{ i18n.isVi() ? 'Chưa tìm thấy lựa chọn phù hợp' : 'No matching choices yet' }}</p>
+            <p class="mt-2 text-sm text-stone-500">{{ i18n.isVi() ? 'Thử nới rộng khoảng giá hoặc xóa bớt một vài bộ lọc nhé.' : 'Try a wider price range or remove a few filters.' }}</p>
+            <button type="button" class="mt-5 rounded-full bg-natural-ink px-5 py-2.5 text-xs font-black text-white transition hover:bg-natural-accent" (click)="resetFilters()">{{ i18n.isVi() ? 'Xóa bộ lọc' : 'Clear filters' }}</button>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            @for (item of visibleItems(); track item.id) {
+              <app-item-card [item]="item" [cta]="i18n.isVi() ? 'Thêm vào giỏ' : 'Add to cart'" />
+            }
+          </div>
+          @if (filteredItems().length > visibleCount()) {
+            <div class="flex justify-center pt-3">
+              <button type="button" class="load-more" (click)="visibleCount.set(visibleCount() + 9)">{{ i18n.isVi() ? 'Khám phá thêm' : 'Explore more' }}</button>
+            </div>
+          }
+        }
+      </main>
     </div>
+  </div>
+</div>
