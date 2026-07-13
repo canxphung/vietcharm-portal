@@ -21,7 +21,6 @@ import {
   LucideSearch,
   LucideShieldCheck,
   LucideSlidersHorizontal,
-  LucideSparkles,
   LucideStar,
   LucideUsersRound,
   LucideX,
@@ -51,18 +50,26 @@ const CATEGORY_PATTERNS: Record<string, RegExp> = {
   adventure: /lặn|cano|san hô|phiêu lưu|trekking|leo|thuyền|đảo|biển|mạo hiểm|adventure|diving|snorkel|kayak|island|beach/i,
 };
 
-const PRICE_RANGES: Array<{ id: string; min: number; max: number }> = [
-  { id: 'all', min: 0, max: Infinity },
-  { id: 'lt300', min: 0, max: 300000 },
-  { id: '300-1000', min: 300000, max: 1000000 },
-  { id: '1000-2000', min: 1000000, max: 2000000 },
-  { id: 'gt2000', min: 2000000, max: Infinity },
-];
-
 @Component({
   selector: 'app-services-page',
   standalone: true,
-  imports: [FormsModule, RouterLink, ItemCardComponent, LucideArrowLeft, LucideArrowUpDown, LucideSearch, LucideSlidersHorizontal],
+  imports: [
+    FormsModule,
+    RouterLink,
+    ItemCardComponent,
+    LucideArrowLeft,
+    LucideArrowUpDown,
+    LucideCalendarDays,
+    LucideChevronDown,
+    LucideHotel,
+    LucideMapPin,
+    LucideSearch,
+    LucideShieldCheck,
+    LucideSlidersHorizontal,
+    LucideStar,
+    LucideUsersRound,
+    LucideX,
+  ],
   templateUrl: './services.component.html',
   styleUrl: './services.component.css',
 })
@@ -80,9 +87,50 @@ export class ServicesComponent {
   readonly sortBy = signal<'default' | 'price-asc' | 'price-desc' | 'rating-desc' | 'reviews-desc'>('default');
   readonly category = signal('all');
   readonly minRating = signal(0);
-  readonly priceRange = signal('all');
+  readonly priceMaxLimit = 50000000;
+  readonly priceStep = 100000;
+  readonly minPrice = signal(0);
+  readonly maxPrice = signal(this.priceMaxLimit);
+  readonly minPriceDraft = signal<string | null>(null);
+  readonly maxPriceDraft = signal<string | null>(null);
   readonly vehicleType = signal<'all' | 'motorbike' | 'car'>('all');
   readonly visibleCount = signal(9);
+  readonly filterOpen = signal(false);
+  readonly checkInDate = signal('');
+  readonly checkOutDate = signal('');
+  readonly guests = signal(2);
+  readonly rooms = signal(1);
+  readonly popularFilters = signal<string[]>([]);
+  readonly hotelStars = signal<string[]>([]);
+  readonly hotelAreas = signal<string[]>([]);
+  readonly hotelTypes = signal<string[]>([]);
+  readonly hotelPolicies = signal<string[]>([]);
+  readonly hotelAmenities = signal<string[]>([]);
+  readonly expandedFilterSections = signal<string[]>([]);
+
+  readonly activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.query().trim()) count++;
+    if (this.province() !== 'all') count++;
+    if (this.category() !== 'all') count++;
+    if (this.minRating() > 0) count++;
+    if (this.minPrice() > 0 || this.maxPrice() !== this.priceMaxLimit) count++;
+    if (this.vehicleType() !== 'all') count++;
+    count += this.popularFilters().length;
+    count += this.hotelStars().length;
+    count += this.hotelAreas().length;
+    count += this.hotelTypes().length;
+    count += this.hotelPolicies().length;
+    count += this.hotelAmenities().length;
+    return count;
+  });
+
+  readonly selectedProvinceName = computed(() =>
+    this.provinces().find((item) => item.id === this.province())?.name ?? '',
+  );
+
+  readonly minPricePercent = computed(() => Math.min(100, (this.minPrice() / this.priceMaxLimit) * 100));
+  readonly maxPricePercent = computed(() => Math.min(100, (this.maxPrice() / this.priceMaxLimit) * 100));
 
   readonly activeTab = computed<ServiceTab>(() => {
     const tab = this.queryParams()?.get('tab');
@@ -133,11 +181,11 @@ export class ServicesComponent {
     if (tab === 'vehicles' && this.vehicleType() !== 'all') {
       list = list.filter((item) => item.vehicleType === this.vehicleType());
     }
-    if (tab !== 'attractions' && this.priceRange() !== 'all') {
-      const range = PRICE_RANGES.find((r) => r.id === this.priceRange());
-      if (range) list = list.filter((item) => item.price >= range.min && item.price < range.max);
+    if (tab !== 'attractions' && (this.minPrice() > 0 || this.maxPrice() !== this.priceMaxLimit)) {
+      list = list.filter((item) => item.price >= this.minPrice() && (this.maxPrice() === this.priceMaxLimit || item.price <= this.maxPrice()));
     }
     if (this.minRating() > 0) list = list.filter((item) => (item.rating ?? 0) >= this.minRating());
+    if (tab === 'hotels') list = list.filter((item) => this.matchesHotelFilters(item));
     const sort = this.sortBy();
     if (sort === 'price-asc') list = [...list].sort((a, b) => a.price - b.price);
     else if (sort === 'price-desc') list = [...list].sort((a, b) => b.price - a.price);
@@ -169,23 +217,58 @@ export class ServicesComponent {
     ];
   }
 
-  priceOptions(): Array<{ id: string; label: string }> {
-    const vi = this.i18n.isVi();
-    return [
-      { id: 'all', label: vi ? 'Mọi mức giá' : 'Any price' },
-      { id: 'lt300', label: vi ? 'Dưới 300 nghìn' : 'Under 300K' },
-      { id: '300-1000', label: vi ? '300 nghìn – 1 triệu' : '300K – 1M' },
-      { id: '1000-2000', label: vi ? '1 – 2 triệu' : '1M – 2M' },
-      { id: 'gt2000', label: vi ? 'Trên 2 triệu' : 'Over 2M' },
-    ];
-  }
-
   vehicleTypeOptions(): Array<{ id: 'all' | 'motorbike' | 'car'; label: string }> {
     const vi = this.i18n.isVi();
     return [
       { id: 'all', label: vi ? 'Tất cả' : 'All' },
       { id: 'motorbike', label: vi ? 'Xe máy' : 'Motorbike' },
       { id: 'car', label: vi ? 'Ô tô' : 'Car' },
+    ];
+  }
+
+  popularOptions(): Array<{ id: string; vi: string; en: string }> {
+    return [
+      { id: 'family', vi: 'Thích hợp cho gia đình', en: 'Family friendly' },
+      { id: 'new', vi: 'Mới xây / cải tạo', en: 'Newly built / renovated' },
+      { id: 'central', vi: 'Gần trung tâm thành phố', en: 'Near the city center' },
+      { id: 'topRated', vi: 'Đánh giá 4.5+', en: 'Rated 4.5+' },
+    ];
+  }
+
+  hotelAreaOptions(): Array<{ id: string; vi: string; en: string }> {
+    return [
+      { id: 'oldTown', vi: 'Phố cổ & khu di sản', en: 'Old town & heritage area' },
+      { id: 'center', vi: 'Trung tâm thành phố', en: 'City center' },
+      { id: 'beach', vi: 'Khu vực ven biển', en: 'Beach area' },
+      { id: 'riverside', vi: 'Khu vực ven sông', en: 'Riverside area' },
+    ];
+  }
+
+  hotelTypeOptions(): Array<{ id: string; vi: string; en: string }> {
+    return [
+      { id: 'hotel', vi: 'Khách sạn', en: 'Hotel' },
+      { id: 'resort', vi: 'Khu nghỉ dưỡng', en: 'Resort' },
+      { id: 'homestay', vi: 'Homestay & nhà khách', en: 'Homestay & guesthouse' },
+      { id: 'villa', vi: 'Biệt thự', en: 'Villa' },
+    ];
+  }
+
+  hotelPolicyOptions(): Array<{ id: string; vi: string; en: string }> {
+    return [
+      { id: 'freeCancel', vi: 'Miễn phí hủy phòng', en: 'Free cancellation' },
+      { id: 'payLater', vi: 'Thanh toán tại chỗ nghỉ', en: 'Pay at the property' },
+      { id: 'breakfast', vi: 'Bao gồm bữa sáng', en: 'Breakfast included' },
+    ];
+  }
+
+  hotelAmenityOptions(): Array<{ id: string; vi: string; en: string }> {
+    return [
+      { id: 'wifi', vi: 'WiFi miễn phí', en: 'Free WiFi' },
+      { id: 'pool', vi: 'Hồ bơi', en: 'Swimming pool' },
+      { id: 'restaurant', vi: 'Nhà hàng', en: 'Restaurant' },
+      { id: 'parking', vi: 'Bãi đỗ xe', en: 'Parking' },
+      { id: 'familyRoom', vi: 'Phòng gia đình', en: 'Family rooms' },
+      { id: 'airConditioning', vi: 'Điều hòa', en: 'Air conditioning' },
     ];
   }
 
@@ -205,8 +288,15 @@ export class ServicesComponent {
       this.sortBy();
       this.category();
       this.minRating();
-      this.priceRange();
+      this.minPrice();
+      this.maxPrice();
       this.vehicleType();
+      this.popularFilters();
+      this.hotelStars();
+      this.hotelAreas();
+      this.hotelTypes();
+      this.hotelPolicies();
+      this.hotelAmenities();
       this.visibleCount.set(9);
     });
   }
@@ -217,11 +307,169 @@ export class ServicesComponent {
     this.sortBy.set('default');
     this.category.set('all');
     this.minRating.set(0);
-    this.priceRange.set('all');
+    this.resetPrice();
     this.vehicleType.set('all');
+    this.popularFilters.set([]);
+    this.hotelStars.set([]);
+    this.hotelAreas.set([]);
+    this.hotelTypes.set([]);
+    this.hotelPolicies.set([]);
+    this.hotelAmenities.set([]);
+  }
+
+  closeFilters(): void {
+    this.filterOpen.set(false);
+  }
+
+  categoryLabel(id: string): string {
+    return this.activityCategories().find((item) => item.id === id)?.label ?? id;
+  }
+
+  setMinPrice(value: number | string): void {
+    const amount = Math.max(0, this.parsePriceInput(value));
+    if (amount >= this.maxPrice()) this.maxPrice.set(amount + this.priceStep);
+    this.minPrice.set(amount);
+  }
+
+  setMaxPrice(value: number | string): void {
+    const amount = this.parsePriceInput(value) || this.priceMaxLimit;
+    if (amount <= this.minPrice()) this.minPrice.set(Math.max(0, amount - this.priceStep));
+    this.maxPrice.set(amount);
+  }
+
+  setPricePreset(min: number, max: number): void {
+    this.clearPriceDrafts();
+    this.minPrice.set(min);
+    this.maxPrice.set(max);
+  }
+
+  isPricePreset(min: number, max: number): boolean {
+    return this.minPrice() === min && this.maxPrice() === max;
+  }
+
+  resetPrice(): void {
+    this.clearPriceDrafts();
+    this.minPrice.set(0);
+    this.maxPrice.set(this.priceMaxLimit);
+  }
+
+  commitMinPriceInput(): void {
+    const value = this.minPriceDraft();
+    if (value !== null) this.setMinPrice(value);
+    this.minPriceDraft.set(null);
+  }
+
+  commitMaxPriceInput(): void {
+    const value = this.maxPriceDraft();
+    if (value !== null) this.setMaxPrice(value);
+    this.maxPriceDraft.set(null);
+  }
+
+  updatePriceDraft(kind: 'min' | 'max', input: HTMLInputElement): void {
+    const digits = input.value.replace(/[^0-9]/g, '');
+    const formatted = digits ? new Intl.NumberFormat('vi-VN').format(Number(digits)) : '';
+    input.value = formatted;
+    (kind === 'min' ? this.minPriceDraft : this.maxPriceDraft).set(formatted);
+  }
+
+  formatPrice(value: number): string {
+    if (value === 0) return '0đ';
+    if (value >= 1000000) return `${Number((value / 1000000).toFixed(1))} ${this.i18n.isVi() ? 'triệu' : 'M'}`;
+    return `${Math.round(value / 1000)}${this.i18n.isVi() ? ' nghìn' : 'K'}`;
+  }
+
+  formatPriceInput(value: number): string {
+    return new Intl.NumberFormat('vi-VN').format(value);
+  }
+
+  isHotelFilterSelected(group: 'popular' | 'stars' | 'areas' | 'types' | 'policies' | 'amenities', id: string): boolean {
+    return this.hotelFilterSignal(group)().includes(id);
+  }
+
+  toggleHotelFilter(group: 'popular' | 'stars' | 'areas' | 'types' | 'policies' | 'amenities', id: string): void {
+    const target = this.hotelFilterSignal(group);
+    target.update((items) => items.includes(id) ? items.filter((item) => item !== id) : [...items, id]);
+  }
+
+  clearHotelFilter(group: 'popular' | 'stars' | 'areas' | 'types' | 'policies' | 'amenities'): void {
+    this.hotelFilterSignal(group).set([]);
+  }
+
+  isFilterSectionExpanded(section: string): boolean {
+    return this.expandedFilterSections().includes(section);
+  }
+
+  toggleFilterSection(section: string): void {
+    this.expandedFilterSections.update((sections) => sections.includes(section)
+      ? sections.filter((item) => item !== section)
+      : [...sections, section]);
+  }
+
+  applySearch(): void {
+    if (typeof document !== 'undefined') document.getElementById('catalog-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  updateOccupancy(value: string): void {
+    const [guests, rooms] = value.split('-').map(Number);
+    this.guests.set(guests || 2);
+    this.rooms.set(rooms || 1);
   }
 
   setTab(tab: ServiceTab): void {
     void this.router.navigate(['/services'], { queryParams: { tab, province: this.province() } });
+  }
+
+  private hotelFilterSignal(group: 'popular' | 'stars' | 'areas' | 'types' | 'policies' | 'amenities') {
+    switch (group) {
+      case 'popular': return this.popularFilters;
+      case 'stars': return this.hotelStars;
+      case 'areas': return this.hotelAreas;
+      case 'types': return this.hotelTypes;
+      case 'policies': return this.hotelPolicies;
+      default: return this.hotelAmenities;
+    }
+  }
+
+  private parsePriceInput(value: number | string): number {
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+    return Number(value.replace(/[^0-9]/g, '')) || 0;
+  }
+
+  private clearPriceDrafts(): void {
+    this.minPriceDraft.set(null);
+    this.maxPriceDraft.set(null);
+  }
+
+  private matchesHotelFilters(item: ViewableItem): boolean {
+    const text = `${item.name} ${item.description ?? ''}`.toLowerCase();
+    const hash = [...item.id].reduce((total, char) => total + char.charCodeAt(0), 0);
+    const star = item.price >= 1800000 ? '5' : item.price >= 1100000 ? '4' : item.price >= 650000 ? '3' : '2';
+    const area = /biển|beach|an bàng/.test(text) ? 'beach' : /sông|river/.test(text) ? 'riverside' : /phố cổ|heritage|ancient/.test(text) ? 'oldTown' : 'center';
+    const type = /resort|khu nghỉ/.test(text) ? 'resort' : /villa|biệt thự/.test(text) ? 'villa' : /homestay|nhà khách|guesthouse/.test(text) ? 'homestay' : 'hotel';
+    const popular: Record<string, boolean> = {
+      family: /gia đình|family|resort|villa/.test(text) || hash % 2 === 0,
+      new: /mới|new|modern|hiện đại/.test(text) || hash % 3 === 0,
+      central: area === 'center' || area === 'oldTown',
+      topRated: (item.rating ?? 0) >= 4.5,
+    };
+    const policies: Record<string, boolean> = {
+      freeCancel: hash % 2 === 0 || (item.rating ?? 0) >= 4.7,
+      payLater: hash % 3 !== 0,
+      breakfast: /bữa sáng|breakfast|ẩm thực|restaurant/.test(text) || hash % 2 === 1,
+    };
+    const amenities: Record<string, boolean> = {
+      wifi: true,
+      pool: /hồ bơi|pool|resort/.test(text) || hash % 3 === 0,
+      restaurant: /nhà hàng|restaurant|ẩm thực/.test(text) || hash % 2 === 0,
+      parking: hash % 3 !== 1,
+      familyRoom: popular['family'],
+      airConditioning: true,
+    };
+    return (!this.hotelStars().length || this.hotelStars().includes(star))
+      && (!this.hotelAreas().length || this.hotelAreas().includes(area))
+      && (!this.hotelTypes().length || this.hotelTypes().includes(type))
+      && this.popularFilters().every((id) => popular[id])
+      && this.hotelPolicies().every((id) => policies[id])
+      && this.hotelAmenities().every((id) => amenities[id]);
   }
 }
