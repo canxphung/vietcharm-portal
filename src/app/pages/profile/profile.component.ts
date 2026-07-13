@@ -154,9 +154,12 @@ export class ProfileComponent {
 
   /** Received and unreviewed, still inside the review window — ready to review now. */
   pendingReviewItems(user: UserAccount): BookingCartItem[] {
-    return this.unreviewedConfirmedRefs(user)
-      .filter((r) => this.catalog.isItemReviewReady(r.item))
-      .map((r) => r.item);
+    return this.pendingReviewRefs(user).map((r) => r.item);
+  }
+
+  /** Same list but keeping the booking, so the card can also open the report-an-issue flow. */
+  pendingReviewRefs(user: UserAccount): BookingItemRef[] {
+    return this.unreviewedConfirmedRefs(user).filter((r) => this.catalog.isItemReviewReady(r.item));
   }
 
   isItemUsable(it: BookingCartItem): boolean {

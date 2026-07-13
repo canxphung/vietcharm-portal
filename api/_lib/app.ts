@@ -16,6 +16,7 @@ import vouchersRouter from './routes/vouchers';
 import partnershipsRouter from './routes/partnerships';
 import serviceReviewsRouter from './routes/serviceReviews';
 import complaintsRouter from './routes/complaints';
+import tripRoomsRouter from './routes/tripRooms';
 
 /** Shared Express app mounted by both `server.ts` (standalone) and `api/[...catchall].ts` (Vercel). */
 export const app = express();
@@ -38,6 +39,7 @@ app.use('/api/vouchers', vouchersRouter);
 app.use('/api/partnerships', partnershipsRouter);
 app.use('/api/service-reviews', serviceReviewsRouter);
 app.use('/api/complaints', complaintsRouter);
+app.use('/api/trip-rooms', tripRoomsRouter);
 
 app.post('/api/itinerary', async (req, res) => {
   const { province = 'quang-nam', budget = 3000000, language = 'vi' } = req.body ?? {};
