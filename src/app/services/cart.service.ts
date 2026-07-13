@@ -134,7 +134,7 @@ export class CartService {
   }
 
   addCombo(items: BookingCartItem[]): void {
-    const replacesCart = items.some((item) => item.id.startsWith('ai-'));
+    const replacesCart = items.some((item) => item.id.startsWith('plan-'));
     this.items.update((current) => (replacesCart ? [...items] : [...current, ...items]));
     this.deselectedKeys.set([]);
     this.toast.showToast({

@@ -42,8 +42,8 @@
 
           <p class="mt-5 max-w-2xl text-sm leading-relaxed text-white/82 md:text-base">
             {{ i18n.isVi()
-              ? 'VietCharm gom điểm đến, nơi ở, xe, hoạt động và lịch trình AI vào một flow đặt chuyến. Khu vực phục vụ đang được mở rộng dần, với trải nghiệm thiết kế cho cả bản đồ Việt Nam.'
-              : 'VietCharm brings destinations, stays, rides, experiences, and AI itineraries into one trip flow. Coverage keeps expanding across regions, with an experience designed for the full Vietnam map.' }}
+              ? 'VietCharm gom điểm đến, nơi ở, phương tiện và hoạt động vào một luồng khám phá, chọn dịch vụ và đặt chuyến. Khu vực phục vụ đang được mở rộng dần trên bản đồ Việt Nam.'
+              : 'VietCharm brings destinations, stays, rides, and experiences into one flow for browsing, choosing, and booking services. Coverage is expanding across Vietnam.' }}
           </p>
 
           <div class="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -60,7 +60,7 @@
               class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/25 bg-white/12 px-6 text-sm font-black text-white backdrop-blur transition hover:bg-white/20"
             >
               <i class="bi bi-stars h-4 w-4"></i>
-              <span>{{ i18n.isVi() ? 'Để AI gợi ý chuyến đi' : 'Let AI suggest a trip' }}</span>
+              <span>{{ i18n.isVi() ? 'Khám phá chuyến đi ẩn số' : 'Explore a surprise trip' }}</span>
             </a>
           </div>
         </div>
@@ -107,7 +107,7 @@
       <div class="mx-auto max-w-7xl text-center">
         <div reveal class="mb-12">
           <span class="rounded-full border border-natural-border bg-natural-beige px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-natural-accent">{{ i18n.dictionary().selectRegion }}</span>
-          <h2 class="mx-auto mt-6 max-w-4xl font-serif text-3xl font-bold leading-tight tracking-tight text-natural-text md:text-5xl">{{ i18n.isVi() ? 'Chọn vùng, rồi để VietCharm gom lịch trình cho bạn.' : 'Pick a region, then let VietCharm shape the trip.' }}</h2>
+          <h2 class="mx-auto mt-6 max-w-4xl font-serif text-3xl font-bold leading-tight tracking-tight text-natural-text md:text-5xl">{{ i18n.isVi() ? 'Chọn vùng, rồi xem tuyến và dịch vụ đang có.' : 'Pick a region, then browse available routes and services.' }}</h2>
           <p class="mx-auto mt-4 max-w-2xl text-sm text-natural-text/80 md:text-base">{{ i18n.isVi() ? 'Mỗi vùng có một nhịp đi riêng. VietCharm giữ cấu trúc Bắc, Trung, Nam ngang nhau; dữ liệu đặt dịch vụ sẽ được mở dần theo từng cụm điểm đến.' : 'Every region has its own travel rhythm. VietCharm keeps North, Central, and South equally visible while service data opens destination by destination.' }}</p>
           <div class="mt-7 flex items-center justify-center gap-3" aria-hidden="true">
             <span class="h-px w-12 bg-gradient-to-r from-transparent to-natural-gold/70 sm:w-20"></span>
@@ -179,7 +179,7 @@
               <div class="space-y-3 text-left">
                 <span class="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-amber-800"><i class="bi bi-magic h-3 w-3" aria-hidden="true"></i>{{ i18n.isVi() ? 'BLIND TRAVEL: TRẢI NGHIỆM ẨN SỐ' : 'BLIND TRAVEL: SURPRISE ADVENTURE' }}</span>
                 <h4 class="font-serif text-xl font-black text-natural-text">{{ i18n.isVi() ? 'Blind Travel – Hành Trình Ẩn Số Độc Bản' : 'Blind Travel – Unbox Secret Getaways' }}</h4>
-                <p class="text-xs leading-relaxed text-natural-text/80">{{ i18n.isVi() ? 'Bỏ qua áp lực đau đầu so sánh giá và lên lịch trình. Chỉ nhập ngân sách, số ngày nghỉ và gu du lịch, hệ thống AI sẽ tự động đặt mọi thứ. Bạn sẽ không biết mình đi đâu cho đến khi ra sân bay (nhận gợi ý chuẩn bị trang phục trước 3 ngày)!' : 'Ditch the exhaustive schedules. Choose your budget, days and vibes. The AI reserves everything automatically and seals the final oracle destination card until you arrive at the airport!' }}</p>
+                <p class="text-xs leading-relaxed text-natural-text/80">{{ i18n.isVi() ? 'Chọn ngân sách, số ngày nghỉ và gu du lịch để xem một gói chuyến đi mẫu bất ngờ từ VietCharm. Gói hiển thị lịch trình dự kiến, phương tiện và nơi lưu trú; bạn vẫn là người quyết định trước khi thêm vào giỏ.' : 'Choose your budget, trip length, and travel mood to preview a surprise sample bundle from VietCharm. It shows a suggested schedule, transport, and stay, and you decide whether to add it to your cart.' }}</p>
               </div>
               <a routerLink="/blind-travel" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-natural-gold px-5 py-2.5 font-serif text-xs font-black text-natural-ink transition hover:bg-natural-gold-dark"><span>{{ i18n.isVi() ? 'Khám phá hành trình ẩn số' : 'Explore Blind Travel' }}</span><i class="bi bi-arrow-right h-4 w-4"></i></a>
             </div>

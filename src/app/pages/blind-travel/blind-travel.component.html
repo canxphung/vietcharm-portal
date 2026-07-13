@@ -9,7 +9,7 @@
         <div class="mx-auto max-w-3xl space-y-3 text-center">
           <div class="inline-flex items-center gap-1.5 rounded-full bg-natural-border-light px-3 py-1 text-[10px] font-black uppercase tracking-widest text-natural-accent"><i class="bi bi-fire h-3.5 w-3.5 text-amber-500"></i><span>{{ isVi() ? 'HÀNH TRÌNH TRẢI NGHIỆM ẨN SỐ' : 'BLIND TRAVEL ESCAPADE' }}</span></div>
           <h2 class="font-serif text-3xl font-black tracking-tight text-natural-text md:text-5xl">{{ isVi() ? 'Hành Trình Ẩn Số – Nhận Quà Từ Tương Lai' : 'Blind Travel – Unbox Your Surprise Escape' }}</h2>
-          <p class="mx-auto max-w-2xl text-xs leading-relaxed text-natural-text/80 md:text-sm">{{ isVi() ? 'Thay vì tốn hàng chục tiếng so sánh giá phòng và đau đầu lên lịch trình, hãy nhập ngân sách, số ngày nghỉ và gu tận hưởng của bạn. VietCharm sẽ tự động sắp xếp xe riêng đưa đón khứ hồi cùng phòng Resort Heritage ẩn danh.' : 'Appealing to adventure-seekers and busy people tired of planning. Input your budget, length of stay, and preference guidelines. VietCharm reserves private roundtrip transfers and premium heritage secret stays.' }}</p>
+          <p class="mx-auto max-w-2xl text-xs leading-relaxed text-natural-text/80 md:text-sm">{{ isVi() ? 'Chọn ngân sách, số ngày nghỉ và gu trải nghiệm để xem một gói chuyến đi mẫu bất ngờ. VietCharm hiển thị tuyến dự kiến, nơi lưu trú và phương tiện đi kèm để bạn xem trước rồi quyết định đặt.' : 'Choose your budget, trip length, and travel mood to preview a surprise sample bundle. VietCharm shows the suggested route, stay, and transport so you can review everything before booking.' }}</p>
         </div>
 
         <div class="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
@@ -60,7 +60,7 @@
                 <button type="submit" [disabled]="loading()" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-natural-accent py-4 font-serif font-black text-white shadow-xl transition duration-300 hover:bg-natural-olive disabled:opacity-50"><i class="bi bi-stars h-4 w-4 text-amber-300"></i><span>{{ isVi() ? 'LẬP TRÌNH CHUYẾN ĐI BẤT NGỜ' : 'COMPILE SURPRISE ORACLE' }}</span></button>
               </div>
             </form>
-            <div class="mt-5 flex items-start gap-2 rounded-2xl border border-amber-200/40 bg-amber-50/50 p-3.5 text-[10px] leading-relaxed text-amber-900"><i class="bi bi-lightbulb shrink-0 text-sm" aria-hidden="true"></i><span><strong>{{ isVi() ? 'Yếu tố lôi cuốn thế hệ trẻ:' : 'Why young explorers love this:' }}</strong> {{ isVi() ? 'Bạn sẽ không biết chính xác điểm đến của mình là đâu cho đến khi xe đón bạn khởi hành! Tuy nhiên, hệ thống sẽ gửi gợi ý chuẩn bị quần áo/trang phục trước 3 ngày để bạn chủ động chuẩn bị.' : 'You will remain blind to the exact destination until your pick-up time! Rest easy: a smart packaging guide arrives 3 days early to prepare your wardrobe perfectly.' }}</span></div>
+            <div class="mt-5 flex items-start gap-2 rounded-2xl border border-amber-200/40 bg-amber-50/50 p-3.5 text-[10px] leading-relaxed text-amber-900"><i class="bi bi-lightbulb shrink-0 text-sm" aria-hidden="true"></i><span><strong>{{ isVi() ? 'Điểm thú vị của chuyến đi:' : 'What makes it fun:' }}</strong> {{ isVi() ? 'Điểm đến được giữ bí mật cho đến khi bạn mở hộp gói mẫu. Khi mở, bạn sẽ thấy ngay lịch trình dự kiến và gợi ý chuẩn bị trang phục phù hợp.' : 'The destination stays hidden until you open the sample bundle. Once revealed, you can immediately review the suggested schedule and packing guidance.' }}</span></div>
           </div>
 
           <!-- RIGHT -->
@@ -73,13 +73,13 @@
                 <div class="max-w-sm space-y-4 text-center">
                   <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-natural-border bg-natural-sand"><i class="bi bi-gift h-10 w-10 animate-bounce text-natural-accent"></i></div>
                   <h4 class="font-serif text-base font-black text-natural-text">{{ isVi() ? 'Hòm Quà Hành Trình Đang Chờ Đợi' : 'Mystery Escape Chest Awaiting' }}</h4>
-                  <p class="text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Hãy điền ngân sách và sở thích ở khung bên trái. Hệ thống VietCharm sẽ gói gọn lộ trình di chuyển & nghỉ dưỡng hoàn mỹ trong hộp quà bí mật!' : 'Set your budget cap and preferred taste on the left. The compiler will seal your ride & luxury stay inside a glowing surprise envelope!' }}</p>
+                  <p class="text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Hãy chọn ngân sách và sở thích ở khung bên trái. VietCharm sẽ đối chiếu các lựa chọn đó với một gói mẫu đang có để bạn xem trước.' : 'Choose your budget and preferences on the left. VietCharm will match those choices with an available sample bundle for you to preview.' }}</p>
                 </div>
               }
               @case ('loading') {
                 <div class="max-w-md space-y-6 text-center">
                   <div class="relative mx-auto h-16 w-16"><div class="absolute inset-0 rounded-full border-4 border-natural-accent/30"></div><div class="absolute inset-0 animate-spin rounded-full border-4 border-t-natural-accent"></div><i class="bi bi-compass absolute inset-0 m-auto h-6 w-6 animate-pulse text-natural-accent"></i></div>
-                  <div class="space-y-2"><h4 class="animate-pulse font-serif text-xs font-black uppercase tracking-widest text-natural-accent">{{ isVi() ? 'Đang giữ chỗ và chuẩn bị gợi ý hành trình...' : 'Holding options and preparing your trip reveal...' }}</h4><p class="flex items-center justify-center gap-2 rounded-xl border border-natural-border bg-natural-sand px-4 py-2.5 font-mono text-[11px] text-natural-text/90"><i [class]="'bi ' + loadingStepIcon() + ' shrink-0 text-natural-accent'" aria-hidden="true"></i><span>{{ loadingStep() }}</span></p></div>
+                  <div class="space-y-2"><h4 class="animate-pulse font-serif text-xs font-black uppercase tracking-widest text-natural-accent">{{ isVi() ? 'Đang chuẩn bị gói hành trình mẫu...' : 'Preparing your sample trip bundle...' }}</h4><p class="flex items-center justify-center gap-2 rounded-xl border border-natural-border bg-natural-sand px-4 py-2.5 font-mono text-[11px] text-natural-text/90"><i [class]="'bi ' + loadingStepIcon() + ' shrink-0 text-natural-accent'" aria-hidden="true"></i><span>{{ loadingStep() }}</span></p></div>
                 </div>
               }
               @case ('sealed-box') {
@@ -88,7 +88,7 @@
                     <div class="mx-auto flex h-28 w-28 cursor-pointer items-center justify-center rounded-3xl bg-natural-accent text-white shadow-2xl transition hover:scale-105" (click)="openGift()"><i class="bi bi-gift h-14 w-14 animate-pulse text-amber-300"></i></div>
                     <div class="absolute -right-1 -top-1 animate-bounce rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-black uppercase text-white">Ready!</div>
                   </div>
-                  <div class="space-y-2"><h4 class="flex items-center justify-center gap-2 font-serif text-base font-black text-natural-text"><i class="bi bi-gift text-natural-accent" aria-hidden="true"></i><span>{{ isVi() ? 'Hộp Quà Ẩn Số Đã Khóa!' : 'Your Secret Box is Sealed!' }}</span></h4><p class="text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Lá số chuyến đi bất ngờ đã được niêm phong an toàn. Hãy nhấp chuột vào chiếc hộp để mở bung và chiêm ngưỡng hành trình dành riêng cho bạn!' : 'The heritage algorithm has locked your special getaway. Click/Tap the unboxing envelope to tear open your golden surprise ticket!' }}</p></div>
+                  <div class="space-y-2"><h4 class="flex items-center justify-center gap-2 font-serif text-base font-black text-natural-text"><i class="bi bi-gift text-natural-accent" aria-hidden="true"></i><span>{{ isVi() ? 'Hộp Quà Ẩn Số Đã Sẵn Sàng!' : 'Your Surprise Box Is Ready!' }}</span></h4><p class="text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Gói chuyến đi mẫu đã sẵn sàng. Hãy mở hộp để xem điểm đến, lịch trình dự kiến và các dịch vụ đi kèm trước khi quyết định đặt.' : 'Your sample trip bundle is ready. Open it to review the destination, suggested schedule, and included services before deciding to book.' }}</p></div>
                   <button type="button" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-8 py-3.5 font-serif text-xs font-bold text-white shadow-md transition duration-300 hover:bg-emerald-800" (click)="openGift()"><i class="bi bi-stars" aria-hidden="true"></i><span>{{ isVi() ? 'MỞ TUNG QUÀ BẤT NGỜ' : 'TEAR OPEN SURPRISE GIFT' }}</span></button>
                 </div>
               }
@@ -111,10 +111,10 @@
                       </div>
                       <div class="mt-4 flex gap-3 rounded-2xl border border-natural-border bg-natural-border-light/50 p-3">
                         <i class="bi bi-person-standing mt-0.5 h-5 w-5 shrink-0 text-natural-accent"></i>
-                        <div><span class="block text-[9px] font-black uppercase text-natural-accent">{{ isVi() ? 'Gợi Ý Chuẩn Bị Trang Phục (3 ngày trước khởi hành)' : 'Apparel Guidance (Sent 3 Days Early)' }}</span><p class="mt-0.5 text-[11px] leading-relaxed text-natural-text/80">{{ isVi() ? dest.packingVi : dest.packingEn }}</p></div>
+                        <div><span class="block text-[9px] font-black uppercase text-natural-accent">{{ isVi() ? 'Gợi ý chuẩn bị trang phục' : 'Packing suggestions' }}</span><p class="mt-0.5 text-[11px] leading-relaxed text-natural-text/80">{{ isVi() ? dest.packingVi : dest.packingEn }}</p></div>
                       </div>
                       <div class="mt-4 space-y-2 border-t border-natural-border pt-3">
-                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-natural-accent"><i class="bi bi-stars" aria-hidden="true"></i><span>{{ isVi() ? 'Lộ Trình Bất Ngờ Thiết Kế' : 'Surprise Itinerary Highlight Node' }}</span></span>
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-natural-accent"><i class="bi bi-stars" aria-hidden="true"></i><span>{{ isVi() ? 'Lịch trình mẫu của gói' : 'Sample bundle itinerary' }}</span></span>
                         <ul class="space-y-1.5 text-xs">
                           @for (day of (isVi() ? dest.itineraryVi : dest.itineraryEn); track day) {
                             <li class="flex items-start gap-2 text-natural-text/95"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-natural-accent"></span><span>{{ day }}</span></li>

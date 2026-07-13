@@ -26,7 +26,7 @@ export class HomeComponent {
   readonly heroImage =
     'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1800&q=85';
   readonly stats = [
-    { icon: 'calendar', valueVi: 'AI', valueEn: 'AI', labelVi: 'lịch trình theo gu', labelEn: 'mood-based routes', label: 'routes' },
+    { icon: 'calendar', valueVi: 'Theo gu', valueEn: 'By mood', labelVi: 'gói chuyến đi mẫu', labelEn: 'sample trip bundles', label: 'routes' },
     { icon: 'hotel', valueVi: '18+', valueEn: '18+', labelVi: 'lưu trú chọn lọc', labelEn: 'curated stays', label: 'stays' },
     { icon: 'map', valueVi: 'Bắc-Trung-Nam', valueEn: 'N-C-S', labelVi: 'khung vùng du lịch', labelEn: 'regional framework', label: 'framework' },
     { icon: 'users', valueVi: 'Nhóm', valueEn: 'Groups', labelVi: 'cùng vote lịch trình', labelEn: 'co-plan together', label: 'group' },
