@@ -26,12 +26,10 @@ import {
   LucideX,
 } from '@lucide/angular';
 import { ToastService } from '@/services/toast.service';
-import { provinces } from '@/data';
 import { SERVICE_TABS, isServiceTab, type ServiceTab } from '@/constants/views';
 import type { ViewableItem } from '@/types';
 import { I18nService } from '@/services/i18n.service';
 import { UiStateService } from '@/services/ui-state.service';
-import { allCatalogItems, allProvinceItems, itemsForTab, provinceById } from '@/services/catalog-data';
 import { ItemCardComponent } from '@/components/item-card/item-card.component';
 import { JourneyMapComponent } from '@/components/journey-map/journey-map.component';
 import { RevealDirective } from '@/directives/reveal.directive';

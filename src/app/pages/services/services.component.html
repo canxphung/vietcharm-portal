@@ -42,7 +42,7 @@
                   <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Tỉnh thành' : 'Province' }}</label>
                   <select [ngModel]="province()" (ngModelChange)="province.set($event)" class="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-natural-text focus:border-natural-accent focus:outline-none">
                     <option value="all">{{ i18n.isVi() ? 'Tất cả tỉnh thành' : 'All provinces' }}</option>
-                    @for (p of provinces; track p.id) { <option [value]="p.id">{{ p.name }}</option> }
+                    @for (p of provinces(); track p.id) { <option [value]="p.id">{{ p.name }}</option> }
                   </select>
                 </div>
               }

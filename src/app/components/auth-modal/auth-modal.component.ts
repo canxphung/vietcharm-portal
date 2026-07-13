@@ -163,10 +163,9 @@ export class AuthModalComponent {
       avatar: `https://images.unsplash.com/photo-${1500000000000 + Math.floor(Math.random() * 999999)}?auto=format&fit=crop&w=150&q=80`,
       createdAt: new Date().toISOString().split('T')[0],
     };
-    this.auth.register(newUser);
     this.successMsg.set(this.isVi() ? 'Đăng ký tài khoản thành công! Đang tự động kết nối và đăng nhập...' : 'Account created successfully! Logging in...');
-    setTimeout(() => {
-      this.auth.login(newUser);
+    setTimeout(async () => {
+      await this.auth.register(newUser);
       this.close();
     }, 1200);
   }
@@ -186,10 +185,9 @@ export class AuthModalComponent {
       avatar: platform === 'Google' ? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80' : 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
       createdAt: new Date().toISOString().split('T')[0],
     };
-    this.auth.register(socialUser);
     this.successMsg.set(this.isVi() ? `Ủy quyền tài khoản ${platform} thành công! Đang đăng nhập...` : `Authorized with ${platform}! Entering system...`);
-    setTimeout(() => {
-      this.auth.login(socialUser);
+    setTimeout(async () => {
+      await this.auth.register(socialUser);
       this.close();
     }, 1200);
   }
@@ -216,13 +214,14 @@ export class AuthModalComponent {
     }
   }
 
-  handleSaveNewPassword(): void {
+  async handleSaveNewPassword(): Promise<void> {
     this.errorMsg.set('');
     if (this.newPassword().trim().length < 6) {
       this.errorMsg.set(this.isVi() ? 'Mật khẩu mới phải từ 6 ký tự trở lên!' : 'Password must be at least 6 characters!');
       return;
     }
-    if (this.auth.updatePasswordByEmail(this.forgotEmail(), this.newPassword().trim())) {
+    const updated = await this.auth.updatePasswordByEmail(this.forgotEmail(), this.newPassword().trim());
+    if (updated) {
       const matched = this.auth.users().find((u) => u.email.toLowerCase() === this.forgotEmail().trim().toLowerCase());
       this.successMsg.set(this.isVi() ? `Khôi phục thành công mật khẩu cho tài khoản ${matched?.fullName || this.forgotEmail()}! Vui lòng đăng nhập.` : 'Password successfully reset! Please login.');
     } else {

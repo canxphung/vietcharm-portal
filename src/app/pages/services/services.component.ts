@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -26,12 +27,11 @@ import {
   LucideX,
 } from '@lucide/angular';
 import { ToastService } from '@/services/toast.service';
-import { provinces } from '@/data';
 import { SERVICE_TABS, isServiceTab, type ServiceTab } from '@/constants/views';
-import type { ViewableItem } from '@/types';
+import type { Activity, Attraction, Hotel, ViewableItem } from '@/types';
 import { I18nService } from '@/services/i18n.service';
 import { UiStateService } from '@/services/ui-state.service';
-import { allCatalogItems, allProvinceItems, itemsForTab, provinceById } from '@/services/catalog-data';
+import { CatalogDataService, toAttractionItems, toActivityItems, toHotelItems, toVehicleItems } from '@/services/catalog-data';
 import { ItemCardComponent } from '@/components/item-card/item-card.component';
 import { JourneyMapComponent } from '@/components/journey-map/journey-map.component';
 import { RevealDirective } from '@/directives/reveal.directive';
@@ -55,7 +55,8 @@ export class ServicesComponent {
   private readonly router = inject(Router);
   readonly i18n = inject(I18nService);
   readonly ui = inject(UiStateService);
-  readonly provinces = provinces;
+  private readonly catalogData = inject(CatalogDataService);
+  readonly provinces = this.catalogData.provinces;
   private readonly queryParams = toSignal(this.route.queryParamMap);
   readonly tabs = SERVICE_TABS;
   readonly query = signal('');
@@ -86,12 +87,20 @@ export class ServicesComponent {
       : 'This list is filtered by the destination you were viewing. You can still change province in the filters.',
   );
 
-  readonly items = computed(() => {
+  private readonly itemsRes = httpResource<(Attraction | Hotel | Activity)[]>(() => {
     const tab = this.activeTab();
+    if (tab === 'vehicles') return undefined;
     const prov = this.province();
-    if (tab === 'vehicles') return itemsForTab('vehicles', prov === 'all' ? 'quang-nam' : prov);
-    if (prov === 'all') return this.provinces.flatMap((p) => itemsForTab(tab, p.id));
-    return itemsForTab(tab, prov);
+    const endpoint = tab === 'hotels' ? 'hotels' : tab === 'activities' ? 'activities' : 'attractions';
+    return prov === 'all' ? `/api/${endpoint}` : `/api/${endpoint}?provinceId=${prov}`;
+  }, { defaultValue: [] });
+
+  readonly items = computed<ViewableItem[]>(() => {
+    const tab = this.activeTab();
+    if (tab === 'vehicles') return toVehicleItems(this.catalogData.vehicles());
+    if (tab === 'hotels') return toHotelItems(this.itemsRes.value() as Hotel[]);
+    if (tab === 'activities') return toActivityItems(this.itemsRes.value() as Activity[]);
+    return toAttractionItems(this.itemsRes.value() as Attraction[]);
   });
 
   readonly filteredItems = computed(() => {

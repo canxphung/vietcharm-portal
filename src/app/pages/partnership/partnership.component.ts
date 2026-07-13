@@ -34,9 +34,6 @@ import {
   LucideUsersRound,
   LucideWaves,
 } from '@lucide/angular';
-import { provinces } from '@/data';
-import { PREDEFINED_COMBOS } from '@/constants/seed/tourCombos';
-import { TOURIST_LOCATIONS } from '@/constants/seed/touristLocations';
 import type { BookingCartItem, PartnershipApplication, ViewableItem } from '@/types';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';
@@ -94,10 +91,10 @@ export class PartnershipComponent {
     private readonly catalog: CatalogService,
   ) {}
 
-  submit(): void {
+  async submit(): Promise<void> {
     if (!this.brandName().trim() || !this.contactName().trim()) return;
     const trackingId = `VC-PARTNER-${1000 + Math.floor(Math.random() * 8999)}`;
-    this.catalog.addApplication({
+    await this.catalog.addApplication({
       id: trackingId,
       brandName: this.brandName().trim(),
       contactName: this.contactName().trim(),

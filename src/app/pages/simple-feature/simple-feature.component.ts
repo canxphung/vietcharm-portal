@@ -34,9 +34,6 @@ import {
   LucideUsersRound,
   LucideWaves,
 } from '@lucide/angular';
-import { provinces } from '@/data';
-import { PREDEFINED_COMBOS } from '@/constants/seed/tourCombos';
-import { TOURIST_LOCATIONS } from '@/constants/seed/touristLocations';
 import type { BookingCartItem, PartnershipApplication, ViewableItem } from '@/types';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';

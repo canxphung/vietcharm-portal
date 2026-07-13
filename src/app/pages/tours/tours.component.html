@@ -12,7 +12,7 @@
         </div>
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          @for (combo of combos; track combo.id) {
+          @for (combo of combos(); track combo.id) {
             <div class="group flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-natural-border bg-white shadow-xs transition duration-300 ease-out hover:-translate-y-1.5 hover:border-natural-gold/45 hover:shadow-luxe-lg" (click)="view(combo)">
               <div class="relative h-56 overflow-hidden">
                 <img [src]="combo.image" [alt]="combo.name" class="h-full w-full object-cover transition duration-[600ms] ease-out group-hover:scale-110" />

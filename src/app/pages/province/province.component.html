@@ -1,15 +1,17 @@
-    <section class="relative overflow-hidden bg-natural-ink text-white">
-      <img [src]="province().image" [alt]="province().name" class="absolute inset-0 h-full w-full object-cover opacity-55" />
-      <div class="absolute inset-0 bg-gradient-to-r from-natural-ink via-natural-ink/70 to-natural-ink/20"></div>
-      <div class="relative mx-auto max-w-7xl px-4 py-16 md:py-24">
-        <p class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-natural-gold">
-          <svg lucideMapPin class="h-4 w-4"></svg>
-          {{ i18n.isVi() ? 'Chi tiết điểm đến' : 'Destination detail' }}
-        </p>
-        <h1 class="mt-3 font-serif text-5xl font-black md:text-7xl">{{ province().name }}</h1>
-        <p class="mt-5 max-w-2xl text-lg leading-8 text-white/82">{{ province().description }}</p>
-      </div>
-    </section>
+    @if (province(); as p) {
+      <section class="relative overflow-hidden bg-natural-ink text-white">
+        <img [src]="p.image" [alt]="p.name" class="absolute inset-0 h-full w-full object-cover opacity-55" />
+        <div class="absolute inset-0 bg-gradient-to-r from-natural-ink via-natural-ink/70 to-natural-ink/20"></div>
+        <div class="relative mx-auto max-w-7xl px-4 py-16 md:py-24">
+          <p class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-natural-gold">
+            <svg lucideMapPin class="h-4 w-4"></svg>
+            {{ i18n.isVi() ? 'Chi tiết điểm đến' : 'Destination detail' }}
+          </p>
+          <h1 class="mt-3 font-serif text-5xl font-black md:text-7xl">{{ p.name }}</h1>
+          <p class="mt-5 max-w-2xl text-lg leading-8 text-white/82">{{ p.description }}</p>
+        </div>
+      </section>
+    }
 
     <section class="mx-auto max-w-7xl px-4 py-10">
       <div class="mb-7 flex flex-wrap gap-2">

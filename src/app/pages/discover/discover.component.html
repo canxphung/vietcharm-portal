@@ -40,7 +40,7 @@
 
         <!-- Provinces grid -->
         <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          @for (prov of provinces; track prov.id) {
+          @for (prov of provinces(); track prov.id) {
             <div
               [class]="'group relative h-full overflow-hidden rounded-3xl border bg-natural-beige-light transition duration-300 ' + (prov.active ? 'border-natural-border cursor-pointer shadow-luxe hover:shadow-luxe-lg hover:-translate-y-1.5 hover:border-natural-gold/45' : 'border-natural-border/60 opacity-70 shadow-lg')"
               (click)="prov.active && ui.selectProvince(prov.id)"

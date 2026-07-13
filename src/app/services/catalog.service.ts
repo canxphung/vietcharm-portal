@@ -1,8 +1,6 @@
-import { Injectable } from '@angular/core';
-import { DEFAULT_SYSTEM_BOOKINGS } from '@/constants/seed/bookings';
-import { DEFAULT_PARTNERSHIPS } from '@/constants/seed/partnerships';
-import { DEFAULT_VOUCHERS } from '@/constants/seed/vouchers';
-import { STORAGE_KEYS } from '@/constants/storageKeys';
+import { Injectable, computed, inject } from '@angular/core';
+import { HttpClient, httpResource } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import type {
   BookingCartItem,
   PartnershipApplication,
@@ -11,7 +9,6 @@ import type {
   ServiceReview,
   SystemBooking,
 } from '@/types';
-import { storedSignal } from './storage';
 
 /** How many days after the service date a customer may still leave a review. */
 const REVIEW_WINDOW_DAYS = 30;
@@ -24,42 +21,61 @@ function today(): string {
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
-  readonly applications = storedSignal<PartnershipApplication[]>(STORAGE_KEYS.applications, DEFAULT_PARTNERSHIPS);
-  readonly vouchers = storedSignal<PromoVoucher[]>(STORAGE_KEYS.vouchers, DEFAULT_VOUCHERS);
-  readonly bookings = storedSignal<SystemBooking[]>(STORAGE_KEYS.bookings, DEFAULT_SYSTEM_BOOKINGS);
-  readonly serviceReviews = storedSignal<ServiceReview[]>(STORAGE_KEYS.serviceReviews, []);
-  readonly complaints = storedSignal<ServiceComplaint[]>(STORAGE_KEYS.complaints, []);
+  private readonly http = inject(HttpClient);
 
-  addApplication(application: PartnershipApplication): void {
-    this.applications.update((applications) => [application, ...applications]);
+  private readonly applicationsRes = httpResource<PartnershipApplication[]>(() => '/api/partnerships', {
+    defaultValue: [],
+  });
+  readonly applications = computed(() => this.applicationsRes.value());
+
+  private readonly vouchersRes = httpResource<PromoVoucher[]>(() => '/api/vouchers', { defaultValue: [] });
+  readonly vouchers = computed(() => this.vouchersRes.value());
+
+  private readonly bookingsRes = httpResource<SystemBooking[]>(() => '/api/bookings', { defaultValue: [] });
+  readonly bookings = computed(() => this.bookingsRes.value());
+
+  private readonly serviceReviewsRes = httpResource<ServiceReview[]>(() => '/api/service-reviews', {
+    defaultValue: [],
+  });
+  readonly serviceReviews = computed(() => this.serviceReviewsRes.value());
+
+  private readonly complaintsRes = httpResource<ServiceComplaint[]>(() => '/api/complaints', { defaultValue: [] });
+  readonly complaints = computed(() => this.complaintsRes.value());
+
+  async addApplication(application: PartnershipApplication): Promise<void> {
+    const { id, ...rest } = application;
+    await firstValueFrom(this.http.post('/api/partnerships', { id, ...rest }));
+    this.applicationsRes.reload();
   }
 
-  setApplicationStatus(id: string, status: PartnershipApplication['status']): void {
-    this.applications.update((applications) =>
-      applications.map((application) => (application.id === id ? { ...application, status } : application)),
-    );
+  async setApplicationStatus(id: string, status: PartnershipApplication['status']): Promise<void> {
+    await firstValueFrom(this.http.patch(`/api/partnerships/${id}`, { status }));
+    this.applicationsRes.reload();
   }
 
-  setBookingStatus(id: string, status: SystemBooking['status']): void {
-    this.bookings.update((bookings) => bookings.map((booking) => (booking.id === id ? { ...booking, status } : booking)));
+  async setBookingStatus(id: string, status: SystemBooking['status']): Promise<void> {
+    await firstValueFrom(this.http.patch(`/api/bookings/${id}`, { status }));
+    this.bookingsRes.reload();
   }
 
-  addVoucher(voucher: PromoVoucher): void {
-    this.vouchers.update((vouchers) => [voucher, ...vouchers]);
+  async addVoucher(voucher: PromoVoucher): Promise<void> {
+    await firstValueFrom(this.http.post('/api/vouchers', voucher));
+    this.vouchersRes.reload();
   }
 
-  deleteVoucher(code: string): void {
-    this.vouchers.update((vouchers) => vouchers.filter((voucher) => voucher.code !== code));
+  async deleteVoucher(code: string): Promise<void> {
+    await firstValueFrom(this.http.delete(`/api/vouchers/${code}`));
+    this.vouchersRes.reload();
   }
 
-  createBookingFromCart(
+  async createBookingFromCart(
     userEmail: string,
     userName: string,
     items: BookingCartItem[],
     total: number,
     discountApplied: number,
     finalTotal: number,
-  ): SystemBooking {
+  ): Promise<SystemBooking> {
     const booking: SystemBooking = {
       id: `VC-BK-${Date.now()}`,
       userEmail,
@@ -71,7 +87,9 @@ export class CatalogService {
       status: 'confirmed',
       date: today(),
     };
-    this.bookings.update((bookings) => [booking, ...bookings]);
+    const { id, ...rest } = booking;
+    await firstValueFrom(this.http.post('/api/bookings', { id, ...rest }));
+    this.bookingsRes.reload();
     return booking;
   }
 
@@ -115,19 +133,14 @@ export class CatalogService {
   }
 
   /** Marks a specific booking's item as received (check-in done / vehicle picked up / activity attended). */
-  confirmItemReceived(bookingId: string, itemKey: string): void {
-    this.bookings.update((bookings) =>
-      bookings.map((booking) =>
-        booking.id === bookingId
-          ? {
-              ...booking,
-              items: booking.items.map((item) =>
-                (item.cartKey ?? item.id) === itemKey ? { ...item, receivedConfirmed: true } : item,
-              ),
-            }
-          : booking,
-      ),
+  async confirmItemReceived(bookingId: string, itemKey: string): Promise<void> {
+    const booking = this.bookings().find((b) => b.id === bookingId);
+    if (!booking) return;
+    const items = booking.items.map((item) =>
+      (item.cartKey ?? item.id) === itemKey ? { ...item, receivedConfirmed: true } : item,
     );
+    await firstValueFrom(this.http.patch(`/api/bookings/${bookingId}`, { items }));
+    this.bookingsRes.reload();
   }
 
   canReview(itemId: string, userEmail: string): boolean {
@@ -150,10 +163,14 @@ export class CatalogService {
    * Adds the review and, every REVIEW_MILESTONE_INTERVAL-th review from this user, mints them a
    * one-time thank-you voucher. Returns that voucher so the caller can celebrate it in the UI.
    */
-  addReview(review: ServiceReview): PromoVoucher | null {
-    this.serviceReviews.update((reviews) => [review, ...reviews]);
-    const count = this.reviewsByUser(review.userEmail).length;
-    if (count === 0 || count % REVIEW_MILESTONE_INTERVAL !== 0) return null;
+  async addReview(review: ServiceReview): Promise<PromoVoucher | null> {
+    const { id, ...rest } = review;
+    await firstValueFrom(this.http.post('/api/service-reviews', { id, ...rest }));
+    // Count against the pre-reload cache (+1 for the review just posted) so the milestone
+    // check doesn't depend on the reload's round-trip having already resolved.
+    const count = this.reviewsByUser(review.userEmail).length + 1;
+    this.serviceReviewsRes.reload();
+    if (count % REVIEW_MILESTONE_INTERVAL !== 0) return null;
 
     const voucher: PromoVoucher = {
       code: `THANKS${count}${Math.floor(100 + Math.random() * 900)}`,
@@ -163,7 +180,7 @@ export class CatalogService {
       minSpend: 0,
       active: true,
     };
-    this.addVoucher(voucher);
+    await this.addVoucher(voucher);
     return voucher;
   }
 
@@ -182,11 +199,14 @@ export class CatalogService {
     return this.complaints().filter((c) => c.userEmail.toLowerCase() === normalized);
   }
 
-  addComplaint(complaint: ServiceComplaint): void {
-    this.complaints.update((list) => [complaint, ...list]);
+  async addComplaint(complaint: ServiceComplaint): Promise<void> {
+    const { id, ...rest } = complaint;
+    await firstValueFrom(this.http.post('/api/complaints', { id, ...rest }));
+    this.complaintsRes.reload();
   }
 
-  setComplaintStatus(id: string, status: ServiceComplaint['status']): void {
-    this.complaints.update((list) => list.map((c) => (c.id === id ? { ...c, status } : c)));
+  async setComplaintStatus(id: string, status: ServiceComplaint['status']): Promise<void> {
+    await firstValueFrom(this.http.patch(`/api/complaints/${id}`, { status }));
+    this.complaintsRes.reload();
   }
 }

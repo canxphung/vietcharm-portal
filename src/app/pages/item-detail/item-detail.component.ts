@@ -1,4 +1,4 @@
-import { afterNextRender, Component, computed, effect, ElementRef, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { DecimalPipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,9 +23,9 @@ import {
   LucideShare2,
 } from '@lucide/angular';
 import type { BookingCartItem, ViewableItem } from '@/types';
-import { TOURIST_LOCATIONS } from '@/constants/seed/touristLocations';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
+import { CatalogDataService } from '@/services/catalog-data';
 import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
 import { ToastService } from '@/services/toast.service';
@@ -111,6 +111,7 @@ function isoOffset(days: number): string {
   styleUrl: './item-detail.component.css',
 })
 export class ItemDetailComponent {
+  private readonly catalogData = inject(CatalogDataService);
   readonly today = isoOffset(0);
   readonly selectedDate = signal(isoOffset(1));
   readonly checkInDate = signal(isoOffset(1));
@@ -120,9 +121,9 @@ export class ItemDetailComponent {
   readonly childrenCount = signal(0);
   readonly roomsCount = signal(1);
   readonly successMsg = signal(false);
-  readonly rentalLocations = TOURIST_LOCATIONS;
-  readonly pickupLocationId = signal(TOURIST_LOCATIONS[0].id);
-  readonly returnLocationId = signal(TOURIST_LOCATIONS[0].id);
+  readonly rentalLocations = this.catalogData.touristLocations;
+  readonly pickupLocationId = signal('dad-airport');
+  readonly returnLocationId = signal('dad-airport');
 
   readonly reviewRating = signal(5);
   readonly reviewComment = signal('');
@@ -184,8 +185,8 @@ export class ItemDetailComponent {
         this.childrenCount.set(0);
         this.roomsCount.set(1);
         this.successMsg.set(false);
-        this.pickupLocationId.set(TOURIST_LOCATIONS[0].id);
-        this.returnLocationId.set(TOURIST_LOCATIONS[0].id);
+        this.pickupLocationId.set('dad-airport');
+        this.returnLocationId.set('dad-airport');
       }
     });
 
@@ -289,7 +290,7 @@ export class ItemDetailComponent {
   }
 
   locationName(id: string): string {
-    return this.rentalLocations.find((l) => l.id === id)?.name ?? id;
+    return this.rentalLocations().find((l) => l.id === id)?.name ?? id;
   }
 
   private detailsStr(item: ViewableItem): string {
@@ -384,7 +385,7 @@ export class ItemDetailComponent {
   addReview(item: ViewableItem): void {
     const comment = this.reviewComment().trim();
     if (!comment) return;
-    this.ui.requireAuth(() => {
+    this.ui.requireAuth(async () => {
       const user = this.auth.currentUser()!;
       if (!this.catalog.canReview(item.id, user.email)) {
         this.toast.showToast({
@@ -396,7 +397,7 @@ export class ItemDetailComponent {
         });
         return;
       }
-      const milestoneVoucher = this.catalog.addReview({
+      const milestoneVoucher = await this.catalog.addReview({
         id: `review-details-${Date.now()}`,
         itemId: item.id,
         itemName: item.name,
