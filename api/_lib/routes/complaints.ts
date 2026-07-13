@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { ServiceComplaintModel } from '../models/ServiceComplaint';
 
 const router = Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const { userEmail } = req.query;
     const filter = userEmail ? { userEmail: String(userEmail) } : {};
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const doc = await ServiceComplaintModel.findById(req.params.id);
     if (!doc) return res.status(404).json({ message: 'Complaint not found' });
@@ -24,7 +24,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const { id, ...rest } = req.body ?? {};
     if (!id) return res.status(400).json({ message: 'id is required' });
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', async (req: Request, res: Response) => {
   try {
     const { id: _ignored, ...updates } = req.body ?? {};
     const doc = await ServiceComplaintModel.findByIdAndUpdate(req.params.id, updates, {
@@ -49,7 +49,7 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const doc = await ServiceComplaintModel.findByIdAndDelete(req.params.id);
     if (!doc) return res.status(404).json({ message: 'Complaint not found' });
