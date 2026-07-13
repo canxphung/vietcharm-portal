@@ -1,158 +1,464 @@
-    <div class="min-h-screen w-full bg-natural-cream px-4 py-12 text-natural-text md:px-8">
-      <div class="mx-auto mb-10 max-w-7xl">
-        <div class="flex flex-col justify-between gap-4 border-b border-natural-border pb-6 md:flex-row md:items-center">
-          <div>
-            <span class="mb-1 flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-widest text-natural-accent"><svg lucideCompass class="h-4 w-4 text-natural-gold"></svg>{{ i18n.isVi() ? 'Hệ thống khám phá lân cận Hội An' : 'Hoi An Nearby Discovery System' }}</span>
-            <h2 class="font-serif text-3xl font-black leading-tight text-stone-900 md:text-4xl">{{ i18n.isVi() ? 'Khám Phá Địa Điểm Lân Cận' : 'Explore Nearby Places' }}</h2>
-            <p class="mt-1.5 max-w-xl text-xs text-stone-500">{{ i18n.isVi() ? 'Tìm kiếm và khám phá các địa danh, thắng cảnh và làng nghề cổ truyền xung quanh hệ thống VietCharm Hội An với ước tính quãng đường cụ thể.' : 'Search and discover legendary landmarks, sandy beaches, and traditional craft villages around VietCharm Hoi An.' }}</p>
-          </div>
-          <a routerLink="/" class="self-start rounded-full border border-natural-border bg-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-stone-600 transition-all hover:border-natural-accent hover:text-natural-accent md:self-center">&larr; {{ i18n.isVi() ? 'Quay lại Trang chủ' : 'Back to Home' }}</a>
-        </div>
+<div class="min-h-screen w-full bg-natural-cream px-4 py-12 text-natural-text md:px-8">
+  <div class="mx-auto mb-10 max-w-7xl">
+    <div
+      class="flex flex-col justify-between gap-4 border-b border-natural-border pb-6 md:flex-row md:items-center"
+    >
+      <div>
+        <span
+          class="mb-1 flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-widest text-natural-accent"
+          ><svg lucideCompass class="h-4 w-4 text-natural-gold"></svg
+          >{{
+            i18n.isVi() ? 'Hệ thống khám phá lân cận Hội An' : 'Hoi An Nearby Discovery System'
+          }}</span
+        >
+        <h2 class="font-serif text-3xl font-black leading-tight text-stone-900 md:text-4xl">
+          {{ i18n.isVi() ? 'Khám Phá Địa Điểm Lân Cận' : 'Explore Nearby Places' }}
+        </h2>
+        <p class="mt-1.5 max-w-xl text-xs text-stone-500">
+          {{
+            i18n.isVi()
+              ? 'Tìm kiếm và khám phá các địa danh, thắng cảnh và làng nghề cổ truyền xung quanh hệ thống VietCharm Hội An với ước tính quãng đường cụ thể.'
+              : 'Search and discover legendary landmarks, sandy beaches, and traditional craft villages around VietCharm Hoi An.'
+          }}
+        </p>
       </div>
+      <a
+        routerLink="/"
+        class="self-start rounded-full border border-natural-border bg-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-stone-600 transition-all hover:border-natural-accent hover:text-natural-accent md:self-center"
+        >&larr; {{ i18n.isVi() ? 'Quay lại Trang chủ' : 'Back to Home' }}</a
+      >
+    </div>
+  </div>
 
-      <div class="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-12">
-        <!-- LEFT -->
-        <div class="space-y-6 lg:col-span-7">
-          <div class="space-y-4 rounded-3xl border border-natural-border bg-white p-5 shadow-sm">
-            <div class="relative">
-              <input type="text" [ngModel]="query()" (ngModelChange)="query.set($event)" [placeholder]="i18n.isVi() ? 'Tìm tên địa điểm, làng nghề, bãi biển...' : 'Search landmark name, village, beach...'" class="w-full rounded-2xl border border-natural-border bg-natural-cream py-3 pl-11 pr-4 text-xs font-medium transition focus:border-natural-accent focus:outline-none" />
-              <svg lucideSearch class="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"></svg>
-            </div>
-            <div class="flex flex-wrap gap-1.5 pt-1">
-              @for (cat of categories(); track cat.value) {
-                <button type="button" [class]="'rounded-xl border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ' + (category() === cat.value ? 'border-natural-accent bg-natural-accent text-white' : 'border-natural-border bg-natural-cream text-stone-500 hover:border-natural-accent hover:text-natural-accent')" (click)="category.set(cat.value)">{{ cat.label }}</button>
-              }
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            @for (place of filtered(); track place.id) {
-              <div [class]="'group cursor-pointer overflow-hidden rounded-3xl border bg-white transition-all duration-300 ' + (activeId() === place.id ? 'border-transparent shadow-md ring-2 ring-natural-accent' : 'border-natural-border hover:border-natural-accent hover:shadow-md')" (click)="select(place)">
-                <div class="relative h-44 overflow-hidden bg-stone-100">
-                  <img [src]="place.images[0]" [alt]="i18n.isVi() ? place.nameVi : place.nameEn" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <button type="button" class="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow-sm transition hover:scale-110" [title]="i18n.isVi() ? 'Thêm vào yêu thích' : 'Add to favorites'" (click)="$event.stopPropagation(); ui.toggleFavorite(asItem(place))">
-                    <svg lucideHeart class="h-4 w-4 transition duration-200" [class.text-rose-600]="ui.isFavorite(place.id)" [class.fill-rose-600]="ui.isFavorite(place.id)" [class.text-stone-400]="!ui.isFavorite(place.id)"></svg>
-                  </button>
-                  <div class="absolute left-3 top-3 rounded-lg bg-white/95 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-natural-accent shadow-xs backdrop-blur-xs">{{ i18n.isVi() ? place.categoryVi : place.categoryEn }}</div>
-                  <div class="absolute bottom-3 right-3 rounded-md bg-natural-accent/90 px-2 py-0.5 font-mono text-[9px] text-white">📍 {{ place.distance }}</div>
-                </div>
-                <div class="space-y-2 p-5">
-                  <div class="flex items-start justify-between gap-1">
-                    <h3 class="font-serif text-sm font-black leading-tight text-stone-800 transition-colors group-hover:text-natural-accent">{{ i18n.isVi() ? place.nameVi : place.nameEn }}</h3>
-                    <div class="flex shrink-0 items-center gap-0.5 rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-500"><svg lucideStar class="h-3 w-3 fill-current"></svg><span>{{ place.rating }}</span></div>
-                  </div>
-                  <p class="line-clamp-2 text-[11px] leading-relaxed text-stone-500">{{ i18n.isVi() ? place.descriptionVi : place.descriptionEn }}</p>
-                  <div class="flex items-center justify-between border-t border-stone-100 pt-2 text-[10px] text-stone-400">
-                    <span class="flex items-center gap-1"><svg lucideNavigation class="h-3 w-3 text-natural-accent"></svg><span>{{ place.duration }}</span></span>
-                    <button type="button" class="text-[9px] font-bold uppercase tracking-wider text-natural-accent hover:text-natural-olive hover:underline" (click)="$event.stopPropagation(); view(place)">{{ i18n.isVi() ? 'Xem chi tiết &' : 'Details &' }} &rarr;</button>
-                  </div>
-                </div>
-              </div>
-            } @empty {
-              <div class="col-span-full rounded-3xl border border-natural-border bg-white p-12 text-center">
-                <svg lucideCompass class="mx-auto mb-3 h-12 w-12 text-stone-300"></svg>
-                <p class="text-xs font-bold uppercase tracking-wider text-stone-400">{{ i18n.isVi() ? 'Không tìm thấy địa điểm nào' : 'No places found' }}</p>
-                <p class="mt-1 text-[10px] text-stone-400">{{ i18n.isVi() ? 'Thử tìm với từ khóa khác xem nhé!' : 'Try searching with another keyword!' }}</p>
-              </div>
-            }
-          </div>
+  <div class="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-12">
+    <!-- LEFT -->
+    <div class="space-y-6 lg:col-span-7">
+      <div class="space-y-4 rounded-3xl border border-natural-border bg-white p-5 shadow-sm">
+        <div class="relative">
+          <input
+            type="text"
+            [ngModel]="query()"
+            (ngModelChange)="query.set($event)"
+            [placeholder]="
+              i18n.isVi()
+                ? 'Tìm tên địa điểm, làng nghề, bãi biển...'
+                : 'Search landmark name, village, beach...'
+            "
+            class="w-full rounded-2xl border border-natural-border bg-natural-cream py-3 pl-11 pr-4 text-xs font-medium transition focus:border-natural-accent focus:outline-none"
+          />
+          <svg
+            lucideSearch
+            class="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
+          ></svg>
         </div>
-
-        <!-- RIGHT -->
-        <div class="lg:col-span-5">
-          @if (active(); as place) {
-            <div class="sticky top-28 overflow-hidden rounded-3xl border border-natural-border bg-white shadow-lg">
-              <div class="relative h-64 bg-stone-900">
-                <img [src]="place.images[imageIdx()]" [alt]="i18n.isVi() ? place.nameVi : place.nameEn" class="h-full w-full object-cover opacity-95" />
-                <button type="button" class="absolute right-4 top-4 rounded-full bg-black/60 p-2 text-white transition hover:bg-black/80" (click)="activeId.set(null)"><svg lucideX class="h-4 w-4"></svg></button>
-                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-6 pt-16">
-                  <div class="mb-1 text-[10px] font-bold uppercase tracking-widest text-amber-300">{{ i18n.isVi() ? place.categoryVi : place.categoryEn }}</div>
-                  <h3 class="font-serif text-xl font-black leading-tight text-white md:text-2xl">{{ i18n.isVi() ? place.nameVi : place.nameEn }}</h3>
-                </div>
-                @if (place.images.length > 1) {
-                  <div class="absolute left-4 top-4 flex gap-1 rounded-full bg-black/40 px-2 py-1">
-                    @for (img of place.images; track img; let i = $index) {
-                      <button type="button" [class]="'h-2 w-2 rounded-full transition-all ' + (imageIdx() === i ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80')" (click)="imageIdx.set(i)"></button>
-                    }
-                  </div>
-                }
-              </div>
-              <div class="max-h-[calc(100vh-340px)] space-y-6 overflow-y-auto p-6">
-                <div class="grid grid-cols-2 gap-3 rounded-2xl border border-natural-border bg-natural-cream p-3">
-                  <div class="text-center"><span class="block text-[9px] font-bold uppercase tracking-wider text-stone-400">{{ i18n.isVi() ? 'Quãng đường' : 'Distance' }}</span><span class="font-serif text-sm font-black text-natural-accent">📍 {{ place.distance }}</span></div>
-                  <div class="border-l border-natural-border text-center"><span class="block text-[9px] font-bold uppercase tracking-wider text-stone-400">{{ i18n.isVi() ? 'Thời gian di chuyển' : 'Travel Time' }}</span><span class="mt-0.5 block text-[11px] font-semibold text-stone-700">{{ place.duration }}</span></div>
-                </div>
-                <div class="space-y-2">
-                  <h4 class="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-stone-500"><svg lucideCompass class="h-4 w-4 text-natural-accent"></svg>{{ i18n.isVi() ? 'Giới thiệu chung' : 'Overview' }}</h4>
-                  <p class="text-justify text-[11px] leading-relaxed text-stone-600">{{ i18n.isVi() ? place.descriptionVi : place.descriptionEn }}</p>
-                </div>
-                <div class="space-y-1.5 rounded-2xl border border-dashed border-amber-300 bg-amber-50/40 p-4">
-                  <h4 class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-natural-accent">💡 {{ i18n.isVi() ? 'Có thể bạn chưa biết?' : 'Did you know?' }}</h4>
-                  <p class="text-[11px] italic leading-relaxed text-natural-text/90">{{ i18n.isVi() ? place.historyVi : place.historyEn }}</p>
-                </div>
-                <button type="button" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-natural-accent py-3 text-xs font-black uppercase tracking-wider text-white shadow-sm transition duration-300 hover:bg-natural-olive" (click)="view(place)"><svg lucideCompass class="h-4 w-4 text-amber-300"></svg><span>{{ i18n.isVi() ? 'Xem Chi Tiết Lớn & Trải Nghiệm' : 'Immersive Details & Experiences' }}</span></button>
-                <div class="space-y-2">
-                  <div class="flex items-center justify-between">
-                    <h4 class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-stone-500"><svg lucideMapPin class="h-3.5 w-3.5 text-red-500"></svg>{{ i18n.isVi() ? 'Vị trí trên sơ đồ VietCharm' : 'Sitemap Navigation Location' }}</h4>
-                    <span class="rounded bg-stone-100 px-2 py-0.5 font-mono text-[9px] text-stone-500">X: {{ place.coordinates.x }} | Y: {{ place.coordinates.y }}</span>
-                  </div>
-                  <div class="relative flex h-44 items-center justify-center overflow-hidden rounded-2xl border border-emerald-100 bg-emerald-50/50 shadow-inner">
-                    <div class="absolute inset-0 bg-[radial-gradient(#059669_1px,transparent_1px)] opacity-10 [background-size:16px_16px]"></div>
-                    <svg class="absolute inset-0 h-full w-full">
-                      <path [attr.d]="'M 180 100 L ' + place.coordinates.x + ' ' + place.coordinates.y" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="5,4" class="animate-pulse text-natural-accent"></path>
-                      <path d="M 50 10 Q 150 110 320 220" fill="none" stroke="rgba(14,116,144,0.15)" stroke-width="8"></path>
-                    </svg>
-                    <div class="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center" style="left: 180px; top: 100px;">
-                      <div class="relative"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span><div class="flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-amber-600 shadow-md"><span class="h-1.5 w-1.5 rounded-full bg-white"></span></div></div>
-                      <span class="mt-1 whitespace-nowrap rounded-md bg-amber-950 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow-xs">🏨 VietCharm Resort</span>
-                    </div>
-                    <div class="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center" [style.left.px]="place.coordinates.x" [style.top.px]="place.coordinates.y">
-                      <div class="relative"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span><div class="flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-red-500 shadow-md"><svg lucideMapPin class="h-2.5 w-2.5 text-white"></svg></div></div>
-                      <span class="mt-1 whitespace-nowrap rounded-md bg-red-950 px-1.5 py-0.5 text-[8px] font-bold text-white shadow-xs">📍 {{ i18n.isVi() ? place.nameVi : place.nameEn }}</span>
-                    </div>
-                    <div class="absolute left-2 top-2 rounded-md bg-emerald-50 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-emerald-800">{{ i18n.isVi() ? 'Đường thủy Thu Bồn' : 'Thu Bon Waterway System' }}</div>
-                  </div>
-                </div>
-                <div class="space-y-4 border-t border-stone-100 pt-4">
-                  <h4 class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-stone-500">
-                    <span class="flex items-center gap-1.5"><svg lucideMessageSquare class="h-3.5 w-3.5 text-natural-accent"></svg>{{ i18n.isVi() ? 'Đánh giá từ du khách' : 'Traveler Reviews' }} ({{ place.reviews.length }})</span>
-                    <span class="flex items-center gap-0.5 rounded bg-amber-50 px-2 py-0.5 font-bold text-amber-500">★ {{ place.rating }}</span>
-                  </h4>
-                  <div class="space-y-3">
-                    @for (r of place.reviews; track r.id) {
-                      <div class="space-y-1.5 rounded-2xl bg-stone-50 p-3">
-                        <div class="flex items-center justify-between text-[10px]">
-                          <div class="flex items-center gap-2"><img [src]="r.avatar" [alt]="r.author" class="h-5 w-5 rounded-full object-cover" /><span class="font-bold text-stone-700">{{ r.author }}</span></div>
-                          <div class="flex items-center gap-1 text-stone-400"><span class="text-[9px] font-bold text-amber-500">{{ stars(r.rating) }}</span><span>• {{ r.date }}</span></div>
-                        </div>
-                        <p class="pl-7 text-[11px] italic leading-relaxed text-stone-600">"{{ r.comment }}"</p>
-                      </div>
-                    }
-                  </div>
-                  <form class="space-y-3 rounded-2xl border border-natural-border bg-natural-cream p-4" (ngSubmit)="addReview(place)">
-                    <div class="text-[10px] font-black uppercase tracking-wider text-stone-500">✍️ {{ i18n.isVi() ? 'Để lại trải nghiệm của bạn' : 'Write a review' }}</div>
-                    <div class="grid grid-cols-2 gap-2">
-                      <input type="text" required [ngModel]="reviewerName()" (ngModelChange)="reviewerName.set($event)" name="rname" [placeholder]="i18n.isVi() ? 'Tên của bạn...' : 'Your name...'" class="rounded-xl border border-natural-border bg-white px-3 py-2 text-xs focus:border-natural-accent focus:outline-none" />
-                      <div class="flex items-center gap-1.5 rounded-xl border border-natural-border bg-white px-3 py-2">
-                        <span class="text-[10px] font-bold uppercase text-stone-400">{{ i18n.isVi() ? 'Điểm:' : 'Rating:' }}</span>
-                        <div class="flex gap-0.5">
-                          @for (n of [1,2,3,4,5]; track n) { <button type="button" (click)="reviewRating.set(n)"><svg lucideStar class="h-3.5 w-3.5" [class.text-amber-400]="n <= reviewRating()" [class.fill-amber-400]="n <= reviewRating()" [class.text-stone-300]="n > reviewRating()"></svg></button> }
-                        </div>
-                      </div>
-                    </div>
-                    <textarea required rows="2" [ngModel]="reviewComment()" (ngModelChange)="reviewComment.set($event)" name="rcomment" [placeholder]="i18n.isVi() ? 'Bạn thích điều gì nhất tại địa điểm này? Chia sẻ cảm nghĩ nhé...' : 'What did you enjoy most about this place?...'" class="w-full resize-none rounded-xl border border-natural-border bg-white p-3 text-xs leading-relaxed focus:border-natural-accent focus:outline-none"></textarea>
-                    <button type="submit" class="w-full rounded-xl bg-natural-accent py-2 text-[10px] font-black uppercase tracking-widest text-white transition hover:bg-natural-olive">{{ i18n.isVi() ? 'Gửi đánh giá' : 'Submit Review' }}</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          } @else {
-            <div class="sticky top-28 rounded-3xl border border-dashed border-natural-border bg-natural-cream p-16 text-center">
-              <svg lucideCompass class="mx-auto mb-4 h-16 w-16 animate-bounce text-stone-300"></svg>
-              <h4 class="font-serif text-sm font-black uppercase tracking-wider text-stone-800">{{ i18n.isVi() ? 'Chưa chọn địa điểm' : 'No Place Selected' }}</h4>
-              <p class="mx-auto mt-2 max-w-xs text-[11px] leading-relaxed text-stone-400">{{ i18n.isVi() ? 'Vui lòng nhấn chọn một địa điểm trong danh sách bên trái để khám phá hình ảnh, lịch sử truyền kỳ, toạ độ di chuyển và đánh giá chi tiết.' : 'Please select a place on the left to inspect stunning images, historical trivia, localized routes, and traveler testimonials.' }}</p>
-            </div>
+        <div class="flex flex-wrap gap-1.5 pt-1">
+          @for (cat of categories(); track cat.value) {
+            <button
+              type="button"
+              [class]="
+                'rounded-xl border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition ' +
+                (category() === cat.value
+                  ? 'border-natural-accent bg-natural-accent text-white'
+                  : 'border-natural-border bg-natural-cream text-stone-500 hover:border-natural-accent hover:text-natural-accent')
+              "
+              (click)="category.set(cat.value)"
+            >
+              {{ cat.label }}
+            </button>
           }
         </div>
       </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        @for (place of filtered(); track place.id) {
+          <div
+            [class]="
+              'group cursor-pointer overflow-hidden rounded-3xl border bg-white transition-all duration-300 ' +
+              (activeId() === place.id
+                ? 'border-transparent shadow-md ring-2 ring-natural-accent'
+                : 'border-natural-border hover:border-natural-accent hover:shadow-md')
+            "
+            (click)="select(place)"
+          >
+            <div class="relative h-44 overflow-hidden bg-stone-100">
+              <img
+                [src]="place.images[0]"
+                [alt]="i18n.isVi() ? place.nameVi : place.nameEn"
+                class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <button
+                type="button"
+                class="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow-sm transition hover:scale-110"
+                [title]="i18n.isVi() ? 'Thêm vào yêu thích' : 'Add to favorites'"
+                (click)="$event.stopPropagation(); ui.toggleFavorite(asItem(place))"
+              >
+                <svg
+                  lucideHeart
+                  class="h-4 w-4 transition duration-200"
+                  [class.text-rose-600]="ui.isFavorite(place.id)"
+                  [class.fill-rose-600]="ui.isFavorite(place.id)"
+                  [class.text-stone-400]="!ui.isFavorite(place.id)"
+                ></svg>
+              </button>
+              <div
+                class="absolute left-3 top-3 rounded-lg bg-white/95 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-natural-accent shadow-xs backdrop-blur-xs"
+              >
+                {{ i18n.isVi() ? place.categoryVi : place.categoryEn }}
+              </div>
+              <div
+                class="absolute bottom-3 right-3 rounded-md bg-natural-accent/90 px-2 py-0.5 font-mono text-[9px] text-white"
+              >
+                📍 {{ place.distance }}
+              </div>
+            </div>
+            <div class="space-y-2 p-5">
+              <div class="flex items-start justify-between gap-1">
+                <h3
+                  class="font-serif text-sm font-black leading-tight text-stone-800 transition-colors group-hover:text-natural-accent"
+                >
+                  {{ i18n.isVi() ? place.nameVi : place.nameEn }}
+                </h3>
+                <div
+                  class="flex shrink-0 items-center gap-0.5 rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-500"
+                >
+                  <svg lucideStar class="h-3 w-3 fill-current"></svg><span>{{ place.rating }}</span>
+                </div>
+              </div>
+              <p class="line-clamp-2 text-[11px] leading-relaxed text-stone-500">
+                {{ i18n.isVi() ? place.descriptionVi : place.descriptionEn }}
+              </p>
+              <div
+                class="flex items-center justify-between border-t border-stone-100 pt-2 text-[10px] text-stone-400"
+              >
+                <span class="flex items-center gap-1"
+                  ><svg lucideNavigation class="h-3 w-3 text-natural-accent"></svg
+                  ><span>{{ place.duration }}</span></span
+                >
+                <button
+                  type="button"
+                  class="text-[9px] font-bold uppercase tracking-wider text-natural-accent hover:text-natural-olive hover:underline"
+                  (click)="$event.stopPropagation(); view(place)"
+                >
+                  {{ i18n.isVi() ? 'Xem chi tiết &' : 'Details &' }} &rarr;
+                </button>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div
+            class="col-span-full rounded-3xl border border-natural-border bg-white p-12 text-center"
+          >
+            <svg lucideCompass class="mx-auto mb-3 h-12 w-12 text-stone-300"></svg>
+            <p class="text-xs font-bold uppercase tracking-wider text-stone-400">
+              {{ i18n.isVi() ? 'Không tìm thấy địa điểm nào' : 'No places found' }}
+            </p>
+            <p class="mt-1 text-[10px] text-stone-400">
+              {{
+                i18n.isVi()
+                  ? 'Thử tìm với từ khóa khác xem nhé!'
+                  : 'Try searching with another keyword!'
+              }}
+            </p>
+          </div>
+        }
+      </div>
     </div>
+
+    <!-- RIGHT -->
+    <div class="lg:col-span-5">
+      @if (active(); as place) {
+        <div
+          class="sticky top-28 overflow-hidden rounded-3xl border border-natural-border bg-white shadow-lg"
+        >
+          <div class="relative h-64 bg-stone-900">
+            <img
+              [src]="place.images[imageIdx()]"
+              [alt]="i18n.isVi() ? place.nameVi : place.nameEn"
+              class="h-full w-full object-cover opacity-95"
+            />
+            <button
+              type="button"
+              class="absolute right-4 top-4 rounded-full bg-black/60 p-2 text-white transition hover:bg-black/80"
+              (click)="activeId.set(null)"
+            >
+              <svg lucideX class="h-4 w-4"></svg>
+            </button>
+            <div
+              class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-6 pt-16"
+            >
+              <div class="mb-1 text-[10px] font-bold uppercase tracking-widest text-amber-300">
+                {{ i18n.isVi() ? place.categoryVi : place.categoryEn }}
+              </div>
+              <h3 class="font-serif text-xl font-black leading-tight text-white md:text-2xl">
+                {{ i18n.isVi() ? place.nameVi : place.nameEn }}
+              </h3>
+            </div>
+            @if (place.images.length > 1) {
+              <div class="absolute left-4 top-4 flex gap-1 rounded-full bg-black/40 px-2 py-1">
+                @for (img of place.images; track img; let i = $index) {
+                  <button
+                    type="button"
+                    [class]="
+                      'h-2 w-2 rounded-full transition-all ' +
+                      (imageIdx() === i ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80')
+                    "
+                    (click)="imageIdx.set(i)"
+                  ></button>
+                }
+              </div>
+            }
+          </div>
+          <div class="max-h-[calc(100vh-340px)] space-y-6 overflow-y-auto p-6">
+            <div
+              class="grid grid-cols-2 gap-3 rounded-2xl border border-natural-border bg-natural-cream p-3"
+            >
+              <div class="text-center">
+                <span class="block text-[9px] font-bold uppercase tracking-wider text-stone-400">{{
+                  i18n.isVi() ? 'Quãng đường' : 'Distance'
+                }}</span
+                ><span class="font-serif text-sm font-black text-natural-accent"
+                  >📍 {{ place.distance }}</span
+                >
+              </div>
+              <div class="border-l border-natural-border text-center">
+                <span class="block text-[9px] font-bold uppercase tracking-wider text-stone-400">{{
+                  i18n.isVi() ? 'Thời gian di chuyển' : 'Travel Time'
+                }}</span
+                ><span class="mt-0.5 block text-[11px] font-semibold text-stone-700">{{
+                  place.duration
+                }}</span>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <h4
+                class="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-stone-500"
+              >
+                <svg lucideCompass class="h-4 w-4 text-natural-accent"></svg
+                >{{ i18n.isVi() ? 'Giới thiệu chung' : 'Overview' }}
+              </h4>
+              <p class="text-justify text-[11px] leading-relaxed text-stone-600">
+                {{ i18n.isVi() ? place.descriptionVi : place.descriptionEn }}
+              </p>
+            </div>
+            <div
+              class="space-y-1.5 rounded-2xl border border-dashed border-amber-300 bg-amber-50/40 p-4"
+            >
+              <h4
+                class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-natural-accent"
+              >
+                💡 {{ i18n.isVi() ? 'Có thể bạn chưa biết?' : 'Did you know?' }}
+              </h4>
+              <p class="text-[11px] italic leading-relaxed text-natural-text/90">
+                {{ i18n.isVi() ? place.historyVi : place.historyEn }}
+              </p>
+            </div>
+            <button
+              type="button"
+              class="flex w-full items-center justify-center gap-2 rounded-2xl bg-natural-accent py-3 text-xs font-black uppercase tracking-wider text-white shadow-sm transition duration-300 hover:bg-natural-olive"
+              (click)="view(place)"
+            >
+              <svg lucideCompass class="h-4 w-4 text-amber-300"></svg
+              ><span>{{
+                i18n.isVi() ? 'Xem Chi Tiết Lớn & Trải Nghiệm' : 'Immersive Details & Experiences'
+              }}</span>
+            </button>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h4
+                  class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-stone-500"
+                >
+                  <svg lucideMapPin class="h-3.5 w-3.5 text-red-500"></svg
+                  >{{ i18n.isVi() ? 'Vị trí trên sơ đồ VietCharm' : 'Sitemap Navigation Location' }}
+                </h4>
+                <span class="rounded bg-stone-100 px-2 py-0.5 font-mono text-[9px] text-stone-500"
+                  >X: {{ place.coordinates.x }} | Y: {{ place.coordinates.y }}</span
+                >
+              </div>
+              <div
+                class="relative flex h-44 items-center justify-center overflow-hidden rounded-2xl border border-emerald-100 bg-emerald-50/50 shadow-inner"
+              >
+                <div
+                  class="absolute inset-0 bg-[radial-gradient(#059669_1px,transparent_1px)] opacity-10 [background-size:16px_16px]"
+                ></div>
+                <svg class="absolute inset-0 h-full w-full">
+                  <path
+                    [attr.d]="'M 180 100 L ' + place.coordinates.x + ' ' + place.coordinates.y"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-dasharray="5,4"
+                    class="animate-pulse text-natural-accent"
+                  ></path>
+                  <path
+                    d="M 50 10 Q 150 110 320 220"
+                    fill="none"
+                    stroke="rgba(14,116,144,0.15)"
+                    stroke-width="8"
+                  ></path>
+                </svg>
+                <div
+                  class="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+                  style="left: 180px; top: 100px"
+                >
+                  <div class="relative">
+                    <span
+                      class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"
+                    ></span>
+                    <div
+                      class="flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-amber-600 shadow-md"
+                    >
+                      <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
+                    </div>
+                  </div>
+                  <span
+                    class="mt-1 whitespace-nowrap rounded-md bg-amber-950 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow-xs"
+                    >🏨 VietCharm Resort</span
+                  >
+                </div>
+                <div
+                  class="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+                  [style.left.px]="place.coordinates.x"
+                  [style.top.px]="place.coordinates.y"
+                >
+                  <div class="relative">
+                    <span
+                      class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"
+                    ></span>
+                    <div
+                      class="flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-red-500 shadow-md"
+                    >
+                      <svg lucideMapPin class="h-2.5 w-2.5 text-white"></svg>
+                    </div>
+                  </div>
+                  <span
+                    class="mt-1 whitespace-nowrap rounded-md bg-red-950 px-1.5 py-0.5 text-[8px] font-bold text-white shadow-xs"
+                    >📍 {{ i18n.isVi() ? place.nameVi : place.nameEn }}</span
+                  >
+                </div>
+                <div
+                  class="absolute left-2 top-2 rounded-md bg-emerald-50 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-emerald-800"
+                >
+                  {{ i18n.isVi() ? 'Đường thủy Thu Bồn' : 'Thu Bon Waterway System' }}
+                </div>
+              </div>
+            </div>
+            <div class="space-y-4 border-t border-stone-100 pt-4">
+              <h4
+                class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-stone-500"
+              >
+                <span class="flex items-center gap-1.5"
+                  ><svg lucideMessageSquare class="h-3.5 w-3.5 text-natural-accent"></svg
+                  >{{ i18n.isVi() ? 'Đánh giá từ du khách' : 'Traveler Reviews' }} ({{
+                    place.reviews.length
+                  }})</span
+                >
+                <span
+                  class="flex items-center gap-0.5 rounded bg-amber-50 px-2 py-0.5 font-bold text-amber-500"
+                  >★ {{ place.rating }}</span
+                >
+              </h4>
+              <div class="space-y-3">
+                @for (r of place.reviews; track r.id) {
+                  <div class="space-y-1.5 rounded-2xl bg-stone-50 p-3">
+                    <div class="flex items-center justify-between text-[10px]">
+                      <div class="flex items-center gap-2">
+                        <img
+                          [src]="r.avatar"
+                          [alt]="r.author"
+                          class="h-5 w-5 rounded-full object-cover"
+                        /><span class="font-bold text-stone-700">{{ r.author }}</span>
+                      </div>
+                      <div class="flex items-center gap-1 text-stone-400">
+                        <span class="text-[9px] font-bold text-amber-500">{{
+                          stars(r.rating)
+                        }}</span
+                        ><span>• {{ r.date }}</span>
+                      </div>
+                    </div>
+                    <p class="pl-7 text-[11px] italic leading-relaxed text-stone-600">
+                      "{{ r.comment }}"
+                    </p>
+                  </div>
+                }
+              </div>
+              <form
+                class="space-y-3 rounded-2xl border border-natural-border bg-natural-cream p-4"
+                (ngSubmit)="addReview(place)"
+              >
+                <div class="text-[10px] font-black uppercase tracking-wider text-stone-500">
+                  ✍️ {{ i18n.isVi() ? 'Để lại trải nghiệm của bạn' : 'Write a review' }}
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    required
+                    [ngModel]="reviewerName()"
+                    (ngModelChange)="reviewerName.set($event)"
+                    name="rname"
+                    [placeholder]="i18n.isVi() ? 'Tên của bạn...' : 'Your name...'"
+                    class="rounded-xl border border-natural-border bg-white px-3 py-2 text-xs focus:border-natural-accent focus:outline-none"
+                  />
+                  <div
+                    class="flex items-center gap-1.5 rounded-xl border border-natural-border bg-white px-3 py-2"
+                  >
+                    <span class="text-[10px] font-bold uppercase text-stone-400">{{
+                      i18n.isVi() ? 'Điểm:' : 'Rating:'
+                    }}</span>
+                    <div class="flex gap-0.5">
+                      @for (n of [1, 2, 3, 4, 5]; track n) {
+                        <button type="button" (click)="reviewRating.set(n)">
+                          <svg
+                            lucideStar
+                            class="h-3.5 w-3.5"
+                            [class.text-amber-400]="n <= reviewRating()"
+                            [class.fill-amber-400]="n <= reviewRating()"
+                            [class.text-stone-300]="n > reviewRating()"
+                          ></svg>
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+                <textarea
+                  required
+                  rows="2"
+                  [ngModel]="reviewComment()"
+                  (ngModelChange)="reviewComment.set($event)"
+                  name="rcomment"
+                  [placeholder]="
+                    i18n.isVi()
+                      ? 'Bạn thích điều gì nhất tại địa điểm này? Chia sẻ cảm nghĩ nhé...'
+                      : 'What did you enjoy most about this place?...'
+                  "
+                  class="w-full resize-none rounded-xl border border-natural-border bg-white p-3 text-xs leading-relaxed focus:border-natural-accent focus:outline-none"
+                ></textarea>
+                <button
+                  type="submit"
+                  class="w-full rounded-xl bg-natural-accent py-2 text-[10px] font-black uppercase tracking-widest text-white transition hover:bg-natural-olive"
+                >
+                  {{ i18n.isVi() ? 'Gửi đánh giá' : 'Submit Review' }}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div
+          class="sticky top-28 rounded-3xl border border-dashed border-natural-border bg-natural-cream p-16 text-center"
+        >
+          <svg lucideCompass class="mx-auto mb-4 h-16 w-16 animate-bounce text-stone-300"></svg>
+          <h4 class="font-serif text-sm font-black uppercase tracking-wider text-stone-800">
+            {{ i18n.isVi() ? 'Chưa chọn địa điểm' : 'No Place Selected' }}
+          </h4>
+          <p class="mx-auto mt-2 max-w-xs text-[11px] leading-relaxed text-stone-400">
+            {{
+              i18n.isVi()
+                ? 'Vui lòng nhấn chọn một địa điểm trong danh sách bên trái để khám phá hình ảnh, lịch sử truyền kỳ, toạ độ di chuyển và đánh giá chi tiết.'
+                : 'Please select a place on the left to inspect stunning images, historical trivia, localized routes, and traveler testimonials.'
+            }}
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

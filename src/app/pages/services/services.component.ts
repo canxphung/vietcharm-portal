@@ -17,7 +17,9 @@ import {
   LucideMapPin,
   LucideMapPinned,
   LucideMessageSquare,
+  LucideMinus,
   LucideNavigation,
+  LucidePlus,
   LucideSearch,
   LucideShieldCheck,
   LucideSlidersHorizontal,
@@ -50,6 +52,8 @@ const CATEGORY_PATTERNS: Record<string, RegExp> = {
   adventure: /lặn|cano|san hô|phiêu lưu|trekking|leo|thuyền|đảo|biển|mạo hiểm|adventure|diving|snorkel|kayak|island|beach/i,
 };
 
+const LIVE_PROVINCE_ID = 'quang-nam';
+
 @Component({
   selector: 'app-services-page',
   standalone: true,
@@ -63,6 +67,8 @@ const CATEGORY_PATTERNS: Record<string, RegExp> = {
     LucideChevronDown,
     LucideHotel,
     LucideMapPin,
+    LucideMinus,
+    LucidePlus,
     LucideSearch,
     LucideShieldCheck,
     LucideSlidersHorizontal,
@@ -81,10 +87,11 @@ export class ServicesComponent {
   private readonly catalogData = inject(CatalogDataService);
   readonly provinces = this.catalogData.provinces;
   private readonly queryParams = toSignal(this.route.queryParamMap);
+  readonly promotionMode = computed(() => this.queryParams()?.get('promotion') === 'hot');
   readonly tabs = SERVICE_TABS;
   readonly query = signal('');
   readonly province = signal('all');
-  readonly sortBy = signal<'default' | 'price-asc' | 'price-desc' | 'rating-desc' | 'reviews-desc'>('default');
+  readonly sortBy = signal<'default' | 'promotion' | 'price-asc' | 'price-desc' | 'rating-desc' | 'reviews-desc'>('default');
   readonly category = signal('all');
   readonly minRating = signal(0);
   readonly priceMaxLimit = 50000000;
@@ -100,6 +107,7 @@ export class ServicesComponent {
   readonly checkOutDate = signal('');
   readonly guests = signal(2);
   readonly rooms = signal(1);
+  readonly occupancyOpen = signal(false);
   readonly popularFilters = signal<string[]>([]);
   readonly hotelStars = signal<string[]>([]);
   readonly hotelAreas = signal<string[]>([]);
@@ -110,6 +118,7 @@ export class ServicesComponent {
 
   readonly activeFilterCount = computed(() => {
     let count = 0;
+    if (this.promotionMode()) count++;
     if (this.query().trim()) count++;
     if (this.province() !== 'all') count++;
     if (this.category() !== 'all') count++;
@@ -129,6 +138,12 @@ export class ServicesComponent {
     this.provinces().find((item) => item.id === this.province())?.name ?? '',
   );
 
+  readonly selectedProvinceInactive = computed(() => {
+    if (this.province() === 'all') return false;
+    const selected = this.provinces().find((item) => item.id === this.province());
+    return selected ? !selected.active : false;
+  });
+
   readonly minPricePercent = computed(() => Math.min(100, (this.minPrice() / this.priceMaxLimit) * 100));
   readonly maxPricePercent = computed(() => Math.min(100, (this.maxPrice() / this.priceMaxLimit) * 100));
 
@@ -139,6 +154,7 @@ export class ServicesComponent {
 
   readonly heading = computed(() => {
     const vi = this.i18n.isVi();
+    if (this.promotionMode()) return vi ? 'Khuyến mãi HOT' : 'HOT Deals';
     switch (this.activeTab()) {
       case 'hotels': return vi ? 'Lưu trú & Khách sạn' : 'Stays & Hotels';
       case 'vehicles': return vi ? 'Phương tiện di chuyển' : 'Transport & Rides';
@@ -148,12 +164,17 @@ export class ServicesComponent {
   });
 
   readonly scopeDescription = computed(() =>
-    this.i18n.isVi()
-      ? 'Danh sách được lọc theo điểm đến bạn đang xem. Bạn vẫn có thể đổi tỉnh trong bộ lọc.'
-      : 'This list is filtered by the destination you were viewing. You can still change province in the filters.',
+    this.promotionMode()
+      ? (this.i18n.isVi()
+          ? 'Tất cả dịch vụ lưu trú và hoạt động đang có giá ưu đãi. Bạn vẫn có thể lọc theo điểm đến, ngân sách và đánh giá.'
+          : 'All discounted stays and activities. You can still filter by destination, budget, and rating.')
+      : (this.i18n.isVi()
+          ? 'Danh sách được lọc theo điểm đến bạn đang xem. Bạn vẫn có thể đổi tỉnh trong bộ lọc.'
+          : 'This list is filtered by the destination you were viewing. You can still change province in the filters.'),
   );
 
   private readonly itemsRes = httpResource<(Attraction | Hotel | Activity)[]>(() => {
+    if (this.promotionMode()) return undefined;
     const tab = this.activeTab();
     if (tab === 'vehicles') return undefined;
     const prov = this.province();
@@ -161,7 +182,27 @@ export class ServicesComponent {
     return prov === 'all' ? `/api/${endpoint}` : `/api/${endpoint}?provinceId=${prov}`;
   }, { defaultValue: [] });
 
+  private readonly promoHotelsRes = httpResource<Hotel[]>(() => {
+    if (!this.promotionMode()) return undefined;
+    const prov = this.province();
+    return prov === 'all' ? '/api/hotels' : `/api/hotels?provinceId=${prov}`;
+  }, { defaultValue: [] });
+
+  private readonly promoActivitiesRes = httpResource<Activity[]>(() => {
+    if (!this.promotionMode()) return undefined;
+    const prov = this.province();
+    return prov === 'all' ? '/api/activities' : `/api/activities?provinceId=${prov}`;
+  }, { defaultValue: [] });
+
   readonly items = computed<ViewableItem[]>(() => {
+    if (this.promotionMode()) {
+      return [
+        ...toHotelItems(this.promoHotelsRes.value()),
+        ...toActivityItems(this.promoActivitiesRes.value()),
+      ]
+        .filter((item) => (item.discountPercent ?? 0) > 0)
+        .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    }
     const tab = this.activeTab();
     if (tab === 'vehicles') return toVehicleItems(this.catalogData.vehicles());
     if (tab === 'hotels') return toHotelItems(this.itemsRes.value() as Hotel[]);
@@ -174,23 +215,27 @@ export class ServicesComponent {
     const tab = this.activeTab();
     let list = this.items();
     if (normalized) list = list.filter((item) => `${item.name} ${item.description ?? ''}`.toLowerCase().includes(normalized));
-    if ((tab === 'activities' || tab === 'attractions') && this.category() !== 'all') {
+    if (!this.promotionMode() && (tab === 'activities' || tab === 'attractions') && this.category() !== 'all') {
       const pattern = CATEGORY_PATTERNS[this.category()];
       if (pattern) list = list.filter((item) => pattern.test(`${item.name} ${item.description ?? ''}`));
     }
-    if (tab === 'vehicles' && this.vehicleType() !== 'all') {
+    if (!this.promotionMode() && tab === 'vehicles' && this.vehicleType() !== 'all') {
       list = list.filter((item) => item.vehicleType === this.vehicleType());
     }
-    if (tab !== 'attractions' && (this.minPrice() > 0 || this.maxPrice() !== this.priceMaxLimit)) {
+    if ((this.promotionMode() || tab !== 'attractions') && (this.minPrice() > 0 || this.maxPrice() !== this.priceMaxLimit)) {
       list = list.filter((item) => item.price >= this.minPrice() && (this.maxPrice() === this.priceMaxLimit || item.price <= this.maxPrice()));
     }
     if (this.minRating() > 0) list = list.filter((item) => (item.rating ?? 0) >= this.minRating());
-    if (tab === 'hotels') list = list.filter((item) => this.matchesHotelFilters(item));
+    if (!this.promotionMode() && tab === 'hotels') list = list.filter((item) => this.matchesHotelFilters(item));
     const sort = this.sortBy();
-    if (sort === 'price-asc') list = [...list].sort((a, b) => a.price - b.price);
+    if (sort === 'promotion') list = [...list].sort((a, b) => (b.discountPercent ?? 0) - (a.discountPercent ?? 0) || (b.rating ?? 0) - (a.rating ?? 0));
+    else if (sort === 'price-asc') list = [...list].sort((a, b) => a.price - b.price);
     else if (sort === 'price-desc') list = [...list].sort((a, b) => b.price - a.price);
     else if (sort === 'rating-desc') list = [...list].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     else if (sort === 'reviews-desc') list = [...list].sort((a, b) => reviewsCountNumber(b.reviewsCount) - reviewsCountNumber(a.reviewsCount));
+    if (this.province() === 'all') {
+      list = [...list].sort((a, b) => this.availabilityRank(a) - this.availabilityRank(b));
+    }
     return list;
   });
 
@@ -283,6 +328,7 @@ export class ServicesComponent {
     // Reset pagination whenever filters change.
     effect(() => {
       this.activeTab();
+      this.promotionMode();
       this.query();
       this.province();
       this.sortBy();
@@ -302,6 +348,7 @@ export class ServicesComponent {
   }
 
   resetFilters(): void {
+    const clearPromotion = this.promotionMode();
     this.query.set('');
     this.province.set('all');
     this.sortBy.set('default');
@@ -315,6 +362,7 @@ export class ServicesComponent {
     this.hotelTypes.set([]);
     this.hotelPolicies.set([]);
     this.hotelAmenities.set([]);
+    if (clearPromotion) this.clearPromotion();
   }
 
   closeFilters(): void {
@@ -405,18 +453,51 @@ export class ServicesComponent {
       : [...sections, section]);
   }
 
+  isComingSoonTab(tab: ServiceTab): boolean {
+    return this.selectedProvinceInactive() && (tab === 'hotels' || tab === 'activities');
+  }
+
+  isServiceItemComingSoon(item: ViewableItem): boolean {
+    if (item.type === 'vehicle') return false;
+    const itemProvinceId = item.provinceId ?? (this.province() !== 'all' ? this.province() : undefined);
+    return itemProvinceId ? itemProvinceId !== LIVE_PROVINCE_ID : false;
+  }
+
+  private availabilityRank(item: ViewableItem): number {
+    return item.provinceId === LIVE_PROVINCE_ID ? 0 : 1;
+  }
+
   applySearch(): void {
+    this.occupancyOpen.set(false);
     if (typeof document !== 'undefined') document.getElementById('catalog-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  updateOccupancy(value: string): void {
-    const [guests, rooms] = value.split('-').map(Number);
-    this.guests.set(guests || 2);
-    this.rooms.set(rooms || 1);
+  adjustGuests(change: number): void {
+    const next = Math.max(1, Math.min(20, this.guests() + change));
+    this.guests.set(next);
+    if (this.rooms() > next) this.rooms.set(next);
+  }
+
+  adjustRooms(change: number): void {
+    const maximum = Math.min(10, this.guests());
+    this.rooms.set(Math.max(1, Math.min(maximum, this.rooms() + change)));
   }
 
   setTab(tab: ServiceTab): void {
-    void this.router.navigate(['/services'], { queryParams: { tab, province: this.province() } });
+    void this.router.navigate(['/services'], { queryParams: { tab, province: this.province(), promotion: null } });
+  }
+
+  updateSort(value: 'default' | 'promotion' | 'price-asc' | 'price-desc' | 'rating-desc' | 'reviews-desc'): void {
+    this.sortBy.set(value);
+  }
+
+  clearPromotion(): void {
+    if (this.sortBy() === 'promotion') this.sortBy.set('default');
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { promotion: null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   private hotelFilterSignal(group: 'popular' | 'stars' | 'areas' | 'types' | 'policies' | 'amenities') {

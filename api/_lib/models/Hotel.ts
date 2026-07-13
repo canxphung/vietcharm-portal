@@ -9,6 +9,7 @@ export interface HotelDocument {
   rating: number;
   reviewsCount: string;
   pricePerNight: number;
+  discountPercent: number;
   description: string;
   lat: number;
   lng: number;
@@ -23,6 +24,7 @@ const hotelSchema = new Schema<HotelDocument>(
     rating: { type: Number, required: true },
     reviewsCount: { type: String, required: true },
     pricePerNight: { type: Number, required: true },
+    discountPercent: { type: Number, min: 0, max: 90, default: 0 },
     description: { type: String, required: true },
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },

@@ -2,8 +2,11 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LucideChevronDown, LucideMail, LucideMapPin, LucidePhone } from '@lucide/angular';
+import { ContentService } from '@/services/content.service';
 import { I18nService } from '@/services/i18n.service';
-import { SUPPORT_TOPICS, SUPPORT_TOPIC_ORDER, type SupportTopicId } from './support-content';
+import type { SupportTopic, SupportTopicId } from '@/types';
+
+const DEFAULT_TOPIC: SupportTopicId = 'help';
 
 @Component({
   selector: 'app-support-page',
@@ -14,20 +17,22 @@ import { SUPPORT_TOPICS, SUPPORT_TOPIC_ORDER, type SupportTopicId } from './supp
 })
 export class SupportComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly content = inject(ContentService);
   readonly i18n = inject(I18nService);
-  readonly topicOrder = SUPPORT_TOPIC_ORDER;
-  readonly SUPPORT_TOPICS = SUPPORT_TOPICS;
+  readonly topics = this.content.supportTopics;
+  readonly loading = this.content.supportTopicsLoading;
   readonly openFaq = signal<string | null>(null);
 
   private readonly params = toSignal(this.route.paramMap);
-  readonly topicId = computed<SupportTopicId>(() => {
-    const raw = this.params()?.get('topic') ?? 'help';
-    return raw in SUPPORT_TOPICS ? (raw as SupportTopicId) : 'help';
-  });
-  readonly topic = computed(() => SUPPORT_TOPICS[this.topicId()]);
+  readonly topicId = computed(
+    () => (this.params()?.get('topic') ?? DEFAULT_TOPIC) as SupportTopicId,
+  );
+  readonly topic = computed(
+    () => this.topics().find((topic) => topic.id === this.topicId()) ?? this.topics()[0] ?? null,
+  );
 
-  groupTopics(group: 'first' | 'second'): SupportTopicId[] {
-    return this.topicOrder.filter((id) => (SUPPORT_TOPICS[id].groupVi === 'Hỗ trợ') === (group === 'first'));
+  groupTopics(group: SupportTopic['group']): SupportTopic[] {
+    return this.topics().filter((topic) => topic.group === group);
   }
 
   toggleFaq(question: string): void {

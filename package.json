@@ -8,7 +8,9 @@
     "start": "node dist/server.cjs",
     "build": "node scripts/build-angular.mjs && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "watch": "ng build --watch --configuration development",
+    "seed:service-discounts": "node scripts/seed-service-discounts.mjs",
     "seed:trip-rooms": "node scripts/seed-trip-rooms.mjs",
+    "seed:vehicle-details": "node scripts/seed-vehicle-details.mjs",
     "test": "ng test"
   },
   "private": true,

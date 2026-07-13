@@ -1,51 +1,161 @@
-    <div class="py-8">
-      <div class="mx-auto max-w-7xl space-y-10 px-4 text-natural-text">
-        <div class="mx-auto max-w-2xl space-y-2 text-center">
-          <span class="rounded-full bg-natural-gold px-3.5 py-1 text-[10px] font-black uppercase tracking-widest text-natural-text">EXCLUSIVE HERITAGE BUNDLES</span>
-          <h2 class="font-serif text-3xl font-black uppercase text-stone-900">{{ i18n.isVi() ? 'ĐẶT COMBO TOUR DU LỊCH TIẾT KIỆM IPP' : 'SAVER HERITAGE TOUR COMBOS' }}</h2>
-          <p class="text-xs leading-relaxed text-stone-500">{{ i18n.isVi() ? 'Kết hợp phòng nghỉ cao cấp, xe di chuyển riêng tư và vé tham quan di sản nổi bật với mức chiết khấu độc quyền lên đến 25% tổng hóa đơn.' : 'Unite premium hotel stays, private airport transfers, and verified attraction entries with absolute 25% bundling savings.' }}</p>
-          <div class="flex items-center justify-center gap-3 pt-1" aria-hidden="true">
-            <span class="h-px w-12 bg-gradient-to-r from-transparent to-natural-gold/70 sm:w-20"></span>
-            <span class="relative flex h-3.5 w-3.5 items-center justify-center"><span class="absolute inset-0 rotate-45 rounded-[2px] border border-natural-gold/50"></span><span class="h-1.5 w-1.5 rotate-45 rounded-[1px] bg-natural-gold"></span></span>
-            <span class="h-px w-12 bg-gradient-to-l from-transparent to-natural-gold/70 sm:w-20"></span>
-          </div>
-        </div>
+    <div class="min-h-screen w-full bg-natural-bg px-4 py-10">
+      <div class="mx-auto max-w-7xl space-y-12">
+        <!-- Hero -->
+        <header class="mx-auto max-w-2xl space-y-2.5 text-center">
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-natural-gold px-3.5 py-1 text-[10px] font-black uppercase tracking-widest text-natural-text"><svg lucideFlame class="h-3.5 w-3.5"></svg>{{ i18n.isVi() ? 'Ưu đãi hôm nay' : 'Deals today' }}</span>
+          <h1 class="font-serif text-3xl font-black tracking-tight text-stone-900 md:text-4xl">{{ i18n.isVi() ? 'Khuyến Mãi & Ưu Đãi' : 'Promotions & Deals' }}</h1>
+          <p class="text-sm leading-relaxed text-stone-500">{{ i18n.isVi() ? 'Săn deal dịch vụ hot, gom voucher giảm giá và đặt combo trọn gói tiết kiệm — tất cả ở một nơi.' : 'Grab hot service deals, collect discount vouchers and book money-saving bundles — all in one place.' }}</p>
+        </header>
 
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          @for (combo of combos(); track combo.id) {
-            <div class="group flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-natural-border bg-white shadow-xs transition duration-300 ease-out hover:-translate-y-1.5 hover:border-natural-gold/45 hover:shadow-luxe-lg" (click)="view(combo)">
-              <div class="relative h-56 overflow-hidden">
-                <img [src]="combo.image" [alt]="combo.name" class="h-full w-full object-cover transition duration-[600ms] ease-out group-hover:scale-110" />
-                <button type="button" class="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow-md transition hover:scale-110" [title]="i18n.isVi() ? 'Thêm vào yêu thích' : 'Add to favorites'" (click)="$event.stopPropagation(); ui.toggleFavorite(asItem(combo))">
-                  <svg lucideHeart class="h-4 w-4 transition duration-200" [class.text-rose-600]="ui.isFavorite(combo.id)" [class.fill-rose-600]="ui.isFavorite(combo.id)" [class.text-stone-400]="!ui.isFavorite(combo.id)"></svg>
-                </button>
-                <div class="absolute right-3 top-3 flex items-center gap-1 rounded-xl border border-stone-200 bg-white/95 px-2.5 py-1 text-xs font-bold text-stone-800 shadow-sm backdrop-blur-md">
-                  <svg lucideStar class="h-4 w-4 fill-amber-400 stroke-amber-400"></svg><span>{{ combo.rating }}</span>
+        <!-- 1. Khuyến mãi hot -->
+        <section class="space-y-5">
+          <div class="flex items-end justify-between gap-3">
+            <div>
+              <h2 class="flex items-center gap-2 font-serif text-xl font-black text-stone-900 md:text-2xl"><svg lucideFlame class="h-5 w-5 text-rose-600"></svg>{{ i18n.isVi() ? 'Khuyến mãi hot' : 'Hot deals' }}</h2>
+              <p class="mt-1 text-xs text-stone-500">{{ i18n.isVi() ? 'Dịch vụ được yêu thích nhất với mức giảm sâu, số lượng có hạn.' : 'Best-loved services at deep discounts, limited slots.' }}</p>
+            </div>
+          </div>
+          <nav class="deal-filter-bar" [attr.aria-label]="i18n.isVi() ? 'Lọc khuyến mãi' : 'Deal filters'">
+            <div class="deal-filter-options">
+              <button type="button" class="deal-filter-button" [class.deal-filter-active]="hotDealSort() === 'hot'" [attr.aria-pressed]="hotDealSort() === 'hot'" (click)="hotDealSort.set('hot')"><svg lucideGift class="h-4 w-4"></svg><span>{{ i18n.isVi() ? 'Khuyến mãi HOT' : 'HOT deals' }}</span></button>
+              <button type="button" class="deal-filter-button" [class.deal-filter-active]="hotDealSort() === 'price-asc'" [attr.aria-pressed]="hotDealSort() === 'price-asc'" (click)="hotDealSort.set('price-asc')"><span class="deal-sort-mark">↗</span><span>{{ i18n.isVi() ? 'Giá thấp – cao' : 'Price low – high' }}</span></button>
+              <button type="button" class="deal-filter-button" [class.deal-filter-active]="hotDealSort() === 'price-desc'" [attr.aria-pressed]="hotDealSort() === 'price-desc'" (click)="hotDealSort.set('price-desc')"><span class="deal-sort-mark">↘</span><span>{{ i18n.isVi() ? 'Giá cao – thấp' : 'Price high – low' }}</span></button>
+            </div>
+            <a routerLink="/services" [queryParams]="{ promotion: 'hot' }" class="deal-view-all">{{ i18n.isVi() ? 'Xem tất cả' : 'View all' }}<svg lucideArrowRight class="h-4 w-4"></svg></a>
+          </nav>
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            @for (deal of sortedHotDeals(); track deal.item.id) {
+              <div class="group relative flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-natural-border bg-white shadow-xs transition duration-300 hover:-translate-y-1 hover:border-natural-gold/50 hover:shadow-lg" (click)="viewDeal(deal)">
+                <div class="relative h-40 overflow-hidden">
+                  <img [src]="deal.item.image" [alt]="deal.item.name" class="h-full w-full object-cover transition duration-500 group-hover:scale-108" loading="lazy" />
+                  <span class="absolute right-3 top-3 rounded-xl bg-rose-600 px-2.5 py-1 text-sm font-black text-white shadow-md">-{{ deal.discount }}%</span>
+                </div>
+                <div class="flex flex-1 flex-col justify-between gap-3 p-4">
+                  <div>
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-[10px] font-black uppercase tracking-wider text-natural-accent">{{ dealTypeLabel(deal.item.type) }}</span>
+                      <span class="flex items-center gap-1 text-xs font-bold text-stone-700"><svg lucideStar class="h-3.5 w-3.5 fill-amber-400 stroke-amber-400"></svg>{{ deal.item.rating }}</span>
+                    </div>
+                    <h3 class="mt-1.5 line-clamp-2 min-h-[40px] font-serif text-sm font-bold leading-snug text-stone-900">{{ deal.item.name }}</h3>
+                  </div>
+                  <div class="flex items-end justify-between border-t border-stone-100 pt-2.5">
+                    <span class="text-xs text-stone-400 line-through">{{ deal.item.price | number : '1.0-0' }}đ</span>
+                    <strong class="font-serif text-lg font-black text-rose-600">{{ deal.salePrice | number : '1.0-0' }}đ</strong>
+                  </div>
                 </div>
               </div>
-              <div class="flex flex-1 flex-col justify-between space-y-5 p-5">
-                <div class="space-y-3">
-                  <div class="flex items-center justify-between">
-                    <span class="block text-xs font-bold uppercase tracking-wider text-natural-accent">{{ combo.days }}</span>
-                    <span class="text-xs text-stone-400 line-through">{{ combo.oldPrice | number : '1.0-0' }}đ</span>
-                  </div>
-                  <h3 class="line-clamp-2 min-h-[44px] font-serif text-base font-bold leading-snug text-stone-900">{{ combo.name }}</h3>
-                  <ul class="space-y-1.5 border-t border-stone-100 pt-1 text-xs text-stone-600">
-                    @for (inc of combo.includes; track inc) {
-                      <li class="flex items-start gap-1.5 leading-relaxed"><span class="mt-0.5 font-bold text-emerald-600">✓</span><span>{{ inc }}</span></li>
-                    }
-                  </ul>
+            }
+          </div>
+        </section>
+
+        <!-- 2. Địa điểm hot -->
+        <section class="space-y-5">
+          <div class="flex items-end justify-between gap-3">
+            <div>
+              <h2 class="flex items-center gap-2 font-serif text-xl font-black text-stone-900 md:text-2xl"><svg lucideMapPin class="h-5 w-5 text-natural-accent"></svg>{{ i18n.isVi() ? 'Địa điểm hot' : 'Trending places' }}</h2>
+              <p class="mt-1 text-xs text-stone-500">{{ i18n.isVi() ? 'Những điểm đến được đánh giá cao nhất tuần này.' : 'The highest-rated destinations this week.' }}</p>
+            </div>
+            <a routerLink="/services" [queryParams]="{ tab: 'attractions' }" class="flex shrink-0 items-center gap-1 text-xs font-black text-natural-accent transition hover:text-natural-olive">{{ i18n.isVi() ? 'Khám phá' : 'Explore' }}<svg lucideArrowRight class="h-3.5 w-3.5"></svg></a>
+          </div>
+          <div class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2">
+            @for (place of hotPlaces(); track place.id) {
+              <button type="button" class="group w-52 shrink-0 overflow-hidden rounded-2xl border border-natural-border bg-white text-left shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-lg" (click)="viewPlace(place)">
+                <div class="relative h-32 overflow-hidden">
+                  <img [src]="place.image" [alt]="place.name" class="h-full w-full object-cover transition duration-500 group-hover:scale-108" loading="lazy" />
+                  <span class="absolute bottom-2 left-2 flex items-center gap-1 rounded-lg bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm"><svg lucideStar class="h-3 w-3 fill-amber-400 stroke-amber-400"></svg>{{ place.rating }}</span>
                 </div>
-                <div class="space-y-3 border-t border-stone-100 pt-3">
-                  <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase text-stone-400">{{ i18n.isVi() ? 'Giá trọn gói' : 'Bundled Price' }}</span>
-                    <strong class="font-serif text-xl font-black text-natural-accent">{{ combo.price | number : '1.0-0' }}đ <span class="font-sans text-[10px] text-stone-500">/{{ i18n.isVi() ? 'Khách' : 'Pax' }}</span></strong>
-                  </div>
-                  <button type="button" class="w-full rounded-xl bg-natural-accent py-3 text-xs font-black uppercase tracking-wider text-white transition hover:bg-natural-olive" (click)="$event.stopPropagation(); view(combo)">{{ i18n.isVi() ? 'ĐẶT COMBO NGAY' : 'BOOK BUNDLED PACKAGE' }}</button>
+                <div class="p-3">
+                  <h3 class="line-clamp-1 text-xs font-bold text-stone-900">{{ place.name }}</h3>
+                  <p class="mt-0.5 line-clamp-1 text-[10px] text-stone-500">{{ place.description }}</p>
                 </div>
-              </div>
+              </button>
+            }
+          </div>
+        </section>
+
+        <!-- 3. Săn voucher -->
+        <section class="space-y-5">
+          <div>
+            <h2 class="flex items-center gap-2 font-serif text-xl font-black text-stone-900 md:text-2xl"><svg lucideGift class="h-5 w-5 text-natural-gold-dark"></svg>{{ i18n.isVi() ? 'Săn voucher' : 'Voucher hunt' }}</h2>
+            <p class="mt-1 text-xs text-stone-500">{{ i18n.isVi() ? 'Sao chép mã và dán ở bước thanh toán để được giảm giá.' : 'Copy a code and paste it at checkout for instant savings.' }}</p>
+          </div>
+          @if (activeVouchers().length === 0) {
+            <p class="rounded-2xl border border-dashed border-natural-border bg-white p-8 text-center text-xs italic text-stone-400">{{ i18n.isVi() ? 'Hiện chưa có voucher nào — quay lại sau nhé!' : 'No vouchers right now — check back soon!' }}</p>
+          } @else {
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              @for (voucher of activeVouchers(); track voucher.code) {
+                <div class="relative flex items-stretch overflow-hidden rounded-2xl border-2 border-dashed border-natural-gold/60 bg-white">
+                  <div class="flex w-24 shrink-0 items-center justify-center bg-natural-gold/15 p-3">
+                    <span class="text-center font-serif text-lg font-black leading-tight text-natural-gold-dark">{{ voucherValue(voucher) }}</span>
+                  </div>
+                  <div class="flex min-w-0 flex-1 flex-col justify-between gap-2 p-3.5">
+                    <div>
+                      <p class="line-clamp-2 text-xs font-bold leading-snug text-stone-800">{{ voucher.description }}</p>
+                      <p class="mt-1 text-[10px] text-stone-400">{{ i18n.isVi() ? 'Đơn tối thiểu' : 'Min spend' }} {{ voucher.minSpend | number : '1.0-0' }}đ</p>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                      <code class="truncate rounded-lg bg-natural-sand px-2 py-1 font-mono text-[11px] font-black tracking-wider text-natural-text">{{ voucher.code }}</code>
+                      <button type="button" class="shrink-0 rounded-lg bg-natural-accent px-3 py-1.5 text-[10px] font-black uppercase text-white transition hover:bg-natural-olive" (click)="copyVoucher(voucher)">{{ i18n.isVi() ? 'Sao chép' : 'Copy' }}</button>
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
           }
-        </div>
+        </section>
+
+        <!-- 4. Combo tiết kiệm -->
+        <section class="space-y-5">
+          <div>
+            <h2 class="flex items-center gap-2 font-serif text-xl font-black text-stone-900 md:text-2xl">💼 {{ i18n.isVi() ? 'Combo tiết kiệm' : 'Saver bundles' }}</h2>
+            <p class="mt-1 text-xs text-stone-500">{{ i18n.isVi() ? 'Gói phòng nghỉ + di chuyển + vé tham quan với giá trọn gói rẻ hơn đặt lẻ.' : 'Stay + transport + tickets bundled for less than booking separately.' }}</p>
+          </div>
+          <nav class="deal-filter-bar" [attr.aria-label]="i18n.isVi() ? 'Sắp xếp combo' : 'Sort bundles'">
+            <div class="deal-filter-options">
+              <button type="button" class="deal-filter-button" [class.deal-filter-active]="comboSort() === 'featured'" [attr.aria-pressed]="comboSort() === 'featured'" (click)="comboSort.set('featured')"><svg lucideGift class="h-4 w-4"></svg><span>{{ i18n.isVi() ? 'Combo nổi bật' : 'Featured bundles' }}</span></button>
+              <button type="button" class="deal-filter-button" [class.deal-filter-active]="comboSort() === 'price-asc'" [attr.aria-pressed]="comboSort() === 'price-asc'" (click)="comboSort.set('price-asc')"><span class="deal-sort-mark">↗</span><span>{{ i18n.isVi() ? 'Giá thấp – cao' : 'Price low – high' }}</span></button>
+              <button type="button" class="deal-filter-button" [class.deal-filter-active]="comboSort() === 'price-desc'" [attr.aria-pressed]="comboSort() === 'price-desc'" (click)="comboSort.set('price-desc')"><span class="deal-sort-mark">↘</span><span>{{ i18n.isVi() ? 'Giá cao – thấp' : 'Price high – low' }}</span></button>
+            </div>
+          </nav>
+          <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            @for (combo of sortedCombos(); track combo.id) {
+              <div class="group flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-3xl border border-natural-border bg-white shadow-xs transition duration-300 ease-out hover:-translate-y-1.5 hover:border-natural-gold/45 hover:shadow-luxe-lg" (click)="view(combo)">
+                <div class="relative h-56 overflow-hidden">
+                  <img [src]="combo.image" [alt]="combo.name" class="h-full w-full object-cover transition duration-[600ms] ease-out group-hover:scale-110" />
+                  <button type="button" class="absolute left-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 shadow-md transition hover:scale-110" [title]="i18n.isVi() ? 'Thêm vào yêu thích' : 'Add to favorites'" (click)="$event.stopPropagation(); ui.toggleFavorite(asItem(combo))">
+                    <svg lucideHeart class="h-4 w-4 transition duration-200" [class.text-rose-600]="ui.isFavorite(combo.id)" [class.fill-rose-600]="ui.isFavorite(combo.id)" [class.text-stone-400]="!ui.isFavorite(combo.id)"></svg>
+                  </button>
+                  @if (comboDiscount(combo) > 0) {
+                    <span class="absolute right-3 top-3 rounded-xl bg-rose-600 px-2.5 py-1 text-sm font-black text-white shadow-md">-{{ comboDiscount(combo) }}%</span>
+                  }
+                  <div class="absolute bottom-3 right-3 flex items-center gap-1 rounded-xl border border-stone-200 bg-white/95 px-2.5 py-1 text-xs font-bold text-stone-800 shadow-sm backdrop-blur-md">
+                    <svg lucideStar class="h-4 w-4 fill-amber-400 stroke-amber-400"></svg><span>{{ combo.rating }}</span>
+                  </div>
+                </div>
+                <div class="flex flex-1 flex-col justify-between space-y-5 p-5">
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <span class="block text-xs font-bold uppercase tracking-wider text-natural-accent">{{ combo.days }}</span>
+                      <span class="text-xs text-stone-400 line-through">{{ combo.oldPrice | number : '1.0-0' }}đ</span>
+                    </div>
+                    <h3 class="line-clamp-2 min-h-[44px] font-serif text-base font-bold leading-snug text-stone-900">{{ combo.name }}</h3>
+                    <ul class="space-y-1.5 border-t border-stone-100 pt-1 text-xs text-stone-600">
+                      @for (inc of combo.includes; track inc) {
+                        <li class="flex items-start gap-1.5 leading-relaxed"><span class="mt-0.5 font-bold text-emerald-600">✓</span><span>{{ inc }}</span></li>
+                      }
+                    </ul>
+                  </div>
+                  <div class="space-y-3 border-t border-stone-100 pt-3">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-bold uppercase text-stone-400">{{ i18n.isVi() ? 'Giá trọn gói' : 'Bundled Price' }}</span>
+                      <strong class="font-serif text-xl font-black text-natural-accent">{{ combo.price | number : '1.0-0' }}đ <span class="font-sans text-[10px] text-stone-500">/{{ i18n.isVi() ? 'Khách' : 'Pax' }}</span></strong>
+                    </div>
+                    <button type="button" class="w-full rounded-xl bg-natural-accent py-3 text-xs font-black uppercase tracking-wider text-white transition hover:bg-natural-olive" (click)="$event.stopPropagation(); view(combo)">{{ i18n.isVi() ? 'ĐẶT COMBO NGAY' : 'BOOK BUNDLED PACKAGE' }}</button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
       </div>
     </div>

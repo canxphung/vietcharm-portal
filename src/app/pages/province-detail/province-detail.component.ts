@@ -22,7 +22,7 @@ import {
   LucideStar,
 } from '@lucide/angular';
 import { getProvinceHero } from '@/constants/provinceHero';
-import type { Activity, Attraction, Hotel, ViewableItem } from '@/types';
+import type { Activity, Attraction, Hotel, Vehicle, ViewableItem } from '@/types';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
 import { CatalogDataService } from '@/services/catalog-data';
@@ -31,6 +31,7 @@ import { I18nService } from '@/services/i18n.service';
 import { ToastService } from '@/services/toast.service';
 import { UiStateService } from '@/services/ui-state.service';
 import { RevealDirective } from '@/directives/reveal.directive';
+import { hotDealSalePrice, withDiscountPricing } from '@/utils/hot-deals';
 
 type ActivityCategory = 'all' | 'heritage' | 'culinary' | 'nature' | 'adventure';
 type PriceTier = 'all' | 'under-200k' | '200k-500k' | 'over-500k';
@@ -278,14 +279,18 @@ export class ProvinceDetailComponent {
   attractionItem(spot: { id: string; name: string; image: string; description: string }): ViewableItem {
     return { id: spot.id, type: 'nearby-place', name: spot.name, image: spot.image, price: 0, description: spot.description };
   }
-  hotelItem(h: { id: string; name: string; image: string; pricePerNight: number; description: string }): ViewableItem {
-    return { id: h.id, type: 'hotel', name: h.name, image: h.image, price: h.pricePerNight, description: h.description };
+  hotelItem(h: Hotel): ViewableItem {
+    return withDiscountPricing({ id: h.id, type: 'hotel', name: h.name, image: h.image, price: h.pricePerNight, description: h.description, discountPercent: h.discountPercent });
   }
-  vehicleItem(v: { id: string; name: string; image: string; pricePerDay: number; specs: string }): ViewableItem {
-    return { id: v.id, type: 'vehicle', name: v.name, image: v.image, price: v.pricePerDay, description: v.specs };
+  vehicleItem(v: Vehicle): ViewableItem {
+    return withDiscountPricing({ id: v.id, type: 'vehicle', name: v.name, image: v.image, gallery: v.gallery, price: v.pricePerDay, description: v.specs, specs: v.specs, vehicleType: v.type, rentalPackages: v.rentalPackages, discountPercent: v.discountPercent });
   }
-  activityItem(a: { id: string; name: string; image: string; price: number; description: string }): ViewableItem {
-    return { id: a.id, type: 'activity', name: a.name, image: a.image, price: a.price, description: a.description };
+  activityItem(a: Activity): ViewableItem {
+    return withDiscountPricing({ id: a.id, type: 'activity', name: a.name, image: a.image, price: a.price, description: a.description, discountPercent: a.discountPercent });
+  }
+
+  salePrice(price: number, discountPercent?: number): number {
+    return (discountPercent ?? 0) > 0 ? hotDealSalePrice(price, discountPercent ?? 0) : price;
   }
 
   addReview(): void {

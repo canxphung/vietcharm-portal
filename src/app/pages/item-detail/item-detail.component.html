@@ -169,9 +169,15 @@
           <div class="sticky top-28 space-y-6 lg:col-span-5">
             <div class="space-y-6 rounded-3xl border border-natural-border bg-white p-6 shadow-lg md:p-8">
               <div class="space-y-1">
-                <span class="block text-[10px] font-black uppercase tracking-widest text-natural-accent">{{ isVi() ? 'GIÁ NIÊM YẾT CHÍNH HÃNG' : 'GENUINE RETAIL PRICE' }}</span>
+                <div class="flex items-center justify-between gap-3">
+                  <span class="block text-[10px] font-black uppercase tracking-widest text-natural-accent">{{ item.discountPercent ? (isVi() ? 'GIÁ KHUYẾN MÃI' : 'PROMOTIONAL PRICE') : (isVi() ? 'GIÁ NIÊM YẾT CHÍNH HÃNG' : 'GENUINE RETAIL PRICE') }}</span>
+                  @if (item.discountPercent) { <span class="rounded-lg bg-rose-600 px-2.5 py-1 text-xs font-black text-white">-{{ item.discountPercent }}%</span> }
+                </div>
+                @if ((item.originalPrice ?? 0) > item.price) {
+                  <span class="block text-sm font-bold text-stone-400 line-through">{{ item.originalPrice | number : '1.0-0' }}đ</span>
+                }
                 <div class="flex items-baseline gap-1.5">
-                  <span class="font-mono text-2xl font-black text-natural-accent md:text-3xl">{{ item.price > 0 ? (item.price | number : '1.0-0') + 'đ' : (isVi() ? 'Miễn phí' : 'Free Entry') }}</span>
+                  <span class="font-mono text-2xl font-black md:text-3xl" [class.text-rose-600]="item.discountPercent" [class.text-natural-accent]="!item.discountPercent">{{ item.price > 0 ? (item.price | number : '1.0-0') + 'đ' : (isVi() ? 'Miễn phí' : 'Free Entry') }}</span>
                   @if (item.price > 0) {
                     <span class="text-xs text-stone-500">/{{ item.type === 'hotel' ? (isVi() ? 'đêm' : 'night') : (item.type === 'vehicle' ? (isVi() ? 'ngày' : 'day') : (isVi() ? 'khách' : 'guest')) }}</span>
                   }
@@ -179,11 +185,17 @@
               </div>
 
               <div class="space-y-3 rounded-2xl border border-stone-150 bg-natural-cream p-4">
-                <div class="flex items-center gap-2 text-xs font-bold text-stone-700"><svg lucideShieldCheck class="h-4 w-4 text-emerald-600"></svg><span>{{ isVi() ? 'Cam kết độc quyền VietCharm' : 'VietCharm Exclusives' }}</span></div>
+                <div class="flex items-center gap-2 text-xs font-bold text-stone-700"><svg lucideShieldCheck class="h-4 w-4 text-emerald-600"></svg><span>{{ item.type === 'vehicle' ? (isVi() ? 'Cam kết thuê xe VietCharm' : 'VietCharm Rental Promise') : (isVi() ? 'Cam kết độc quyền VietCharm' : 'VietCharm Exclusives') }}</span></div>
                 <div class="space-y-2 text-[11px] text-stone-500">
-                  <div class="flex items-center gap-2"><svg lucideCheckCircle class="h-3.5 w-3.5 shrink-0 text-emerald-600"></svg><span>{{ isVi() ? 'Không phát sinh phụ phí ẩn' : 'No hidden fees or taxes' }}</span></div>
-                  <div class="flex items-center gap-2"><svg lucideCheckCircle class="h-3.5 w-3.5 shrink-0 text-emerald-600"></svg><span>{{ isVi() ? 'Xác nhận hóa đơn đỏ tức thì' : 'Instant red invoice & booking code' }}</span></div>
-                  <div class="flex items-center gap-2"><svg lucideCheckCircle class="h-3.5 w-3.5 shrink-0 text-emerald-600"></svg><span>{{ isVi() ? 'Tích lũy 5% điểm thưởng thành viên' : 'Accumulate 5% member points' }}</span></div>
+                  @if (item.type === 'vehicle') {
+                    <div class="flex items-center gap-2"><svg lucideCheckCircle class="h-3.5 w-3.5 shrink-0 text-emerald-600"></svg><span>{{ isVi() ? 'Xe được kiểm tra trước khi bàn giao' : 'Vehicle inspected before handover' }}</span></div>
+                    <div class="flex items-center gap-2"><svg lucideCheckCircle class="h-3.5 w-3.5 shrink-0 text-emerald-600"></svg><span>{{ isVi() ? 'Giá thuê, tiền cọc và phụ phí minh bạch' : 'Transparent rental, deposit, and fee terms' }}</span></div>
+                    <div class="flex items-center gap-2"><svg lucideCheckCircle class="h-3.5 w-3.5 shrink-0 text-emerald-600"></svg><span>{{ isVi() ? 'Hỗ trợ cứu hộ và đổi xe khi có sự cố' : 'Roadside support and fault replacement' }}</span></div>
+                  } @else {
+                    <div class="flex items-center gap-2"><svg lucideCheckCircle class="h-3.5 w-3.5 shrink-0 text-emerald-600"></svg><span>{{ isVi() ? 'Không phát sinh phụ phí ẩn' : 'No hidden fees or taxes' }}</span></div>
+                    <div class="flex items-center gap-2"><svg lucideCheckCircle class="h-3.5 w-3.5 shrink-0 text-emerald-600"></svg><span>{{ isVi() ? 'Xác nhận hóa đơn đỏ tức thì' : 'Instant red invoice & booking code' }}</span></div>
+                    <div class="flex items-center gap-2"><svg lucideCheckCircle class="h-3.5 w-3.5 shrink-0 text-emerald-600"></svg><span>{{ isVi() ? 'Tích lũy 5% điểm thưởng thành viên' : 'Accumulate 5% member points' }}</span></div>
+                  }
                 </div>
               </div>
 
@@ -225,7 +237,7 @@
                   }
 
                   <div class="space-y-2">
-                    <label class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-stone-500"><svg lucideSparkles class="h-3.5 w-3.5 text-natural-accent"></svg><span>{{ isVi() ? 'Vui lòng chọn gói dịch vụ:' : 'Please Select Service Package:' }}</span></label>
+                    <label class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-stone-500"><svg lucideSparkles class="h-3.5 w-3.5 text-natural-accent"></svg><span>{{ item.type === 'vehicle' ? (isVi() ? 'Vui lòng chọn gói thuê xe:' : 'Please select a rental package:') : (isVi() ? 'Vui lòng chọn gói dịch vụ:' : 'Please Select Service Package:') }}</span></label>
                     <div class="space-y-2">
                       @for (pkg of packages(); track pkg.key) {
                         <button type="button" (click)="selectedPackage.set(pkg.key)"

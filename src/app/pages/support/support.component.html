@@ -1,71 +1,154 @@
-    <section class="mx-auto max-w-6xl px-4 py-10">
-      <nav class="mb-6 flex flex-wrap items-center gap-2 text-xs font-bold text-stone-500">
-        <a routerLink="/" class="transition hover:text-natural-accent">{{ i18n.isVi() ? 'Trang chủ' : 'Home' }}</a>
-        <span aria-hidden="true">/</span>
-        <span class="text-natural-text" aria-current="page">{{ i18n.isVi() ? topic().titleVi : topic().titleEn }}</span>
-      </nav>
+<section class="mx-auto max-w-6xl px-4 py-10">
+  <nav class="mb-6 flex flex-wrap items-center gap-2 text-xs font-bold text-stone-500">
+    <a routerLink="/" class="transition hover:text-natural-accent">{{
+      i18n.isVi() ? 'Trang chủ' : 'Home'
+    }}</a>
+    <span aria-hidden="true">/</span>
+    <span class="text-natural-text" aria-current="page">{{
+      topic()
+        ? i18n.isVi()
+          ? topic()!.titleVi
+          : topic()!.titleEn
+        : i18n.isVi()
+          ? 'Đang tải'
+          : 'Loading'
+    }}</span>
+  </nav>
 
-      <div class="grid gap-8 lg:grid-cols-[240px_minmax(0,1fr)]">
-        <!-- Sidebar -->
-        <aside class="h-fit space-y-6 rounded-2xl border border-natural-border bg-white p-4 shadow-xs lg:sticky lg:top-28">
-          <div class="space-y-1.5">
-            <h5 class="px-2 text-[10px] font-black uppercase tracking-widest text-natural-accent">{{ i18n.isVi() ? 'Hỗ trợ' : 'Support' }}</h5>
-            <nav class="space-y-0.5">
-              @for (id of groupTopics('first'); track id) {
-                <a [routerLink]="['/support', id]" [class]="'block rounded-lg px-2.5 py-2 text-xs font-bold transition ' + (topicId() === id ? 'bg-natural-accent text-white' : 'text-stone-600 hover:bg-natural-cream')">{{ i18n.isVi() ? SUPPORT_TOPICS[id].titleVi : SUPPORT_TOPICS[id].titleEn }}</a>
-              }
-            </nav>
-          </div>
-          <div class="space-y-1.5">
-            <h5 class="px-2 text-[10px] font-black uppercase tracking-widest text-natural-accent">{{ i18n.isVi() ? 'Về VietCharm' : 'About VietCharm' }}</h5>
-            <nav class="space-y-0.5">
-              @for (id of groupTopics('second'); track id) {
-                <a [routerLink]="['/support', id]" [class]="'block rounded-lg px-2.5 py-2 text-xs font-bold transition ' + (topicId() === id ? 'bg-natural-accent text-white' : 'text-stone-600 hover:bg-natural-cream')">{{ i18n.isVi() ? SUPPORT_TOPICS[id].titleVi : SUPPORT_TOPICS[id].titleEn }}</a>
-              }
-            </nav>
-          </div>
-        </aside>
-
-        <!-- Content -->
-        <div class="space-y-6">
-          <div>
-            <h1 class="font-serif text-3xl font-black tracking-tight text-natural-ink md:text-4xl">{{ i18n.isVi() ? topic().titleVi : topic().titleEn }}</h1>
-            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-stone-500">{{ i18n.isVi() ? topic().introVi : topic().introEn }}</p>
-          </div>
-
-          @if (topic().faqs?.length) {
-            <div class="space-y-3">
-              @for (faq of topic().faqs; track faq.qVi) {
-                <div class="overflow-hidden rounded-2xl border border-natural-border bg-white shadow-xs">
-                  <button type="button" class="flex w-full items-center justify-between gap-3 px-5 py-4 text-left text-sm font-bold text-natural-ink" (click)="toggleFaq(faq.qVi)">
-                    <span>{{ i18n.isVi() ? faq.qVi : faq.qEn }}</span>
-                    <svg lucideChevronDown class="h-4 w-4 shrink-0 transition-transform" [class.rotate-180]="openFaq() === faq.qVi"></svg>
-                  </button>
-                  @if (openFaq() === faq.qVi) {
-                    <p class="border-t border-natural-border px-5 py-4 text-xs leading-relaxed text-stone-600">{{ i18n.isVi() ? faq.aVi : faq.aEn }}</p>
-                  }
-                </div>
-              }
-            </div>
-          } @else {
-            <div class="space-y-4">
-              @for (section of topic().sections; track section.headingVi) {
-                <div class="rounded-2xl border border-natural-border bg-white p-5 shadow-xs">
-                  <h3 class="text-sm font-black uppercase tracking-wide text-natural-accent">{{ i18n.isVi() ? section.headingVi : section.headingEn }}</h3>
-                  <p class="mt-2 text-xs leading-relaxed text-stone-600">{{ i18n.isVi() ? section.bodyVi : section.bodyEn }}</p>
-                </div>
-              }
-            </div>
+  <div class="grid gap-8 lg:grid-cols-[240px_minmax(0,1fr)]">
+    <!-- Sidebar -->
+    <aside
+      class="h-fit space-y-6 rounded-2xl border border-natural-border bg-white p-4 shadow-xs lg:sticky lg:top-28"
+    >
+      <div class="space-y-1.5">
+        <h5 class="px-2 text-[10px] font-black uppercase tracking-widest text-natural-accent">
+          {{ i18n.isVi() ? 'Hỗ trợ' : 'Support' }}
+        </h5>
+        <nav class="space-y-0.5">
+          @for (item of groupTopics('support'); track item.id) {
+            <a
+              [routerLink]="['/support', item.id]"
+              [class]="
+                'block rounded-lg px-2.5 py-2 text-xs font-bold transition ' +
+                (topicId() === item.id
+                  ? 'bg-natural-accent text-white'
+                  : 'text-stone-600 hover:bg-natural-cream')
+              "
+              >{{ i18n.isVi() ? item.titleVi : item.titleEn }}</a
+            >
           }
+        </nav>
+      </div>
+      <div class="space-y-1.5">
+        <h5 class="px-2 text-[10px] font-black uppercase tracking-widest text-natural-accent">
+          {{ i18n.isVi() ? 'Về VietCharm' : 'About VietCharm' }}
+        </h5>
+        <nav class="space-y-0.5">
+          @for (item of groupTopics('about'); track item.id) {
+            <a
+              [routerLink]="['/support', item.id]"
+              [class]="
+                'block rounded-lg px-2.5 py-2 text-xs font-bold transition ' +
+                (topicId() === item.id
+                  ? 'bg-natural-accent text-white'
+                  : 'text-stone-600 hover:bg-natural-cream')
+              "
+              >{{ i18n.isVi() ? item.titleVi : item.titleEn }}</a
+            >
+          }
+        </nav>
+      </div>
+    </aside>
 
-          <div class="flex flex-col gap-3 rounded-2xl border border-natural-border bg-natural-cream p-5 sm:flex-row sm:items-center sm:justify-between">
-            <div class="space-y-1 text-xs text-stone-600">
-              <p class="flex items-center gap-1.5 font-bold text-natural-ink"><svg lucidePhone class="h-3.5 w-3.5 text-natural-accent"></svg>Hotline: 1900 5040</p>
-              <p class="flex items-center gap-1.5"><svg lucideMail class="h-3.5 w-3.5 text-natural-accent"></svg>info&#64;vietcharm.com</p>
-              <p class="flex items-center gap-1.5"><svg lucideMapPin class="h-3.5 w-3.5 text-natural-accent"></svg>{{ i18n.isVi() ? '123 Trần Phú, Minh An, Hội An' : '123 Tran Phu, Minh An, Hoi An' }}</p>
-            </div>
-            <a routerLink="/support/contact" class="inline-flex shrink-0 items-center justify-center rounded-xl bg-natural-accent px-4 py-2.5 text-xs font-bold text-white transition hover:bg-natural-olive">{{ i18n.isVi() ? 'Xem trang liên hệ' : 'View contact page' }}</a>
+    <!-- Content -->
+    @if (topic(); as currentTopic) {
+      <div class="space-y-6">
+        <div>
+          <h1 class="font-serif text-3xl font-black tracking-tight text-natural-ink md:text-4xl">
+            {{ i18n.isVi() ? currentTopic.titleVi : currentTopic.titleEn }}
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-stone-500">
+            {{ i18n.isVi() ? currentTopic.introVi : currentTopic.introEn }}
+          </p>
+        </div>
+
+        @if (currentTopic.faqs.length) {
+          <div class="space-y-3">
+            @for (faq of currentTopic.faqs; track faq.qVi) {
+              <div
+                class="overflow-hidden rounded-2xl border border-natural-border bg-white shadow-xs"
+              >
+                <button
+                  type="button"
+                  class="flex w-full items-center justify-between gap-3 px-5 py-4 text-left text-sm font-bold text-natural-ink"
+                  (click)="toggleFaq(faq.qVi)"
+                >
+                  <span>{{ i18n.isVi() ? faq.qVi : faq.qEn }}</span>
+                  <svg
+                    lucideChevronDown
+                    class="h-4 w-4 shrink-0 transition-transform"
+                    [class.rotate-180]="openFaq() === faq.qVi"
+                  ></svg>
+                </button>
+                @if (openFaq() === faq.qVi) {
+                  <p
+                    class="border-t border-natural-border px-5 py-4 text-xs leading-relaxed text-stone-600"
+                  >
+                    {{ i18n.isVi() ? faq.aVi : faq.aEn }}
+                  </p>
+                }
+              </div>
+            }
           </div>
+        } @else {
+          <div class="space-y-4">
+            @for (section of currentTopic.sections; track section.headingVi) {
+              <div class="rounded-2xl border border-natural-border bg-white p-5 shadow-xs">
+                <h3 class="text-sm font-black uppercase tracking-wide text-natural-accent">
+                  {{ i18n.isVi() ? section.headingVi : section.headingEn }}
+                </h3>
+                <p class="mt-2 text-xs leading-relaxed text-stone-600">
+                  {{ i18n.isVi() ? section.bodyVi : section.bodyEn }}
+                </p>
+              </div>
+            }
+          </div>
+        }
+
+        <div
+          class="flex flex-col gap-3 rounded-2xl border border-natural-border bg-natural-cream p-5 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="space-y-1 text-xs text-stone-600">
+            <p class="flex items-center gap-1.5 font-bold text-natural-ink">
+              <svg lucidePhone class="h-3.5 w-3.5 text-natural-accent"></svg>Hotline: 1900 5040
+            </p>
+            <p class="flex items-center gap-1.5">
+              <svg lucideMail class="h-3.5 w-3.5 text-natural-accent"></svg>info&#64;vietcharm.com
+            </p>
+            <p class="flex items-center gap-1.5">
+              <svg lucideMapPin class="h-3.5 w-3.5 text-natural-accent"></svg
+              >{{ i18n.isVi() ? '123 Trần Phú, Minh An, Hội An' : '123 Tran Phu, Minh An, Hoi An' }}
+            </p>
+          </div>
+          <a
+            routerLink="/support/contact"
+            class="inline-flex shrink-0 items-center justify-center rounded-xl bg-natural-accent px-4 py-2.5 text-xs font-bold text-white transition hover:bg-natural-olive"
+            >{{ i18n.isVi() ? 'Xem trang liên hệ' : 'View contact page' }}</a
+          >
         </div>
       </div>
-    </section>
+    } @else {
+      <div class="content-state" role="status">
+        {{
+          loading()
+            ? i18n.isVi()
+              ? 'Đang tải nội dung...'
+              : 'Loading content...'
+            : i18n.isVi()
+              ? 'Chưa có nội dung.'
+              : 'No content yet.'
+        }}
+      </div>
+    }
+  </div>
+</section>
