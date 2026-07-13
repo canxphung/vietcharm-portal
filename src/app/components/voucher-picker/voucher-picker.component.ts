@@ -1,7 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideCheck, LucideTicket, LucideX } from '@lucide/angular';
 import type { PromoVoucher } from '@/types';
 import { CartService } from '@/services/cart.service';
 import { I18nService } from '@/services/i18n.service';
@@ -9,7 +8,7 @@ import { I18nService } from '@/services/i18n.service';
 @Component({
   selector: 'app-voucher-picker',
   standalone: true,
-  imports: [DecimalPipe, FormsModule, LucideCheck, LucideTicket, LucideX],
+  imports: [DecimalPipe, FormsModule],
   templateUrl: './voucher-picker.component.html',
   styleUrl: './voucher-picker.component.css',
 })

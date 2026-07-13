@@ -11,29 +11,6 @@ import {
 import { DecimalPipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-  LucideArrowLeft,
-  LucideCalendar,
-  LucideCheck,
-  LucideCheckCircle,
-  LucideChevronLeft,
-  LucideChevronRight,
-  LucideClock,
-  LucideCreditCard,
-  LucideHeart,
-  LucideInfo,
-  LucideLandmark,
-  LucideMapPin,
-  LucideMaximize2,
-  LucideMessageSquare,
-  LucideNavigation,
-  LucideShieldCheck,
-  LucideShoppingCart,
-  LucideSparkles,
-  LucideStar,
-  LucideShare2,
-  LucideX,
-} from '@lucide/angular';
 import type { BookingCartItem, ViewableItem } from '@/types';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
@@ -129,27 +106,6 @@ function isoOffset(days: number): string {
   imports: [
     DecimalPipe,
     FormsModule,
-    LucideArrowLeft,
-    LucideCalendar,
-    LucideCheck,
-    LucideCheckCircle,
-    LucideChevronLeft,
-    LucideChevronRight,
-    LucideClock,
-    LucideCreditCard,
-    LucideHeart,
-    LucideInfo,
-    LucideLandmark,
-    LucideMapPin,
-    LucideMaximize2,
-    LucideMessageSquare,
-    LucideNavigation,
-    LucideShieldCheck,
-    LucideShoppingCart,
-    LucideSparkles,
-    LucideStar,
-    LucideShare2,
-    LucideX,
   ],
   templateUrl: './item-detail.component.html',
   styleUrl: './item-detail.component.css',
@@ -254,10 +210,6 @@ export class ItemDetailComponent {
 
   max(a: number, b: number): number {
     return Math.max(a, b);
-  }
-
-  stars(n: number): string {
-    return '★'.repeat(n);
   }
 
   back(): void {
@@ -598,8 +550,8 @@ export class ItemDetailComponent {
           this.toast.showToast({
             type: 'success',
             title: this.isVi()
-              ? '🎉 Cảm ơn bạn đã tích cực đánh giá!'
-              : '🎉 Thanks for being an active reviewer!',
+              ? 'Cảm ơn bạn đã tích cực đánh giá!'
+              : 'Thanks for being an active reviewer!',
             message: this.isVi()
               ? `Bạn nhận được mã ${milestoneVoucher.code} giảm ${milestoneVoucher.value}% cho lần đặt tiếp theo.`
               : `You earned code ${milestoneVoucher.code} for ${milestoneVoucher.value}% off your next booking.`,

@@ -2,15 +2,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import {
-  LucideArrowLeft,
-  LucideCheckCircle2,
-  LucideCreditCard,
-  LucideLock,
-  LucideQrCode,
-  LucideSmartphone,
-  LucideTicket,
-} from '@lucide/angular';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';
@@ -28,13 +19,6 @@ type Gateway = 'vnpay' | 'momo' | 'visa';
     FormsModule,
     RouterLink,
     VoucherPickerComponent,
-    LucideArrowLeft,
-    LucideCheckCircle2,
-    LucideCreditCard,
-    LucideLock,
-    LucideQrCode,
-    LucideSmartphone,
-    LucideTicket,
   ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.css',

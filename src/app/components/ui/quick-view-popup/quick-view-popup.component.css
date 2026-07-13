@@ -57,7 +57,7 @@
   transform: rotate(6deg) scale(1.06);
   background: white;
 }
-.quick-view-close svg {
+.quick-view-close .bi {
   width: 1rem;
   height: 1rem;
 }
@@ -135,7 +135,7 @@
   color: #9a742d;
   font-size: 0.72rem;
 }
-.quick-view-rating svg {
+.quick-view-rating .bi {
   width: 0.95rem;
   height: 0.95rem;
   fill: #e3b04b;
@@ -198,7 +198,7 @@
   color: #736d63;
   background: white;
 }
-.quick-view-favorite svg {
+.quick-view-favorite .bi {
   width: 1rem;
   height: 1rem;
 }
@@ -207,8 +207,8 @@
   color: #e11d48;
   background: #fff1f2;
 }
-.quick-view-favorite.favorite-active svg {
-  fill: currentColor;
+.quick-view-favorite.favorite-active .bi {
+  color: currentColor;
 }
 
 .quick-view-actions {
@@ -233,7 +233,7 @@
 .quick-view-actions button:hover:not(:disabled) {
   transform: translateY(-2px);
 }
-.quick-view-actions svg {
+.quick-view-actions .bi {
   width: 0.95rem;
   height: 0.95rem;
 }

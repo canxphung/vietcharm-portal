@@ -3,37 +3,6 @@ import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import {
-  LucideAlertCircle,
-  LucideArrowRight,
-  LucideBaby,
-  LucideBrain,
-  LucideCamera,
-  LucideCar,
-  LucideCheckCircle,
-  LucideChevronRight,
-  LucideClipboardList,
-  LucideClock,
-  LucideCoffee,
-  LucideCompass,
-  LucideFlame,
-  LucideGift,
-  LucideHeart,
-  LucideHelpCircle,
-  LucideInfo,
-  LucideLeaf,
-  LucidePlane,
-  LucidePlus,
-  LucideShare2,
-  LucideShieldCheck,
-  LucideShirt,
-  LucideSparkles,
-  LucideStar,
-  LucideTrash2,
-  LucideUsers,
-  LucideUsersRound,
-  LucideWaves,
-} from '@lucide/angular';
 import type { BookingCartItem, PartnershipApplication, TouristLocation, ViewableItem } from '@/types';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
@@ -75,7 +44,7 @@ interface AIResponse {
 @Component({
   selector: 'app-taxi-page',
   standalone: true,
-  imports: [DecimalPipe, FormsModule, RouterLink, LucideCar, LucideInfo],
+  imports: [DecimalPipe, FormsModule, RouterLink],
   templateUrl: './taxi.component.html',
   styleUrl: './taxi.component.css',
 })
@@ -145,7 +114,7 @@ export class TaxiComponent {
     const item: BookingCartItem = {
       id: `taxi-${Date.now()}`,
       type: 'vehicle',
-      name: `${vehicleName} [${this.pickupLoc().name} ➔ ${this.dropoffLoc().name}]`,
+      name: `${vehicleName} [${this.pickupLoc().name} - ${this.dropoffLoc().name}]`,
       price: this.totalCost(),
       quantity: 1,
       image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=400&q=80',

@@ -38,8 +38,18 @@ export class CartService {
   // Shared voucher state so a code applied in the cart carries over to checkout.
   readonly voucherCode = signal('');
   readonly appliedVoucher = signal<string | null>(null);
-  readonly voucherDiscount = signal(0);
   readonly voucherError = signal('');
+  /** Recomputed from the live cart total, so editing the cart after applying a code
+   *  can never leave a stale discount or bypass the voucher's minimum spend. */
+  readonly voucherDiscount = computed(() => {
+    const code = this.appliedVoucher();
+    if (!code) return 0;
+    const voucher = this.catalog.vouchers().find((v) => v.code === code && v.active);
+    if (!voucher) return 0;
+    const base = this.basePayableAmount();
+    if (base < voucher.minSpend) return 0;
+    return voucher.discountType === 'percentage' ? Math.round((base * voucher.value) / 100) : Math.min(voucher.value, base);
+  });
   readonly availableVouchers = computed(() => this.catalog.vouchers().filter((v) => v.active));
 
   constructor(
@@ -73,15 +83,12 @@ export class CartService {
       );
       return;
     }
-    const discount = voucher.discountType === 'percentage' ? Math.round((base * voucher.value) / 100) : voucher.value;
-    this.voucherDiscount.set(discount);
     this.appliedVoucher.set(voucher.code);
     this.voucherError.set('');
   }
 
   removeVoucher(): void {
     this.appliedVoucher.set(null);
-    this.voucherDiscount.set(0);
     this.voucherCode.set('');
     this.voucherError.set('');
   }

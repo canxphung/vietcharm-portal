@@ -2,29 +2,6 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  LucideAlertCircle,
-  LucideArrowLeft,
-  LucideArrowRight,
-  LucideArrowUpDown,
-  LucideCalendarDays,
-  LucideChevronDown,
-  LucideCompass,
-  LucideHeart,
-  LucideHotel,
-  LucideMap,
-  LucideMapPin,
-  LucideMapPinned,
-  LucideMessageSquare,
-  LucideNavigation,
-  LucideSearch,
-  LucideShieldCheck,
-  LucideSlidersHorizontal,
-  LucideSparkles,
-  LucideStar,
-  LucideUsersRound,
-  LucideX,
-} from '@lucide/angular';
 import { ToastService } from '@/services/toast.service';
 import { SERVICE_TABS, isServiceTab, type ServiceTab } from '@/constants/views';
 import type { ViewableItem } from '@/types';
@@ -38,7 +15,7 @@ import { RevealDirective } from '@/directives/reveal.directive';
 @Component({
   selector: 'app-provinces-page',
   standalone: true,
-  imports: [RouterLink, LucideArrowLeft, LucideArrowRight, LucideMapPin, LucideNavigation, LucideShieldCheck],
+  imports: [RouterLink],
   templateUrl: './discover.component.html',
   styleUrl: './discover.component.css',
 })

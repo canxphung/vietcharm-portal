@@ -12,81 +12,123 @@
             <h1 class="font-serif text-4xl font-black leading-tight sm:text-5xl">{{ isVi() ? 'Một tài khoản cho những hành trình Việt Nam theo vùng.' : 'One account for Vietnam journeys by region.' }}</h1>
             <p class="mt-5 max-w-lg text-sm leading-7 text-white/78">{{ isVi() ? 'Đăng nhập hoặc tạo tài khoản để lưu hồ sơ, quản lý đặt chỗ và nhận ưu đãi phù hợp với chuyến đi của bạn.' : 'Sign in or create an account to save your profile, manage bookings and unlock travel perks.' }}</p>
             <div class="mt-8 grid max-w-lg gap-3 sm:grid-cols-3">
-              <div class="rounded-2xl border border-white/18 bg-white/12 p-4 text-sm font-bold backdrop-blur"><svg lucideCompass class="mb-3 h-5 w-5 text-natural-gold"></svg>{{ isVi() ? 'Lưu hành trình' : 'Saved trips' }}</div>
-              <div class="rounded-2xl border border-white/18 bg-white/12 p-4 text-sm font-bold backdrop-blur"><svg lucideShieldCheck class="mb-3 h-5 w-5 text-natural-gold"></svg>{{ isVi() ? 'Hồ sơ rõ ràng' : 'Profile details' }}</div>
-              <div class="rounded-2xl border border-white/18 bg-white/12 p-4 text-sm font-bold backdrop-blur"><svg lucideGift class="mb-3 h-5 w-5 text-natural-gold"></svg>{{ isVi() ? 'Ưu đãi riêng' : 'Member perks' }}</div>
+              <div class="rounded-2xl border border-white/18 bg-white/12 p-4 text-sm font-bold backdrop-blur"><i class="bi bi-compass mb-3 h-5 w-5 text-natural-gold"></i>{{ isVi() ? 'Lưu hành trình' : 'Saved trips' }}</div>
+              <div class="rounded-2xl border border-white/18 bg-white/12 p-4 text-sm font-bold backdrop-blur"><i class="bi bi-shield-check mb-3 h-5 w-5 text-natural-gold"></i>{{ isVi() ? 'Hồ sơ rõ ràng' : 'Profile details' }}</div>
+              <div class="rounded-2xl border border-white/18 bg-white/12 p-4 text-sm font-bold backdrop-blur"><i class="bi bi-gift mb-3 h-5 w-5 text-natural-gold"></i>{{ isVi() ? 'Ưu đãi riêng' : 'Member perks' }}</div>
             </div>
           </div>
 
           <!-- Card -->
           <div class="mx-auto w-full max-w-xl rounded-3xl border border-white/70 bg-natural-bg/96 p-5 shadow-2xl backdrop-blur sm:p-7">
             <div class="mb-6">
-              <span class="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase text-emerald-800 ring-1 ring-emerald-100"><svg lucideSparkles class="h-3.5 w-3.5"></svg>{{ isVi() ? 'Khu vực thành viên' : 'Member Area' }}</span>
+              <span class="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase text-emerald-800 ring-1 ring-emerald-100"><i class="bi bi-stars h-3.5 w-3.5"></i>{{ isVi() ? 'Khu vực thành viên' : 'Member Area' }}</span>
               <h2 class="font-serif text-3xl font-black text-natural-text">{{ title() }}</h2>
               <p class="mt-2 text-sm leading-6 text-stone-600">{{ subtitle() }}</p>
             </div>
 
             @if (mode() !== 'forgot-password') {
               <div class="mb-5 grid grid-cols-2 rounded-xl bg-natural-beige p-1">
-                <button type="button" [class]="'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg text-sm font-bold transition ' + (mode() === 'login' ? 'bg-white text-natural-accent shadow-sm' : 'text-stone-500 hover:text-natural-text')" (click)="switchMode('login')"><svg lucideUser class="h-4 w-4"></svg>{{ isVi() ? 'Đăng nhập' : 'Sign In' }}</button>
-                <button type="button" [class]="'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg text-sm font-bold transition ' + (mode() === 'register' ? 'bg-white text-natural-accent shadow-sm' : 'text-stone-500 hover:text-natural-text')" (click)="switchMode('register')"><svg lucideUserPlus class="h-4 w-4"></svg>{{ isVi() ? 'Đăng ký' : 'Register' }}</button>
+                <button type="button" [class]="'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg text-sm font-bold transition ' + (mode() === 'login' ? 'bg-white text-natural-accent shadow-sm' : 'text-stone-500 hover:text-natural-text')" (click)="switchMode('login')"><i class="bi bi-person h-4 w-4"></i>{{ isVi() ? 'Đăng nhập' : 'Sign In' }}</button>
+                <button type="button" [class]="'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg text-sm font-bold transition ' + (mode() === 'register' ? 'bg-white text-natural-accent shadow-sm' : 'text-stone-500 hover:text-natural-text')" (click)="switchMode('register')"><i class="bi bi-person-plus h-4 w-4"></i>{{ isVi() ? 'Đăng ký' : 'Register' }}</button>
               </div>
             }
 
-            @if (errorMsg()) { <div class="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold leading-5 text-red-700"><svg lucideAlertCircle class="mt-0.5 h-4 w-4 shrink-0"></svg><span>{{ errorMsg() }}</span></div> }
-            @if (successMsg()) { <div class="mb-4 flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-bold leading-5 text-emerald-800"><svg lucideCheckCircle2 class="mt-0.5 h-4 w-4 shrink-0"></svg><span>{{ successMsg() }}</span></div> }
+            @if (errorMsg() && !(mode() === 'register' && registerStep() === 'details')) { <div class="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold leading-5 text-red-700"><i class="bi bi-exclamation-circle mt-0.5 h-4 w-4 shrink-0"></i><span>{{ errorMsg() }}</span></div> }
+            @if (successMsg()) { <div class="mb-4 flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-bold leading-5 text-emerald-800"><i class="bi bi-check-circle mt-0.5 h-4 w-4 shrink-0"></i><span>{{ successMsg() }}</span></div> }
 
             @if (mode() === 'login') {
               <form class="space-y-4" (ngSubmit)="handleLogin()">
                 <label class="block">
                   <span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'SĐT / Gmail / Tên đăng nhập' : 'Phone / Gmail / Username' }}</span>
-                  <span class="afield"><svg lucideUser class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput" [ngModel]="username()" (ngModelChange)="username.set($event)" name="username" [placeholder]="isVi() ? 'Nhập thông tin đăng nhập' : 'Enter your credential'" required /></span>
+                  <span class="afield"><i class="bi bi-person h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" [ngModel]="username()" (ngModelChange)="username.set($event)" name="username" [placeholder]="isVi() ? 'Nhập thông tin đăng nhập' : 'Enter your credential'" required /></span>
                   <span class="mt-1.5 block text-[11px] leading-relaxed text-stone-500">{{ isVi() ? 'Tài khoản dùng thử: ' : 'Try it with: ' }}<span class="font-mono font-semibold text-stone-700">hoanganh&#64;gmail.com</span>{{ isVi() ? ' / Mật khẩu: ' : ' / Password: ' }}<span class="font-mono font-semibold text-stone-700">123456</span></span>
                 </label>
                 <label class="block">
                   <span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Mật khẩu' : 'Password' }}</span>
-                  <span class="afield"><svg lucideLockKeyhole class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput" type="password" [ngModel]="password()" (ngModelChange)="password.set($event)" name="password" placeholder="••••••••" required /></span>
+                  <span class="afield"><i class="bi bi-lock h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" [type]="showLoginPassword() ? 'text' : 'password'" [ngModel]="password()" (ngModelChange)="password.set($event)" name="password" placeholder="••••••••" required /><button type="button" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-stone-500 transition hover:bg-natural-beige hover:text-natural-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-natural-accent" (click)="showLoginPassword.set(!showLoginPassword())" [attr.aria-label]="showLoginPassword() ? (isVi() ? 'Ẩn mật khẩu' : 'Hide password') : (isVi() ? 'Hiện mật khẩu' : 'Show password')" [attr.title]="showLoginPassword() ? (isVi() ? 'Ẩn mật khẩu' : 'Hide password') : (isVi() ? 'Hiện mật khẩu' : 'Show password')">@if (showLoginPassword()) {<i class="bi bi-eye-slash h-4 w-4"></i>} @else {<i class="bi bi-eye h-4 w-4"></i>}</button></span>
                 </label>
-                <div class="flex justify-end"><button type="button" class="inline-flex items-center gap-1 text-xs font-bold text-natural-accent hover:text-natural-olive" (click)="switchMode('forgot-password')"><svg lucideKeyRound class="h-3.5 w-3.5"></svg>{{ isVi() ? 'Quên mật khẩu?' : 'Forgot password?' }}</button></div>
-                <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-accent px-5 text-sm font-black text-white shadow-lg transition hover:bg-natural-olive"><svg lucideShieldCheck class="h-4 w-4"></svg>{{ isVi() ? 'Đăng nhập' : 'Sign In' }}</button>
+                <div class="flex justify-end"><button type="button" class="inline-flex items-center gap-1 text-xs font-bold text-natural-accent hover:text-natural-olive" (click)="switchMode('forgot-password')"><i class="bi bi-key h-3.5 w-3.5"></i>{{ isVi() ? 'Quên mật khẩu?' : 'Forgot password?' }}</button></div>
+                <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-accent px-5 text-sm font-black text-white shadow-lg transition hover:bg-natural-olive"><i class="bi bi-shield-check h-4 w-4"></i>{{ isVi() ? 'Đăng nhập' : 'Sign In' }}</button>
               </form>
             }
 
             @if (mode() === 'register') {
-              <form class="space-y-4" (ngSubmit)="handleRegister()">
-                <div class="grid gap-3 sm:grid-cols-2">
-                  <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Tên đăng nhập' : 'Username' }}</span><span class="afield"><svg lucideBadgeCheck class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput" [ngModel]="username()" (ngModelChange)="username.set($event)" name="rusername" placeholder="kimngan26" required /></span></label>
-                  <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Họ và tên' : 'Full Name' }}</span><span class="afield"><svg lucideUser class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput" [ngModel]="fullName()" (ngModelChange)="fullName.set($event)" name="fullName" [placeholder]="isVi() ? 'Đặng Thị Kim Ngân' : 'Kim Ngan Dang'" required /></span></label>
+              <div class="space-y-4">
+                <!-- Step indicator -->
+                <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wide text-stone-400">
+                  <span [class]="registerStep() === 'contact' ? 'text-natural-accent' : ''">1. {{ isVi() ? 'Gmail/SĐT' : 'Contact' }}</span><i class="bi bi-arrow-right" aria-hidden="true"></i>
+                  <span [class]="registerStep() === 'verify-otp' ? 'text-natural-accent' : ''">2. {{ isVi() ? 'Mã OTP' : 'OTP' }}</span><i class="bi bi-arrow-right" aria-hidden="true"></i>
+                  <span [class]="registerStep() === 'details' ? 'text-natural-accent' : ''">3. {{ isVi() ? 'Thông tin & mật khẩu' : 'Details & password' }}</span>
                 </div>
-                <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Địa chỉ Gmail' : 'Email Address' }}</span><span class="afield"><svg lucideMail class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput" type="email" [ngModel]="email()" (ngModelChange)="email.set($event)" name="email" placeholder="ngan@gmail.com" required /></span></label>
-                <div class="grid gap-3 sm:grid-cols-2">
-                  <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Số điện thoại' : 'Phone Number' }}</span><span class="afield"><svg lucidePhone class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput" type="tel" [ngModel]="phone()" (ngModelChange)="phone.set($event)" name="phone" placeholder="0987654321" required /></span></label>
-                  <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Mật khẩu' : 'Password' }}</span><span class="afield"><svg lucideLockKeyhole class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput" type="password" [ngModel]="password()" (ngModelChange)="password.set($event)" name="rpassword" placeholder="••••••••" required /></span></label>
-                </div>
-                <p class="text-[11px] leading-relaxed text-stone-500">{{ isVi() ? 'Tài khoản mới mặc định là khách du lịch. Quyền quản trị được cấp trong trang quản trị.' : 'New accounts are travelers by default. Admin access is granted from the admin dashboard.' }}</p>
-                <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-gold px-5 text-sm font-black text-natural-ink shadow-lg transition hover:bg-natural-gold-dark"><svg lucideUserPlus class="h-4 w-4"></svg>{{ isVi() ? 'Tạo tài khoản' : 'Create Account' }}</button>
-              </form>
+
+                @if (registerStep() === 'contact') {
+                  <form class="space-y-4" (ngSubmit)="handleRegisterContact()">
+                    <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Gmail hoặc SĐT nhận mã OTP' : 'Gmail or phone for OTP' }}</span><span class="afield"><i class="bi bi-telephone h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" [ngModel]="registerContact()" (ngModelChange)="registerContact.set($event)" name="rcontact" [placeholder]="isVi() ? 'ngan@gmail.com hoặc 0987654321' : 'ngan@gmail.com or 0987654321'" required /></span></label>
+                    <p class="text-[11px] leading-relaxed text-stone-500">{{ isVi() ? 'Hệ thống sẽ gửi mã OTP 6 số để xác minh trước khi tạo tài khoản (mã demo hiển thị ngay trên màn hình).' : 'A 6-digit OTP verifies your contact before the account is created (demo code is shown on screen).' }}</p>
+                    <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-accent px-5 text-sm font-black text-white shadow-lg transition hover:bg-natural-olive"><i class="bi bi-key h-4 w-4"></i>{{ isVi() ? 'Gửi mã OTP' : 'Send OTP' }}</button>
+                  </form>
+                }
+
+                @if (registerStep() === 'verify-otp') {
+                  <form class="space-y-4" (ngSubmit)="handleRegisterVerifyOtp()">
+                    <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Mã OTP gồm 6 chữ số' : '6-digit OTP' }}</span><span class="afield"><i class="bi bi-key h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput text-center font-black tracking-[0.35em]" [ngModel]="registerOtp()" (ngModelChange)="registerOtp.set($event)" name="rotp" placeholder="839201" maxlength="6" inputmode="numeric" required /></span></label>
+                    <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-gold px-5 text-sm font-black text-natural-ink shadow-lg transition hover:bg-natural-gold-dark"><i class="bi bi-patch-check h-4 w-4"></i>{{ isVi() ? 'Xác nhận mã OTP' : 'Verify OTP' }}</button>
+                    <div class="flex items-center justify-between text-xs font-bold">
+                      <button type="button" class="inline-flex items-center gap-1 text-stone-400 transition hover:text-natural-text" (click)="registerStep.set('contact')"><i class="bi bi-arrow-left" aria-hidden="true"></i>{{ isVi() ? 'Đổi Gmail/SĐT' : 'Change contact' }}</button>
+                      <button type="button" class="text-natural-accent transition hover:text-natural-olive" (click)="resendRegisterOtp()">{{ isVi() ? 'Chưa nhận được? Gửi lại mã OTP' : 'Not received? Resend OTP' }}</button>
+                    </div>
+                  </form>
+                }
+
+                @if (registerStep() === 'details') {
+                  <form class="space-y-4" (ngSubmit)="handleRegister()">
+                    <div class="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800"><i class="bi bi-patch-check h-4 w-4 shrink-0"></i><span>{{ isVi() ? 'Đã xác minh: ' : 'Verified: ' }}{{ registerContact() }}</span></div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                      <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Tên đăng nhập' : 'Username' }}</span><span class="afield"><i class="bi bi-patch-check h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" [ngModel]="username()" (ngModelChange)="username.set($event)" name="rusername" placeholder="kimngan26" required /></span></label>
+                      <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Họ và tên' : 'Full Name' }}</span><span class="afield"><i class="bi bi-person h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" [ngModel]="fullName()" (ngModelChange)="fullName.set($event)" name="fullName" [placeholder]="isVi() ? 'Đặng Thị Kim Ngân' : 'Kim Ngan Dang'" required /></span></label>
+                    </div>
+                    <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Địa chỉ Gmail' : 'Email Address' }}</span><span class="afield"><i class="bi bi-envelope h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" type="email" [ngModel]="email()" (ngModelChange)="email.set($event)" name="email" placeholder="ngan@gmail.com" required /></span></label>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                      <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Số điện thoại' : 'Phone Number' }}</span><span class="afield" [class.afield-error]="isPhoneRegistrationError()"><i class="bi bi-telephone h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" type="tel" [ngModel]="phone()" (ngModelChange)="onRegisterPhoneInput($event)" name="phone" placeholder="0987654321" inputmode="numeric" maxlength="10" autocomplete="tel" [attr.aria-invalid]="isPhoneRegistrationError()" [attr.aria-describedby]="isPhoneRegistrationError() ? 'register-details-error' : null" required /></span><span class="mt-1 block text-[10px] leading-relaxed" [class.text-red-600]="isPhoneRegistrationError()" [class.text-stone-400]="!isPhoneRegistrationError()">{{ isVi() ? 'Bắt đầu bằng 0 và gồm đúng 10 chữ số.' : 'Starts with 0 and contains exactly 10 digits.' }}</span></label>
+                      <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Mật khẩu' : 'Password' }}</span><span class="afield"><i class="bi bi-lock h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" [type]="showRegisterPassword() ? 'text' : 'password'" [ngModel]="password()" (ngModelChange)="password.set($event)" name="rpassword" placeholder="••••••••" required /><button type="button" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-stone-500 transition hover:bg-natural-beige hover:text-natural-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-natural-accent" (click)="showRegisterPassword.set(!showRegisterPassword())" [attr.aria-label]="showRegisterPassword() ? (isVi() ? 'Ẩn mật khẩu' : 'Hide password') : (isVi() ? 'Hiện mật khẩu' : 'Show password')" [attr.title]="showRegisterPassword() ? (isVi() ? 'Ẩn mật khẩu' : 'Hide password') : (isVi() ? 'Hiện mật khẩu' : 'Show password')">@if (showRegisterPassword()) {<i class="bi bi-eye-slash h-4 w-4"></i>} @else {<i class="bi bi-eye h-4 w-4"></i>}</button></span><span class="mt-1 block text-[10px] leading-relaxed text-stone-400">{{ isVi() ? 'Tối thiểu 8 ký tự, gồm cả chữ cái và chữ số.' : 'At least 8 characters with letters and digits.' }}</span></label>
+                    </div>
+                    @if (errorMsg()) {
+                      <div id="register-details-error" role="alert" aria-live="assertive" class="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50/80 px-3 py-2.5 text-red-700 shadow-sm">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-100"><i class="bi bi-exclamation-circle h-4 w-4"></i></span>
+                        <div class="min-w-0">
+                          <strong class="block text-[10px] font-black uppercase tracking-wide">{{ isVi() ? 'Kiểm tra lại thông tin' : 'Check your details' }}</strong>
+                          <p class="mt-0.5 text-[11px] font-semibold leading-relaxed">{{ errorMsg() }}</p>
+                        </div>
+                      </div>
+                    }
+                    <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-gold px-5 text-sm font-black text-natural-ink shadow-lg transition hover:bg-natural-gold-dark"><i class="bi bi-person-plus h-4 w-4"></i>{{ isVi() ? 'Tạo tài khoản' : 'Create Account' }}</button>
+                  </form>
+                }
+              </div>
             }
 
             @if (mode() === 'forgot-password') {
               <div class="space-y-5">
-                <button type="button" class="inline-flex items-center gap-2 text-sm font-bold text-natural-accent transition hover:text-natural-olive" (click)="switchMode('login')"><svg lucideArrowLeft class="h-4 w-4"></svg>{{ isVi() ? 'Quay lại đăng nhập' : 'Back to sign in' }}</button>
-                @if (forgotStep() === 'input-email') {
-                  <form class="space-y-4" (ngSubmit)="handleForgotEmail()">
-                    <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Gmail nhận mã' : 'Recovery Gmail' }}</span><span class="afield"><svg lucideMail class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput" type="email" [ngModel]="forgotEmail()" (ngModelChange)="forgotEmail.set($event)" name="femail" placeholder="ngandtk244111@st.uel.edu.vn" required /></span></label>
-                    <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-accent px-5 text-sm font-black text-white shadow-lg transition hover:bg-natural-olive"><svg lucideMail class="h-4 w-4"></svg>{{ isVi() ? 'Gửi mã xác nhận' : 'Send Verification Code' }}</button>
+                <button type="button" class="inline-flex items-center gap-2 text-sm font-bold text-natural-accent transition hover:text-natural-olive" (click)="switchMode('login')"><i class="bi bi-arrow-left h-4 w-4"></i>{{ isVi() ? 'Quay lại đăng nhập' : 'Back to sign in' }}</button>
+                @if (forgotStep() === 'input-contact') {
+                  <form class="space-y-4" (ngSubmit)="handleForgotContact()">
+                    <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Gmail / SĐT đã đăng ký' : 'Registered Gmail / phone' }}</span><span class="afield"><i class="bi bi-envelope h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" [ngModel]="forgotContact()" (ngModelChange)="forgotContact.set($event)" name="fcontact" [placeholder]="isVi() ? 'ngan@gmail.com hoặc 0987654321' : 'ngan@gmail.com or 0987654321'" required /></span></label>
+                    <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-accent px-5 text-sm font-black text-white shadow-lg transition hover:bg-natural-olive"><i class="bi bi-envelope h-4 w-4"></i>{{ isVi() ? 'Gửi mã xác nhận' : 'Send Verification Code' }}</button>
                   </form>
                 }
                 @if (forgotStep() === 'verify-code') {
                   <form class="space-y-4" (ngSubmit)="handleVerifyCode()">
-                    <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Mã gồm 6 chữ số' : '6-digit Code' }}</span><span class="afield"><svg lucideKeyRound class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput text-center font-black tracking-[0.35em]" [ngModel]="verificationCode()" (ngModelChange)="verificationCode.set($event)" name="vcode" placeholder="839201" maxlength="6" inputmode="numeric" required /></span></label>
-                    <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-gold px-5 text-sm font-black text-natural-ink shadow-lg transition hover:bg-natural-gold-dark"><svg lucideBadgeCheck class="h-4 w-4"></svg>{{ isVi() ? 'Xác nhận mã' : 'Verify Code' }}</button>
+                    <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Mã gồm 6 chữ số' : '6-digit Code' }}</span><span class="afield"><i class="bi bi-key h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput text-center font-black tracking-[0.35em]" [ngModel]="verificationCode()" (ngModelChange)="verificationCode.set($event)" name="vcode" placeholder="839201" maxlength="6" inputmode="numeric" required /></span></label>
+                    <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-natural-gold px-5 text-sm font-black text-natural-ink shadow-lg transition hover:bg-natural-gold-dark"><i class="bi bi-patch-check h-4 w-4"></i>{{ isVi() ? 'Xác nhận mã' : 'Verify Code' }}</button>
+                    <div class="flex justify-end text-xs font-bold">
+                      <button type="button" class="text-natural-accent transition hover:text-natural-olive" (click)="resendForgotCode()">{{ isVi() ? 'Chưa nhận được? Gửi lại mã OTP' : 'Not received? Resend OTP' }}</button>
+                    </div>
                   </form>
                 }
                 @if (forgotStep() === 'new-pass') {
                   <form class="space-y-4" (ngSubmit)="handleSaveNewPassword()">
-                    <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Mật khẩu mới' : 'New Password' }}</span><span class="afield"><svg lucideLockKeyhole class="h-4 w-4 shrink-0 text-natural-accent"></svg><input class="ainput" type="password" [ngModel]="newPassword()" (ngModelChange)="newPassword.set($event)" name="npass" placeholder="••••••••" required /></span></label>
-                    <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-5 text-sm font-black text-white shadow-lg transition hover:bg-emerald-800"><svg lucideCheckCircle2 class="h-4 w-4"></svg>{{ isVi() ? 'Lưu mật khẩu mới' : 'Save New Password' }}</button>
+                    <label class="block"><span class="mb-1.5 block text-[11px] font-bold uppercase text-stone-600">{{ isVi() ? 'Mật khẩu mới' : 'New Password' }}</span><span class="afield"><i class="bi bi-lock h-4 w-4 shrink-0 text-natural-accent"></i><input class="ainput" [type]="showNewPassword() ? 'text' : 'password'" [ngModel]="newPassword()" (ngModelChange)="newPassword.set($event)" name="npass" placeholder="••••••••" required /><button type="button" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-stone-500 transition hover:bg-natural-beige hover:text-natural-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-natural-accent" (click)="showNewPassword.set(!showNewPassword())" [attr.aria-label]="showNewPassword() ? (isVi() ? 'Ẩn mật khẩu' : 'Hide password') : (isVi() ? 'Hiện mật khẩu' : 'Show password')" [attr.title]="showNewPassword() ? (isVi() ? 'Ẩn mật khẩu' : 'Hide password') : (isVi() ? 'Hiện mật khẩu' : 'Show password')">@if (showNewPassword()) {<i class="bi bi-eye-slash h-4 w-4"></i>} @else {<i class="bi bi-eye h-4 w-4"></i>}</button></span><span class="mt-1 block text-[10px] leading-relaxed text-stone-400">{{ isVi() ? 'Tối thiểu 8 ký tự, gồm cả chữ cái và chữ số.' : 'At least 8 characters with letters and digits.' }}</span></label>
+                    <button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-5 text-sm font-black text-white shadow-lg transition hover:bg-emerald-800"><i class="bi bi-check-circle h-4 w-4"></i>{{ isVi() ? 'Lưu mật khẩu mới' : 'Save New Password' }}</button>
                   </form>
                 }
               </div>
@@ -96,11 +138,11 @@
               <div class="my-5 flex items-center gap-3"><span class="h-px flex-1 bg-natural-border"></span><span class="text-xs font-semibold text-stone-400">{{ isVi() ? 'Hoặc tiếp tục với' : 'Or continue with' }}</span><span class="h-px flex-1 bg-natural-border"></span></div>
               <div class="grid grid-cols-2 gap-3">
                 <button type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-natural-border bg-white px-3 text-sm font-bold text-stone-700 shadow-sm transition hover:bg-natural-beige-light" (click)="handleSocial('Google')">
-                  <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24"><path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114A5.63 5.63 0 0 1 8.35 12.89a5.63 5.63 0 0 1 5.64-5.626c1.558 0 2.972.616 4.022 1.624l3.1-3.1C19.14 3.86 16.54 2.5 13.99 2.5a10.37 10.37 0 0 0-10.4 10.39 10.37 10.37 0 0 0 10.4 10.39c5.78 0 10.11-4.06 10.11-10.28 0-.69-.08-1.22-.22-1.72H12.24Z"/></svg>
+                  <i class="bi bi-google h-4 w-4 shrink-0 text-[#EA4335]"></i>
                   <span>Google</span>
                 </button>
                 <button type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#1877F2] bg-[#1877F2] px-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#166FE5]" (click)="handleSocial('Facebook')">
-                  <svg class="h-4 w-4 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  <i class="bi bi-facebook h-4 w-4 shrink-0"></i>
                   <span>Facebook</span>
                 </button>
               </div>

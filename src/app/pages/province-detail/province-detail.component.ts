@@ -4,23 +4,6 @@ import { httpResource } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  LucideArrowRight,
-  LucideBadgePercent,
-  LucideBike,
-  LucideCar,
-  LucideCheckCircle2,
-  LucideChevronDown,
-  LucideChevronLeft,
-  LucideChevronRight,
-  LucideCompass,
-  LucideHeadset,
-  LucideHeart,
-  LucideNavigation2,
-  LucideShieldCheck,
-  LucideSparkles,
-  LucideStar,
-} from '@lucide/angular';
 import { getProvinceHero } from '@/constants/provinceHero';
 import type { Activity, Attraction, Hotel, Vehicle, ViewableItem } from '@/types';
 import { AuthService } from '@/services/auth.service';
@@ -59,21 +42,6 @@ const SEED_REVIEWS: DetailReview[] = [
     FormsModule,
     RouterLink,
     RevealDirective,
-    LucideArrowRight,
-    LucideBadgePercent,
-    LucideBike,
-    LucideCar,
-    LucideCheckCircle2,
-    LucideChevronDown,
-    LucideChevronLeft,
-    LucideChevronRight,
-    LucideCompass,
-    LucideHeadset,
-    LucideHeart,
-    LucideNavigation2,
-    LucideShieldCheck,
-    LucideSparkles,
-    LucideStar,
   ],
   templateUrl: './province-detail.component.html',
   styleUrl: './province-detail.component.css',
@@ -223,10 +191,6 @@ export class ProvinceDetailComponent {
     return Math.min(a, b);
   }
 
-  stars(n: number): string {
-    return '★'.repeat(n);
-  }
-
   setCheckIn(value: string): void {
     this.checkIn.set(value);
     if (this.checkOut() <= value) {
@@ -325,7 +289,7 @@ export class ProvinceDetailComponent {
       if (milestoneVoucher) {
         this.toast.showToast({
           type: 'success',
-          title: this.i18n.isVi() ? '🎉 Cảm ơn bạn đã tích cực đánh giá!' : '🎉 Thanks for being an active reviewer!',
+          title: this.i18n.isVi() ? 'Cảm ơn bạn đã tích cực đánh giá!' : 'Thanks for being an active reviewer!',
           message: this.i18n.isVi()
             ? `Bạn nhận được mã ${milestoneVoucher.code} giảm ${milestoneVoucher.value}% cho lần đặt tiếp theo.`
             : `You earned code ${milestoneVoucher.code} for ${milestoneVoucher.value}% off your next booking.`,

@@ -13,7 +13,7 @@
       [attr.aria-label]="i18n.isVi() ? 'Đóng cửa sổ' : 'Close dialog'"
       (click)="close()"
     >
-      <svg lucideX></svg>
+      <i class="bi bi-x-lg"></i>
     </button>
 
     <div class="quick-view-media">
@@ -31,7 +31,7 @@
       <h2>{{ item().name }}</h2>
 
       <div class="quick-view-rating">
-        <svg lucideStar></svg>
+        <i class="bi bi-star-fill"></i>
         <strong>{{ item().rating || 4.8 }}</strong>
         <span>({{ item().reviewsCount || (i18n.isVi() ? 'mới' : 'new') }})</span>
       </div>
@@ -53,14 +53,14 @@
           [attr.aria-label]="i18n.isVi() ? 'Yêu thích dịch vụ' : 'Favorite service'"
           (click)="ui.toggleFavorite(item())"
         >
-          <svg lucideHeart></svg>
+          <i class="bi" [class.bi-heart-fill]="ui.isFavorite(item().id)" [class.bi-heart]="!ui.isFavorite(item().id)"></i>
         </button>
       </div>
 
       <div class="quick-view-actions">
         <button type="button" class="quick-view-detail" (click)="viewDetails()">
           {{ i18n.isVi() ? 'Xem đầy đủ' : 'Full details' }}
-          <svg lucideArrowRight></svg>
+          <i class="bi bi-arrow-right"></i>
         </button>
         <button
           type="button"
@@ -69,10 +69,10 @@
           (click)="addToCart()"
         >
           @if (added()) {
-            <svg lucideCheck></svg>
+            <i class="bi bi-check"></i>
             {{ i18n.isVi() ? 'Đã thêm' : 'Added' }}
           } @else {
-            <svg lucideShoppingBag></svg>
+            <i class="bi bi-bag"></i>
             {{ i18n.isVi() ? 'Thêm vào giỏ' : 'Add to cart' }}
           }
         </button>

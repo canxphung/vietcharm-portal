@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { LucideChevronDown, LucideMail, LucideMapPin, LucidePhone } from '@lucide/angular';
 import { ContentService } from '@/services/content.service';
 import { I18nService } from '@/services/i18n.service';
 import type { SupportTopic, SupportTopicId } from '@/types';
@@ -11,7 +10,7 @@ const DEFAULT_TOPIC: SupportTopicId = 'help';
 @Component({
   selector: 'app-support-page',
   standalone: true,
-  imports: [RouterLink, LucideChevronDown, LucideMail, LucideMapPin, LucidePhone],
+  imports: [RouterLink],
   templateUrl: './support.component.html',
   styleUrl: './support.component.css',
 })

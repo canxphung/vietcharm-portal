@@ -1,16 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import {
-  LucideCompass,
-  LucideHeart,
-  LucideMapPin,
-  LucideMessageSquare,
-  LucideNavigation,
-  LucideSearch,
-  LucideStar,
-  LucideX,
-} from '@lucide/angular';
 import { ContentService } from '@/services/content.service';
 import { I18nService } from '@/services/i18n.service';
 import { UiStateService } from '@/services/ui-state.service';
@@ -22,14 +12,6 @@ import type { NearbyPlace, NearbyPlaceReview, ViewableItem } from '@/types';
   imports: [
     FormsModule,
     RouterLink,
-    LucideCompass,
-    LucideHeart,
-    LucideMapPin,
-    LucideMessageSquare,
-    LucideNavigation,
-    LucideSearch,
-    LucideStar,
-    LucideX,
   ],
   templateUrl: './nearby-places.component.html',
   styleUrl: './nearby-places.component.css',
@@ -82,10 +64,6 @@ export class NearbyPlacesComponent {
         label: vi ? 'Làng nghề truyền thống' : 'Traditional Craft',
       },
     ];
-  }
-
-  stars(rating: number): string {
-    return '★'.repeat(rating);
   }
 
   select(place: NearbyPlace): void {

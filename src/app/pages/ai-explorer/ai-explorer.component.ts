@@ -3,37 +3,6 @@ import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import {
-  LucideAlertCircle,
-  LucideArrowRight,
-  LucideBaby,
-  LucideBrain,
-  LucideCamera,
-  LucideCar,
-  LucideCheckCircle,
-  LucideChevronRight,
-  LucideClipboardList,
-  LucideClock,
-  LucideCoffee,
-  LucideCompass,
-  LucideFlame,
-  LucideGift,
-  LucideHeart,
-  LucideHelpCircle,
-  LucideInfo,
-  LucideLeaf,
-  LucidePlane,
-  LucidePlus,
-  LucideShare2,
-  LucideShieldCheck,
-  LucideShirt,
-  LucideSparkles,
-  LucideStar,
-  LucideTrash2,
-  LucideUsers,
-  LucideUsersRound,
-  LucideWaves,
-} from '@lucide/angular';
 import type { BookingCartItem, PartnershipApplication, ViewableItem } from '@/types';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';
@@ -76,19 +45,6 @@ interface AIResponse {
   imports: [
     FormsModule,
     DecimalPipe,
-    LucideArrowRight,
-    LucideBaby,
-    LucideBrain,
-    LucideCamera,
-    LucideCheckCircle,
-    LucideClock,
-    LucideCoffee,
-    LucideHeart,
-    LucideHelpCircle,
-    LucideLeaf,
-    LucideSparkles,
-    LucideUsersRound,
-    LucideWaves,
   ],
   templateUrl: './ai-explorer.component.html',
   styleUrl: './ai-explorer.component.css',

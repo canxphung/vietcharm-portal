@@ -2,44 +2,8 @@ import { Component, computed, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import {
-  LucideAlertCircle,
-  LucideArrowLeft,
-  LucideAward,
-  LucideBadgeCheck,
-  LucideCalendar,
-  LucideCalendarDays,
-  LucideCar,
-  LucideCheckCircle2,
-  LucideCheckSquare,
-  LucideClipboardList,
-  LucideClock3,
-  LucideCreditCard,
-  LucideFileText,
-  LucideGift,
-  LucideHeart,
-  LucideHotel,
-  LucideKey,
-  LucideKeyRound,
-  LucideLockKeyhole,
-  LucideMail,
-  LucideMapPinned,
-  LucideMessageSquare,
-  LucidePackageCheck,
-  LucidePhone,
-  LucideRoute,
-  LucideShieldAlert,
-  LucideShieldCheck,
-  LucideShoppingBag,
-  LucideSparkles,
-  LucideSquare,
-  LucideStar,
-  LucideTrash2,
-  LucideUser,
-  LucideUserPlus,
-  LucideUsersRound,
-} from '@lucide/angular';
 import type { BookingCartItem, SystemBooking, UserAccount } from '@/types';
+import { EMAIL_PATTERN, PHONE_PATTERN, USERNAME_PATTERN } from '@/utils/account-validation';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';
@@ -60,20 +24,6 @@ interface BookingItemRef {
     DecimalPipe,
     FormsModule,
     RouterLink,
-    LucideAward,
-    LucideBadgeCheck,
-    LucideCalendar,
-    LucideClipboardList,
-    LucideClock3,
-    LucideFileText,
-    LucideGift,
-    LucideHeart,
-    LucideKey,
-    LucideMail,
-    LucideMessageSquare,
-    LucidePhone,
-    LucideStar,
-    LucideUser,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css',
@@ -89,6 +39,7 @@ export class ProfileComponent {
   readonly draftBio = signal('');
   readonly draftAvatar = signal('');
   readonly usernameError = signal('');
+  readonly editError = signal('');
   readonly reportingKey = signal<string | null>(null);
   readonly reportReason = signal('');
   readonly reportMessage = signal('');
@@ -253,6 +204,7 @@ export class ProfileComponent {
       this.draftBio.set(user.bio);
       this.draftAvatar.set(user.avatar);
       this.usernameError.set('');
+      this.editError.set('');
     }
     this.isEditing.update((v) => !v);
   }
@@ -261,22 +213,48 @@ export class ProfileComponent {
     this.draftAvatar.set(`https://picsum.photos/id/${Math.floor(Math.random() * 1000)}/150/150`);
   }
 
+  /** BPMN "Xác thực dữ liệu?": every field is validated with the same rules as registration
+   *  before the update request is sent; any failure keeps the user on the edit form. */
   async save(user: UserAccount): Promise<void> {
+    const vi = this.i18n.isVi();
+    const users = this.auth.users();
     const nextUsername = this.draftUsername().trim() || user.username;
-    const isTaken = this.auth
-      .users()
-      .some((u) => u.id !== user.id && u.username.toLowerCase() === nextUsername.toLowerCase());
-    if (isTaken) {
-      this.usernameError.set(this.i18n.isVi() ? 'Tên đăng nhập đã được sử dụng.' : 'This username is already taken.');
+    const nextEmail = this.draftEmail().trim() || user.email;
+    const nextPhone = this.draftPhone().trim();
+    this.usernameError.set('');
+    this.editError.set('');
+
+    if (!USERNAME_PATTERN.test(nextUsername)) {
+      this.usernameError.set(vi ? 'Tên đăng nhập tối thiểu 4 ký tự, chỉ gồm chữ, số, dấu chấm (.) hoặc gạch dưới (_).' : 'Username needs at least 4 characters using letters, digits, dot (.) or underscore (_).');
       return;
     }
-    this.usernameError.set('');
+    if (users.some((u) => u.id !== user.id && u.username.toLowerCase() === nextUsername.toLowerCase())) {
+      this.usernameError.set(vi ? 'Tên đăng nhập đã được sử dụng.' : 'This username is already taken.');
+      return;
+    }
+    if (!EMAIL_PATTERN.test(nextEmail)) {
+      this.editError.set(vi ? 'Địa chỉ email không hợp lệ (VD: ten@gmail.com).' : 'Invalid email address (e.g. name@gmail.com).');
+      return;
+    }
+    if (users.some((u) => u.id !== user.id && u.email.toLowerCase() === nextEmail.toLowerCase())) {
+      this.editError.set(vi ? 'Email này đã được tài khoản khác sử dụng.' : 'This email is used by another account.');
+      return;
+    }
+    if (nextPhone && !PHONE_PATTERN.test(nextPhone)) {
+      this.editError.set(vi ? 'Số điện thoại không hợp lệ — phải bắt đầu bằng 0 và gồm đúng 10 chữ số.' : 'Invalid phone number — must start with 0 and have exactly 10 digits.');
+      return;
+    }
+    if (nextPhone && users.some((u) => u.id !== user.id && u.phone === nextPhone)) {
+      this.editError.set(vi ? 'Số điện thoại này đã được tài khoản khác sử dụng.' : 'This phone number is used by another account.');
+      return;
+    }
+
     await this.auth.updateProfile({
       ...user,
-      fullName: this.draftFullName() || user.fullName,
-      email: this.draftEmail() || user.email,
+      fullName: this.draftFullName().trim() || user.fullName,
+      email: nextEmail,
       username: nextUsername,
-      phone: this.draftPhone(),
+      phone: nextPhone,
       bio: this.draftBio(),
       avatar: this.draftAvatar() || user.avatar,
     });

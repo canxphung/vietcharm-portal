@@ -1,14 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  LucideArrowRight,
-  LucideClock3,
-  LucideCompass,
-  LucideHotel,
-  LucideMapPinned,
-  LucideRoute,
-  LucideUtensils,
-} from '@lucide/angular';
 import { I18nService } from '@/services/i18n.service';
 
 type RouteId = 'north' | 'central' | 'south';
@@ -105,13 +96,6 @@ const ROUTES: RouteEntry[] = [
   standalone: true,
   imports: [
     RouterLink,
-    LucideArrowRight,
-    LucideClock3,
-    LucideCompass,
-    LucideHotel,
-    LucideMapPinned,
-    LucideRoute,
-    LucideUtensils,
   ],
   templateUrl: './journey-map.component.html',
   styleUrl: './journey-map.component.css',

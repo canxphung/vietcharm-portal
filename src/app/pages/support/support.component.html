@@ -14,7 +14,6 @@
           : 'Loading'
     }}</span>
   </nav>
-
   <div class="grid gap-8 lg:grid-cols-[240px_minmax(0,1fr)]">
     <!-- Sidebar -->
     <aside
@@ -59,7 +58,6 @@
         </nav>
       </div>
     </aside>
-
     <!-- Content -->
     @if (topic(); as currentTopic) {
       <div class="space-y-6">
@@ -71,7 +69,6 @@
             {{ i18n.isVi() ? currentTopic.introVi : currentTopic.introEn }}
           </p>
         </div>
-
         @if (currentTopic.faqs.length) {
           <div class="space-y-3">
             @for (faq of currentTopic.faqs; track faq.qVi) {
@@ -84,11 +81,10 @@
                   (click)="toggleFaq(faq.qVi)"
                 >
                   <span>{{ i18n.isVi() ? faq.qVi : faq.qEn }}</span>
-                  <svg
-                    lucideChevronDown
-                    class="h-4 w-4 shrink-0 transition-transform"
+                  <i
+                    class="bi bi-chevron-down h-4 w-4 shrink-0 transition-transform"
                     [class.rotate-180]="openFaq() === faq.qVi"
-                  ></svg>
+                  ></i>
                 </button>
                 @if (openFaq() === faq.qVi) {
                   <p
@@ -114,20 +110,18 @@
             }
           </div>
         }
-
         <div
           class="flex flex-col gap-3 rounded-2xl border border-natural-border bg-natural-cream p-5 sm:flex-row sm:items-center sm:justify-between"
         >
           <div class="space-y-1 text-xs text-stone-600">
             <p class="flex items-center gap-1.5 font-bold text-natural-ink">
-              <svg lucidePhone class="h-3.5 w-3.5 text-natural-accent"></svg>Hotline: 1900 5040
+              <i class="bi bi-telephone h-3.5 w-3.5 text-natural-accent"></i>Hotline: 1900 5040
             </p>
             <p class="flex items-center gap-1.5">
-              <svg lucideMail class="h-3.5 w-3.5 text-natural-accent"></svg>info&#64;vietcharm.com
+              <i class="bi bi-envelope h-3.5 w-3.5 text-natural-accent"></i>info&#64;vietcharm.com
             </p>
             <p class="flex items-center gap-1.5">
-              <svg lucideMapPin class="h-3.5 w-3.5 text-natural-accent"></svg
-              >{{ i18n.isVi() ? '123 Trần Phú, Minh An, Hội An' : '123 Tran Phu, Minh An, Hoi An' }}
+              <i class="bi bi-geo-alt h-3.5 w-3.5 text-natural-accent"></i>{{ i18n.isVi() ? '123 Trần Phú, Minh An, Hội An' : '123 Tran Phu, Minh An, Hoi An' }}
             </p>
           </div>
           <a

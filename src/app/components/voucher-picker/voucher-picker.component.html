@@ -1,5 +1,5 @@
     <div class="space-y-2.5 rounded-2xl border border-stone-200 bg-natural-cream p-4">
-      <label class="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-stone-700"><svg lucideTicket class="h-3.5 w-3.5 text-natural-accent"></svg><span>{{ isVi() ? 'Khuyến mãi & Mã giảm giá' : 'Promotional & Voucher Code' }}</span></label>
+      <label class="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-stone-700"><i class="bi bi-ticket-perforated h-3.5 w-3.5 text-natural-accent"></i><span>{{ isVi() ? 'Khuyến mãi & Mã giảm giá' : 'Promotional & Voucher Code' }}</span></label>
       @if (cart.appliedVoucher()) {
         <div class="flex items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5">
           <div class="min-w-0">
@@ -13,8 +13,8 @@
         </div>
       } @else {
         <button type="button" class="flex w-full items-center justify-between gap-2 rounded-xl border border-dashed border-natural-border bg-white px-3.5 py-2.5 text-left text-xs font-bold text-natural-accent transition hover:border-natural-accent hover:bg-natural-accent/5" (click)="openPicker()">
-          <span class="flex items-center gap-1.5"><svg lucideTicket class="h-4 w-4"></svg>{{ isVi() ? 'Chọn hoặc nhập mã giảm giá' : 'Choose or enter a voucher code' }}</span>
-          <span class="text-stone-400">›</span>
+          <span class="flex items-center gap-1.5"><i class="bi bi-ticket-perforated h-4 w-4"></i>{{ isVi() ? 'Chọn hoặc nhập mã giảm giá' : 'Choose or enter a voucher code' }}</span>
+          <i class="bi bi-chevron-right h-3.5 w-3.5 text-stone-400" aria-hidden="true"></i>
         </button>
       }
     </div>
@@ -25,7 +25,7 @@
           <!-- Header -->
           <div class="flex items-center justify-between border-b border-stone-150 px-5 py-4">
             <h3 class="font-serif text-base font-black uppercase tracking-wide text-natural-ink">{{ isVi() ? 'Chọn mã giảm giá' : 'Choose a Voucher' }}</h3>
-            <button type="button" class="rounded-full p-1.5 text-stone-400 transition hover:bg-stone-100 hover:text-stone-700" (click)="close()"><svg lucideX class="h-5 w-5"></svg></button>
+            <button type="button" class="rounded-full p-1.5 text-stone-400 transition hover:bg-stone-100 hover:text-stone-700" (click)="close()"><i class="bi bi-x-lg h-5 w-5"></i></button>
           </div>
 
           <!-- Manual entry -->
@@ -52,7 +52,7 @@
                   <p class="text-[10px] text-stone-400">{{ conditionLabel(v) }}</p>
                 </div>
                 <div [class]="'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ' + (draftSelection() === v.code ? 'border-natural-accent bg-natural-accent text-white' : 'border-stone-300')">
-                  @if (draftSelection() === v.code) { <svg lucideCheck class="h-3 w-3"></svg> }
+                  @if (draftSelection() === v.code) { <i class="bi bi-check h-3 w-3"></i> }
                 </div>
               </button>
             } @empty {
