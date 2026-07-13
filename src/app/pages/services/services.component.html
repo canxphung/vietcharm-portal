@@ -47,14 +47,34 @@
                 </div>
               }
 
-              @if (activeTab() === 'activities') {
+              @if (activeTab() === 'activities' || activeTab() === 'attractions') {
                 <div class="space-y-2">
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Chủ đề trải nghiệm' : 'Experience Theme' }}</label>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Chủ đề' : 'Theme' }}</label>
                   <div class="flex flex-col gap-1.5">
                     @for (cat of activityCategories(); track cat.id) {
                       <button type="button" [class]="'w-full rounded-xl px-3 py-2 text-left text-xs font-bold transition ' + (category() === cat.id ? 'bg-natural-accent text-white' : 'border border-stone-200 bg-white text-stone-600 hover:bg-stone-100')" (click)="category.set(cat.id)">{{ cat.label }}</button>
                     }
                   </div>
+                </div>
+              }
+
+              @if (activeTab() === 'vehicles') {
+                <div class="space-y-2">
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Loại phương tiện' : 'Vehicle type' }}</label>
+                  <div class="flex gap-1.5">
+                    @for (opt of vehicleTypeOptions(); track opt.id) {
+                      <button type="button" [class]="'flex-1 rounded-xl px-3 py-2 text-xs font-bold transition ' + (vehicleType() === opt.id ? 'bg-natural-accent text-white' : 'border border-stone-200 bg-white text-stone-600 hover:bg-stone-100')" (click)="vehicleType.set(opt.id)">{{ opt.label }}</button>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (activeTab() !== 'attractions') {
+                <div class="space-y-1.5">
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-natural-accent">{{ i18n.isVi() ? 'Khoảng giá' : 'Price range' }}</label>
+                  <select [ngModel]="priceRange()" (ngModelChange)="priceRange.set($event)" class="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-natural-text focus:border-natural-accent focus:outline-none">
+                    @for (opt of priceOptions(); track opt.id) { <option [value]="opt.id">{{ opt.label }}</option> }
+                  </select>
                 </div>
               }
 

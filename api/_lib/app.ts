@@ -39,11 +39,11 @@ app.use('/api/partnerships', partnershipsRouter);
 app.use('/api/service-reviews', serviceReviewsRouter);
 app.use('/api/complaints', complaintsRouter);
 
-app.post('/api/ai/itinerary', async (req, res) => {
-  const { prompt, province = 'quang-nam', budget = 3000000, language = 'vi' } = req.body ?? {};
+app.post('/api/itinerary', async (req, res) => {
+  const { province = 'quang-nam', budget = 3000000, language = 'vi' } = req.body ?? {};
 
   try {
-    return res.json(await createItinerary({ prompt, province, budget, language }));
+    return res.json(await createItinerary(req.body ?? {}));
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Server Internal Error';
     return res.status(500).json({
