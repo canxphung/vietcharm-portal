@@ -1,5 +1,4 @@
 import { Component, input, output } from '@angular/core';
-import { LucideEye, LucideHeart, LucideShoppingBag, LucideStar } from '@lucide/angular';
 import type { BookingCartItem, ViewableItem } from '@/types';
 import { CartService } from '@/services/cart.service';
 import { UiStateService } from '@/services/ui-state.service';
@@ -8,7 +7,7 @@ import { VndPipe } from '@/pipes/vnd.pipe';
 @Component({
   selector: 'app-item-card',
   standalone: true,
-  imports: [VndPipe, LucideEye, LucideHeart, LucideShoppingBag, LucideStar],
+  imports: [VndPipe],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.css',
 })

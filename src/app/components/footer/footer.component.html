@@ -12,16 +12,16 @@
             </p>
             <div class="flex items-center gap-3 pt-2">
               <a href="#facebook" (click)="$event.preventDefault()" class="flex h-8 w-8 items-center justify-center rounded-full border border-natural-beige/25 text-natural-beige/80 transition duration-300 hover:border-natural-gold hover:bg-natural-gold/5 hover:text-natural-gold">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                <i class="bi bi-facebook h-4 w-4"></i>
               </a>
               <a href="#instagram" (click)="$event.preventDefault()" class="flex h-8 w-8 items-center justify-center rounded-full border border-natural-beige/25 text-natural-beige/80 transition duration-300 hover:border-natural-gold hover:bg-natural-gold/5 hover:text-natural-gold">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                <i class="bi bi-instagram h-4 w-4"></i>
               </a>
               <a href="#youtube" (click)="$event.preventDefault()" class="flex h-8 w-8 items-center justify-center rounded-full border border-natural-beige/25 text-natural-beige/80 transition duration-300 hover:border-natural-gold hover:bg-natural-gold/5 hover:text-natural-gold">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-2C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.41 19c1.71.46 8.59.46 8.59.46s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+                <i class="bi bi-youtube h-4 w-4"></i>
               </a>
               <a href="#tiktok" (click)="$event.preventDefault()" class="flex h-8 w-8 select-none items-center justify-center rounded-full border border-natural-beige/25 text-xs font-bold text-natural-beige/80 transition duration-300 hover:border-natural-gold hover:bg-natural-gold/5 hover:text-natural-gold">
-                ♪
+                <i class="bi bi-tiktok h-4 w-4"></i>
               </a>
             </div>
           </div>
@@ -33,15 +33,15 @@
               <span class="mt-2 block h-[2px] w-8 bg-natural-gold"></span>
             </div>
             <ul class="space-y-2.5 text-xs">
-              <li><button type="button" class="foot-link" (click)="ui.selectProvince('quang-nam')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Khám phá Hội An' : 'Explore Hoi An' }}</span></button></li>
-              <li><a routerLink="/nearby-places" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Địa điểm lân cận' : 'Nearby Places' }}</span></a></li>
-              <li><button type="button" class="foot-link" (click)="ui.openAllServices('hotels')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Khách sạn' : 'Hotels' }}</span></button></li>
-              <li><button type="button" class="foot-link" (click)="ui.openAllServices('vehicles')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Phương tiện di chuyển' : 'Transportation' }}</span></button></li>
-              <li><button type="button" class="foot-link" (click)="ui.openAllServices('activities')"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hoạt động & vui chơi' : 'Experiences & Tours' }}</span></button></li>
-              <li><a routerLink="/tours" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Khuyến mãi & ưu đãi' : 'Promotions & Deals' }}</span></a></li>
-              <li><a routerLink="/trip-room" class="foot-link"><span class="arrow">›</span><span>Trip Room</span></a></li>
-              <li><a routerLink="/blind-travel" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hành trình ẩn số' : 'Blind Travel' }}</span></a></li>
-              <li><a routerLink="/handbook" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Cẩm nang du lịch' : 'Travel Handbook' }}</span></a></li>
+              <li><button type="button" class="foot-link" (click)="ui.selectProvince('quang-nam')"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Khám phá Hội An' : 'Explore Hoi An' }}</span></button></li>
+              <li><a routerLink="/nearby-places" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Địa điểm lân cận' : 'Nearby Places' }}</span></a></li>
+              <li><button type="button" class="foot-link" (click)="ui.openAllServices('hotels')"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Khách sạn' : 'Hotels' }}</span></button></li>
+              <li><button type="button" class="foot-link" (click)="ui.openAllServices('vehicles')"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Phương tiện di chuyển' : 'Transportation' }}</span></button></li>
+              <li><button type="button" class="foot-link" (click)="ui.openAllServices('activities')"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Hoạt động & vui chơi' : 'Experiences & Tours' }}</span></button></li>
+              <li><a routerLink="/tours" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Khuyến mãi & ưu đãi' : 'Promotions & Deals' }}</span></a></li>
+              <li><a routerLink="/trip-room" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>Trip Room</span></a></li>
+              <li><a routerLink="/blind-travel" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Hành trình ẩn số' : 'Blind Travel' }}</span></a></li>
+              <li><a routerLink="/handbook" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Cẩm nang du lịch' : 'Travel Handbook' }}</span></a></li>
             </ul>
           </div>
 
@@ -52,12 +52,12 @@
               <span class="mt-2 block h-[2px] w-8 bg-natural-gold"></span>
             </div>
             <ul class="space-y-2.5 text-xs">
-              <li><a routerLink="/support/help" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Trung tâm hỗ trợ' : 'Help Center' }}</span></a></li>
-              <li><a routerLink="/support/faq" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Câu hỏi thường gặp' : 'FAQs' }}</span></a></li>
-              <li><a routerLink="/support/booking-guide" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hướng dẫn đặt dịch vụ' : 'Booking Guide' }}</span></a></li>
-              <li><a routerLink="/support/refund" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Chính sách hủy & hoàn tiền' : 'Cancellation & Refund' }}</span></a></li>
-              <li><a routerLink="/support/terms" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Điều khoản sử dụng' : 'Terms of Use' }}</span></a></li>
-              <li><a routerLink="/support/privacy" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Chính sách bảo mật' : 'Privacy Policy' }}</span></a></li>
+              <li><a routerLink="/support/help" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Trung tâm hỗ trợ' : 'Help Center' }}</span></a></li>
+              <li><a routerLink="/support/faq" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Câu hỏi thường gặp' : 'FAQs' }}</span></a></li>
+              <li><a routerLink="/support/booking-guide" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Hướng dẫn đặt dịch vụ' : 'Booking Guide' }}</span></a></li>
+              <li><a routerLink="/support/refund" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Chính sách hủy & hoàn tiền' : 'Cancellation & Refund' }}</span></a></li>
+              <li><a routerLink="/support/terms" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Điều khoản sử dụng' : 'Terms of Use' }}</span></a></li>
+              <li><a routerLink="/support/privacy" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Chính sách bảo mật' : 'Privacy Policy' }}</span></a></li>
             </ul>
           </div>
 
@@ -68,12 +68,12 @@
               <span class="mt-2 block h-[2px] w-8 bg-natural-gold"></span>
             </div>
             <ul class="space-y-2.5 text-xs">
-              <li><a routerLink="/support/about" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Giới thiệu về chúng tôi' : 'About Us' }}</span></a></li>
-              <li><a routerLink="/partnership" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Hợp tác với chúng tôi' : 'Work With Us' }}</span></a></li>
-              <li><a routerLink="/support/careers" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Tuyển dụng' : 'Careers' }}</span></a></li>
-              <li><a routerLink="/support/partners" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Đối tác & Liên kết' : 'Partners & Affiliates' }}</span></a></li>
-              <li><a routerLink="/support/blog" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Tin tức & Blog' : 'News & Blog' }}</span></a></li>
-              <li><a routerLink="/support/contact" class="foot-link"><span class="arrow">›</span><span>{{ i18n.isVi() ? 'Liên hệ' : 'Contact' }}</span></a></li>
+              <li><a routerLink="/support/about" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Giới thiệu về chúng tôi' : 'About Us' }}</span></a></li>
+              <li><a routerLink="/partnership" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Hợp tác với chúng tôi' : 'Work With Us' }}</span></a></li>
+              <li><a routerLink="/support/careers" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Tuyển dụng' : 'Careers' }}</span></a></li>
+              <li><a routerLink="/support/partners" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Đối tác & Liên kết' : 'Partners & Affiliates' }}</span></a></li>
+              <li><a routerLink="/support/blog" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Tin tức & Blog' : 'News & Blog' }}</span></a></li>
+              <li><a routerLink="/support/contact" class="foot-link"><i class="bi bi-chevron-right arrow h-3 w-3" aria-hidden="true"></i><span>{{ i18n.isVi() ? 'Liên hệ' : 'Contact' }}</span></a></li>
             </ul>
           </div>
 
@@ -85,19 +85,19 @@
             </div>
             <ul class="space-y-3.5 text-xs text-natural-beige/80">
               <li class="flex items-start gap-2.5">
-                <svg lucideMapPin class="mt-0.5 h-4 w-4 shrink-0 text-natural-gold"></svg>
+                <i class="bi bi-geo-alt mt-0.5 h-4 w-4 shrink-0 text-natural-gold"></i>
                 <span>{{ i18n.isVi() ? '123 Trần Phú, Minh An, Hội An, Quảng Nam' : '123 Tran Phu, Minh An, Hoi An, Quang Nam' }}</span>
               </li>
               <li class="flex items-center gap-2.5">
-                <svg lucidePhone class="h-4 w-4 shrink-0 text-natural-gold"></svg>
+                <i class="bi bi-telephone h-4 w-4 shrink-0 text-natural-gold"></i>
                 <a href="tel:19005040" class="transition hover:text-natural-gold">Hotline: 1900 5040</a>
               </li>
               <li class="flex items-center gap-2.5">
-                <svg lucideMail class="h-4 w-4 shrink-0 text-natural-gold"></svg>
+                <i class="bi bi-envelope h-4 w-4 shrink-0 text-natural-gold"></i>
                 <a href="mailto:info@vietcharm.com" class="break-all transition hover:text-natural-gold">Email: info&#64;vietcharm.com</a>
               </li>
               <li class="flex items-center gap-2.5">
-                <svg lucideClock class="h-4 w-4 shrink-0 text-natural-gold"></svg>
+                <i class="bi bi-clock h-4 w-4 shrink-0 text-natural-gold"></i>
                 <span>{{ i18n.isVi() ? 'Thứ 2 - Chủ nhật: 8:00 - 21:00' : 'Mon - Sun: 8:00 AM - 9:00 PM' }}</span>
               </li>
             </ul>
@@ -113,21 +113,21 @@
 
           <div class="flex flex-col items-center gap-4 sm:flex-row md:gap-6">
             <div class="flex items-center gap-2 rounded-xl border border-stone-800/60 bg-natural-beige/5 px-3 py-2">
-              <svg lucideShieldCheck class="h-5 w-5 shrink-0 text-emerald-500"></svg>
+              <i class="bi bi-shield-check h-5 w-5 shrink-0 text-emerald-500"></i>
               <div class="text-left">
                 <span class="block text-[10px] font-bold leading-none text-stone-200">{{ i18n.isVi() ? 'Đặt chỗ an tâm' : 'Booking assurance' }}</span>
                 <span class="mt-0.5 block text-[9px] leading-none text-natural-beige/40">{{ i18n.isVi() ? 'Xác nhận rõ ràng' : 'Clear confirmation' }}</span>
               </div>
             </div>
             <div class="flex items-center gap-2 rounded-xl border border-stone-800/60 bg-natural-beige/5 px-3 py-2">
-              <svg lucideHeadphones class="h-5 w-5 shrink-0 text-amber-500"></svg>
+              <i class="bi bi-headphones h-5 w-5 shrink-0 text-amber-500"></i>
               <div class="text-left">
                 <span class="block text-[10px] font-bold leading-none text-stone-200">{{ i18n.isVi() ? 'Hỗ trợ 24/7' : '24/7 Support' }}</span>
                 <span class="mt-0.5 block text-[9px] leading-none text-natural-beige/40">{{ i18n.isVi() ? 'Luôn sẵn sàng' : 'Always Ready' }}</span>
               </div>
             </div>
             <div class="flex items-center gap-2 rounded-xl border border-stone-800/60 bg-natural-beige/5 px-3 py-2">
-              <svg lucideAward class="h-5 w-5 shrink-0 text-sky-400"></svg>
+              <i class="bi bi-award h-5 w-5 shrink-0 text-sky-400"></i>
               <div class="text-left">
                 <span class="block text-[10px] font-bold leading-none text-stone-200">{{ i18n.isVi() ? 'Đảm bảo chất lượng' : 'Quality Assurance' }}</span>
                 <span class="mt-0.5 block text-[9px] leading-none text-natural-beige/40">{{ i18n.isVi() ? 'Dịch vụ tốt nhất' : 'Best Service' }}</span>

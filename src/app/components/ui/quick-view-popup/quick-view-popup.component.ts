@@ -8,14 +8,6 @@ import {
   output,
   signal,
 } from '@angular/core';
-import {
-  LucideArrowRight,
-  LucideCheck,
-  LucideHeart,
-  LucideShoppingBag,
-  LucideStar,
-  LucideX,
-} from '@lucide/angular';
 import type { BookingCartItem, ViewableItem } from '@/types';
 import { CartService } from '@/services/cart.service';
 import { I18nService } from '@/services/i18n.service';
@@ -27,12 +19,6 @@ import { VndPipe } from '@/pipes/vnd.pipe';
   standalone: true,
   imports: [
     VndPipe,
-    LucideArrowRight,
-    LucideCheck,
-    LucideHeart,
-    LucideShoppingBag,
-    LucideStar,
-    LucideX,
   ],
   templateUrl: './quick-view-popup.component.html',
   styleUrl: './quick-view-popup.component.css',

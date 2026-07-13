@@ -4,20 +4,6 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  LucideAlertCircle,
-  LucideArrowRight,
-  LucideCheckCircle,
-  LucideChevronRight,
-  LucideInfo,
-  LucidePlus,
-  LucideShare2,
-  LucideShieldCheck,
-  LucideSparkles,
-  LucideTrash2,
-  LucideUsers,
-  LucideUsersRound,
-} from '@lucide/angular';
 import type { BookingCartItem } from '@/types';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
@@ -81,7 +67,7 @@ function randomCode(length = 6): string {
 @Component({
   selector: 'app-trip-room-page',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, RouterLink, LucideAlertCircle, LucideArrowRight, LucideCheckCircle, LucideChevronRight, LucidePlus, LucideShare2, LucideShieldCheck, LucideSparkles, LucideTrash2, LucideUsers, LucideUsersRound],
+  imports: [FormsModule, DecimalPipe, RouterLink],
   templateUrl: './trip-room.component.html',
   styleUrl: './trip-room.component.css',
 })
@@ -246,7 +232,7 @@ export class TripRoomComponent {
       ),
     );
     this.syncRoom();
-    this.alert(vi ? '✓ Đã lưu gu du lịch của bạn — cả nhóm sẽ thấy ngay!' : '✓ Travel profile saved — the whole room can see it!');
+    this.alert(vi ? 'Đã lưu gu du lịch của bạn — cả nhóm sẽ thấy ngay!' : 'Travel profile saved — the whole room can see it!');
   }
 
   /** BPMN flow 1: validate input -> generate Room ID + invite code -> persist -> show the new room. */
@@ -292,7 +278,7 @@ export class TripRoomComponent {
       const created = await firstValueFrom(this.http.post<TripRoom>('/api/trip-rooms', room));
       this.enterRoom(created);
       this.myRooms.update((list) => [...list, created]);
-      this.alert(vi ? `✓ Đã tạo phòng "${name}" — mã mời: ${room.inviteCode}. Sao chép link để mời bạn bè!` : `✓ Room "${name}" created — invite code: ${room.inviteCode}. Copy the link to invite friends!`);
+      this.alert(vi ? `Đã tạo phòng "${name}" — mã mời: ${room.inviteCode}. Sao chép link để mời bạn bè!` : `Room "${name}" created — invite code: ${room.inviteCode}. Copy the link to invite friends!`);
     } catch (error) {
       this.formError.set(this.describeError(error));
     } finally {
@@ -320,7 +306,7 @@ export class TripRoomComponent {
       const existing = room.members.find((m) => m.email === this.myEmail());
       if (existing) {
         this.enterRoom(room);
-        this.alert(vi ? `✓ Chào mừng quay lại phòng "${room.name}"!` : `✓ Welcome back to "${room.name}"!`);
+        this.alert(vi ? `Chào mừng quay lại phòng "${room.name}"!` : `Welcome back to "${room.name}"!`);
         return;
       }
       if (room.members.length >= room.maxMembers) {
@@ -343,7 +329,7 @@ export class TripRoomComponent {
       const updated = await firstValueFrom(this.http.patch<TripRoom>(`/api/trip-rooms/${room.id}`, { members: updatedMembers }));
       this.enterRoom(updated);
       this.myRooms.update((list) => (list.some((r) => r.id === updated.id) ? list : [...list, updated]));
-      this.alert(vi ? `✓ Đã tham gia phòng "${room.name}" thành công!` : `✓ Joined "${room.name}" successfully!`);
+      this.alert(vi ? `Đã tham gia phòng "${room.name}" thành công!` : `Joined "${room.name}" successfully!`);
     } catch (error) {
       this.joinError.set(this.describeError(error));
     } finally {
@@ -375,7 +361,7 @@ export class TripRoomComponent {
         this.room.set(null);
         this.stage.set('landing');
       }
-      this.alert(vi ? `✓ Đã xoá phòng "${target.name}".` : `✓ Deleted "${target.name}".`);
+      this.alert(vi ? `Đã xoá phòng "${target.name}".` : `Deleted "${target.name}".`);
     } catch (error) {
       this.alert(this.describeError(error));
     }
@@ -403,12 +389,12 @@ export class TripRoomComponent {
     return 'pb-2 text-xs font-bold uppercase tracking-wider transition ' + (this.tab() === t ? 'border-b-2 border-natural-accent font-black text-natural-accent' : 'text-natural-text/60 hover:text-natural-accent');
   }
 
-  voteCategories(): Array<{ type: 'hotel' | 'restaurant' | 'activity'; label: string }> {
+  voteCategories(): Array<{ type: 'hotel' | 'restaurant' | 'activity'; label: string; icon: string }> {
     const vi = this.isVi();
     return [
-      { type: 'hotel', label: vi ? '🏡 1. Nơi Ở / Lưu Trú' : '🏡 1. Accommodations' },
-      { type: 'restaurant', label: vi ? '🥢 2. Quán Ăn / Ẩm Thực' : '🥢 2. Dining & Flavors' },
-      { type: 'activity', label: vi ? '🛶 3. Hoạt Động Trải Nghiệm' : '🛶 3. Activities' },
+      { type: 'hotel', label: vi ? '1. Nơi Ở / Lưu Trú' : '1. Accommodations', icon: 'bi-house-door-fill' },
+      { type: 'restaurant', label: vi ? '2. Quán Ăn / Ẩm Thực' : '2. Dining & Flavors', icon: 'bi-fork-knife' },
+      { type: 'activity', label: vi ? '3. Hoạt Động Trải Nghiệm' : '3. Activities', icon: 'bi-compass-fill' },
     ];
   }
 
@@ -443,21 +429,27 @@ export class TripRoomComponent {
   copyLink(): void {
     this.copied.set(true);
     if (typeof navigator !== 'undefined' && navigator.clipboard) void navigator.clipboard.writeText(this.shareLink());
-    this.alert(this.isVi() ? '✓ Đã sao chép link mời vào phòng!' : '✓ Trip room invite link copied!');
+    this.alert(this.isVi() ? 'Đã sao chép link mời vào phòng!' : 'Trip room invite link copied!');
     setTimeout(() => this.copied.set(false), 2000);
   }
 
   copyText(value: string | undefined): void {
     if (!value) return;
     if (typeof navigator !== 'undefined' && navigator.clipboard) void navigator.clipboard.writeText(value);
-    this.alert(this.isVi() ? `✓ Đã sao chép: ${value}` : `✓ Copied: ${value}`);
+    this.alert(this.isVi() ? `Đã sao chép: ${value}` : `Copied: ${value}`);
   }
 
   typeLabel(type: 'hotel' | 'restaurant' | 'activity'): string {
     const vi = this.isVi();
-    if (type === 'hotel') return vi ? '🏡 Lưu trú (2 đêm)' : '🏡 Stay (2 nights)';
-    if (type === 'restaurant') return vi ? '🥢 Ẩm thực' : '🥢 Dining';
-    return vi ? '🛶 Hoạt động' : '🛶 Activity';
+    if (type === 'hotel') return vi ? 'Lưu trú (2 đêm)' : 'Stay (2 nights)';
+    if (type === 'restaurant') return vi ? 'Ẩm thực' : 'Dining';
+    return vi ? 'Hoạt động' : 'Activity';
+  }
+
+  typeIcon(type: 'hotel' | 'restaurant' | 'activity'): string {
+    if (type === 'hotel') return 'bi-house-door-fill';
+    if (type === 'restaurant') return 'bi-fork-knife';
+    return 'bi-compass-fill';
   }
 
   deleteMember(id: string): void {
@@ -485,7 +477,7 @@ export class TripRoomComponent {
   pay(id: string): void {
     this.members.update((list) => list.map((m) => (m.id === id ? { ...m, status: 'paid' } : m)));
     this.syncRoom();
-    this.alert(this.isVi() ? '✓ Ghi nhận thanh toán thành công!' : '✓ Payment verified successfully!');
+    this.alert(this.isVi() ? 'Ghi nhận thanh toán thành công!' : 'Payment verified successfully!');
   }
 
   checkoutGroup(): void {
@@ -502,7 +494,7 @@ export class TripRoomComponent {
     if (hotel) items.push({ id: `group-hotel-${hotel.id}`, type: 'hotel', name: `[${room.name}] ${vi ? hotel.nameVi : hotel.nameEn}`, price: hotel.price * 2, quantity: this.members().length, image: hotel.image, details: vi ? `Bình chọn nhiều nhất bởi cả nhóm ${room.id}` : `Top-voted stay by group ${room.id}` });
     if (activity) items.push({ id: `group-act-${activity.id}`, type: 'activity', name: `[${room.name}] ${vi ? activity.nameVi : activity.nameEn}`, price: activity.price, quantity: this.members().length, image: activity.image, details: vi ? `Phục vụ nhóm ${this.members().length} khách` : `Reserved for ${this.members().length} guests` });
     this.cart.addCombo(items);
-    this.alert(vi ? '✓ Đã đồng bộ các lựa chọn hàng đầu của nhóm vào Giỏ hành lý!' : '✓ Syncing consensus group selections to Cart!');
+    this.alert(vi ? 'Đã đồng bộ các lựa chọn hàng đầu của nhóm vào Giỏ hành lý!' : 'Syncing consensus group selections to Cart!');
     this.tab.set('checkout');
   }
 

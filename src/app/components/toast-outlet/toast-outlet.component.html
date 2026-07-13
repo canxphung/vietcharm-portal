@@ -2,11 +2,11 @@
       @for (toast of toastService.toasts(); track toast.id) {
         <div role="status" class="flex items-start gap-3 rounded-2xl border px-4 py-3 shadow-xl backdrop-blur" [ngClass]="toastClass(toast.type)">
           @if (toast.type === 'success') {
-            <svg lucideCheckCircle2 class="mt-0.5 h-5 w-5 shrink-0"></svg>
+            <i class="bi bi-check-circle mt-0.5 h-5 w-5 shrink-0"></i>
           } @else if (toast.type === 'error') {
-            <svg lucideXCircle class="mt-0.5 h-5 w-5 shrink-0"></svg>
+            <i class="bi bi-x-circle mt-0.5 h-5 w-5 shrink-0"></i>
           } @else {
-            <svg lucideInfo class="mt-0.5 h-5 w-5 shrink-0"></svg>
+            <i class="bi bi-info-circle mt-0.5 h-5 w-5 shrink-0"></i>
           }
           <div class="min-w-0 flex-1">
             <p class="text-sm font-black leading-snug">{{ toast.title }}</p>
@@ -24,7 +24,7 @@
             }
           </div>
           <button type="button" class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-current/65 transition hover:bg-black/5" (click)="toastService.dismiss(toast.id)">
-            <svg lucideX class="h-4 w-4"></svg>
+            <i class="bi bi-x-lg h-4 w-4"></i>
           </button>
         </div>
       }

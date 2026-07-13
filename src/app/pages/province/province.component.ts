@@ -3,29 +3,6 @@ import { httpResource } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  LucideAlertCircle,
-  LucideArrowLeft,
-  LucideArrowRight,
-  LucideArrowUpDown,
-  LucideCalendarDays,
-  LucideChevronDown,
-  LucideCompass,
-  LucideHeart,
-  LucideHotel,
-  LucideMap,
-  LucideMapPin,
-  LucideMapPinned,
-  LucideMessageSquare,
-  LucideNavigation,
-  LucideSearch,
-  LucideShieldCheck,
-  LucideSlidersHorizontal,
-  LucideSparkles,
-  LucideStar,
-  LucideUsersRound,
-  LucideX,
-} from '@lucide/angular';
 import { ToastService } from '@/services/toast.service';
 import { SERVICE_TABS, isServiceTab, type ServiceTab } from '@/constants/views';
 import type { Activity, Attraction, Hotel, ViewableItem } from '@/types';
@@ -39,7 +16,7 @@ import { RevealDirective } from '@/directives/reveal.directive';
 @Component({
   selector: 'app-province-page',
   standalone: true,
-  imports: [ItemCardComponent, LucideMapPin],
+  imports: [ItemCardComponent],
   templateUrl: './province.component.html',
   styleUrl: './province.component.css',
 })

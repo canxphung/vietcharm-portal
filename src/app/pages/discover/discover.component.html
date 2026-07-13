@@ -3,7 +3,7 @@
         <!-- Top bar: back + breadcrumb + status -->
         <div class="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <a routerLink="/" class="flex items-center gap-2 rounded-full border border-natural-border bg-natural-beige px-4 py-2 font-serif text-xs font-bold text-natural-accent shadow-xs transition hover:text-natural-olive">
-            <svg lucideArrowLeft class="h-3.5 w-3.5 text-natural-accent"></svg>
+            <i class="bi bi-arrow-left h-3.5 w-3.5 text-natural-accent"></i>
             <span>{{ i18n.isVi() ? 'Quay lại chọn Vùng Miền' : 'Back to Regions' }}</span>
           </a>
           <nav class="flex flex-wrap items-center gap-2 text-xs font-bold text-stone-500" [attr.aria-label]="i18n.isVi() ? 'Điều hướng phân cấp' : 'Breadcrumb'">
@@ -14,7 +14,7 @@
             <span class="text-natural-text" aria-current="page">{{ i18n.isVi() ? 'Điểm đến' : 'Destinations' }}</span>
           </nav>
           <div class="flex items-center gap-1.5 font-mono text-xs text-stone-500">
-            <svg lucideNavigation class="h-3 w-3 text-natural-accent"></svg>
+            <i class="bi bi-cursor h-3 w-3 text-natural-accent"></i>
             <span>{{ i18n.isVi() ? 'Dữ liệu điểm đến đang có' : 'Available destination data' }}</span>
           </div>
         </div>
@@ -50,9 +50,9 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"></div>
                 <div class="absolute right-4 top-4 rounded-full border border-natural-border/20 bg-natural-olive/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
                   @if (prov.active) {
-                    <span class="font-bold text-natural-gold">● {{ i18n.isVi() ? 'HOẠT ĐỘNG' : 'READY' }}</span>
+                    <span class="flex items-center gap-1 font-bold text-natural-gold"><i class="bi bi-circle-fill h-2.5 w-2.5"></i>{{ i18n.isVi() ? 'HOẠT ĐỘNG' : 'READY' }}</span>
                   } @else {
-                    <span class="text-stone-300">⚡ {{ i18n.isVi() ? 'SẮP RA MẮT' : 'COMING SOON' }}</span>
+                    <span class="flex items-center gap-1 text-stone-300"><i class="bi bi-lightning-charge-fill h-3 w-3"></i>{{ i18n.isVi() ? 'SẮP RA MẮT' : 'COMING SOON' }}</span>
                   }
                 </div>
                 <div class="absolute bottom-4 left-4 text-white">
@@ -64,13 +64,13 @@
                 <p class="line-clamp-2 text-xs leading-relaxed text-natural-text/80">{{ prov.description }}</p>
                 <div class="mt-5 flex items-center justify-between border-t border-natural-border pt-4">
                   <span class="flex items-center gap-1.5 font-mono text-[11px] uppercase text-stone-500">
-                    <svg lucideMapPin class="h-3.5 w-3.5 text-natural-accent"></svg>
+                    <i class="bi bi-geo-alt h-3.5 w-3.5 text-natural-accent"></i>
                     {{ prov.id === 'quang-nam' ? (i18n.isVi() ? 'Đậm nét Hội An' : 'Heritage Core') : (i18n.isVi() ? 'Liên tỉnh lân cận' : 'Coastal Gateway') }}
                   </span>
                   @if (prov.active) {
                     <div class="flex items-center gap-1 text-xs font-bold text-natural-accent">
                       <span>{{ i18n.isVi() ? 'Ấn để khám phá' : 'Click to Plan' }}</span>
-                      <svg lucideArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1"></svg>
+                      <i class="bi bi-arrow-right h-4 w-4 transition-transform group-hover:translate-x-1"></i>
                     </div>
                   } @else {
                     <button type="button" class="text-[10px] font-bold text-natural-accent underline transition hover:text-natural-olive" (click)="$event.stopPropagation(); showRoadmap(prov.name)">
@@ -87,7 +87,7 @@
         <div class="mt-14 flex flex-col items-center justify-between gap-6 rounded-3xl border border-natural-border bg-natural-beige p-6 md:flex-row">
           <div class="flex items-center gap-3">
             <div class="shrink-0 rounded-full border border-natural-border bg-natural-bg p-3 text-natural-accent">
-              <svg lucideShieldCheck class="h-6 w-6"></svg>
+              <i class="bi bi-shield-check h-6 w-6"></i>
             </div>
             <div>
               <h4 class="font-serif text-sm font-bold text-natural-text">{{ i18n.isVi() ? 'Bảo chứng Lữ Hành Độc Quyền từ Ban Quản Lý' : 'Certified Safe Travel Assured' }}</h4>

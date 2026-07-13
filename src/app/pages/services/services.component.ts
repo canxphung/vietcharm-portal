@@ -3,30 +3,6 @@ import { httpResource } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  LucideAlertCircle,
-  LucideArrowLeft,
-  LucideArrowRight,
-  LucideArrowUpDown,
-  LucideCalendarDays,
-  LucideChevronDown,
-  LucideCompass,
-  LucideHeart,
-  LucideHotel,
-  LucideMap,
-  LucideMapPin,
-  LucideMapPinned,
-  LucideMessageSquare,
-  LucideMinus,
-  LucideNavigation,
-  LucidePlus,
-  LucideSearch,
-  LucideShieldCheck,
-  LucideSlidersHorizontal,
-  LucideStar,
-  LucideUsersRound,
-  LucideX,
-} from '@lucide/angular';
 import { ToastService } from '@/services/toast.service';
 import { SERVICE_TABS, isServiceTab, type ServiceTab } from '@/constants/views';
 import type { Activity, Attraction, Hotel, ViewableItem } from '@/types';
@@ -72,20 +48,6 @@ const LIVE_PROVINCE_ID = 'quang-nam';
     RouterLink,
     ItemCardComponent,
     QuickViewPopupComponent,
-    LucideArrowLeft,
-    LucideArrowUpDown,
-    LucideCalendarDays,
-    LucideChevronDown,
-    LucideHotel,
-    LucideMapPin,
-    LucideMinus,
-    LucidePlus,
-    LucideSearch,
-    LucideShieldCheck,
-    LucideSlidersHorizontal,
-    LucideStar,
-    LucideUsersRound,
-    LucideX,
   ],
   templateUrl: './services.component.html',
   styleUrl: './services.component.css',
@@ -301,9 +263,9 @@ export class ServicesComponent {
     const vi = this.i18n.isVi();
     return [
       { value: 0, label: vi ? 'Mọi mức đánh giá' : 'Any rating' },
-      { value: 4, label: vi ? '4.0★ trở lên' : '4.0★ & up' },
-      { value: 4.5, label: vi ? '4.5★ trở lên' : '4.5★ & up' },
-      { value: 4.8, label: vi ? '4.8★ trở lên' : '4.8★ & up' },
+      { value: 4, label: vi ? '4.0 trở lên' : '4.0 & up' },
+      { value: 4.5, label: vi ? '4.5 trở lên' : '4.5 & up' },
+      { value: 4.8, label: vi ? '4.8 trở lên' : '4.8 & up' },
     ];
   }
 

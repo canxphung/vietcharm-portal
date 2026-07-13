@@ -2,7 +2,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
-import { LucideArrowRight, LucideFlame, LucideGift, LucideHeart, LucideMapPin, LucideStar } from '@lucide/angular';
 import type { Activity, Attraction, Hotel, PromoVoucher, TourCombo, ViewableItem } from '@/types';
 import { CatalogDataService, toActivityItems, toAttractionItems, toHotelItems } from '@/services/catalog-data';
 import { CatalogService } from '@/services/catalog.service';
@@ -19,7 +18,7 @@ interface HotDeal {
 @Component({
   selector: 'app-tours-page',
   standalone: true,
-  imports: [DecimalPipe, RouterLink, LucideArrowRight, LucideFlame, LucideGift, LucideHeart, LucideMapPin, LucideStar],
+  imports: [DecimalPipe, RouterLink],
   templateUrl: './tours.component.html',
   styleUrl: './tours.component.css',
 })
@@ -95,7 +94,7 @@ export class ToursComponent {
     const vi = this.i18n.isVi();
     this.toast.showToast({
       type: 'success',
-      title: vi ? `✓ Đã sao chép mã ${voucher.code}` : `✓ Copied code ${voucher.code}`,
+      title: vi ? `Đã sao chép mã ${voucher.code}` : `Copied code ${voucher.code}`,
       message: vi ? 'Dán mã ở bước thanh toán để nhận ưu đãi.' : 'Paste it at checkout to redeem the discount.',
     });
   }

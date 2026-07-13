@@ -1,7 +1,7 @@
     <!-- Floating trigger -->
-    <div class="fixed bottom-24 right-4 z-50 flex flex-col gap-2 sm:bottom-28 sm:right-6">
+    <div class="fixed bottom-3 right-4 z-50 flex flex-col gap-2 sm:bottom-4 sm:right-6">
       <button type="button" id="help-promo-center-trigger" class="flex items-center gap-1.5 rounded-full border border-amber-100 bg-natural-accent px-4 py-2.5 text-[11px] font-serif font-black uppercase tracking-wide text-white shadow-xl transition-all hover:scale-105 hover:bg-natural-olive active:scale-95" (click)="open.set(true)">
-        <svg lucideHelpCircle class="h-3.5 w-3.5 text-natural-gold"></svg>
+        <i class="bi bi-question-circle h-3.5 w-3.5 text-natural-gold"></i>
         <span>{{ i18n.isVi() ? 'Hướng dẫn & Mã giảm giá' : 'Guide & Vouchers' }}</span>
         <span class="relative flex h-1.5 w-1.5">
           <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-natural-gold opacity-75"></span>
@@ -17,25 +17,25 @@
           <!-- Header -->
           <div class="flex items-center justify-between border-b border-natural-border/20 bg-natural-text p-5 text-white">
             <div class="flex items-center gap-2">
-              <div class="rounded-lg bg-natural-accent p-1.5"><svg lucideBookOpen class="h-5 w-5 text-natural-bg"></svg></div>
+              <div class="rounded-lg bg-natural-accent p-1.5"><i class="bi bi-book h-5 w-5 text-natural-bg"></i></div>
               <div>
                 <h3 class="flex items-center gap-1.5 font-serif text-base font-black uppercase tracking-wide">
                   {{ i18n.isVi() ? 'HƯỚNG DẪN SỬ DỤNG & MÃ GIẢM GIÁ' : 'USAGE GUIDE & VOUCHER CODES' }}
-                  <svg lucideSparkles class="h-4 w-4 animate-pulse text-natural-gold"></svg>
+                  <i class="bi bi-stars h-4 w-4 animate-pulse text-natural-gold"></i>
                 </h3>
                 <p class="font-sans text-[10px] tracking-wide text-stone-300">{{ i18n.isVi() ? 'Cách đặt dịch vụ trên VietCharm & kho mã giảm giá hiện có' : 'How booking works on VietCharm, plus current voucher codes' }}</p>
               </div>
             </div>
-            <button type="button" class="rounded-full p-1 text-white transition hover:bg-white/10" (click)="open.set(false)"><svg lucideX class="h-5 w-5"></svg></button>
+            <button type="button" class="rounded-full p-1 text-white transition hover:bg-white/10" (click)="open.set(false)"><i class="bi bi-x-lg h-5 w-5"></i></button>
           </div>
 
           <!-- Tabs -->
           <div class="flex border-b border-stone-200 bg-natural-beige text-xs font-bold uppercase tracking-wider">
             <button type="button" (click)="tab.set('guide')" [class]="'flex flex-1 items-center justify-center gap-1.5 border-b-2 py-3 text-center transition ' + (tab() === 'guide' ? 'border-natural-accent bg-natural-bg text-natural-accent' : 'border-transparent text-stone-500 hover:text-stone-700')">
-              <svg lucideCompass class="h-4 w-4"></svg><span>{{ i18n.isVi() ? 'Làm gì khi vô Web?' : 'How to Use Web?' }}</span>
+              <i class="bi bi-compass h-4 w-4"></i><span>{{ i18n.isVi() ? 'Làm gì khi vô Web?' : 'How to Use Web?' }}</span>
             </button>
             <button type="button" (click)="tab.set('promos')" [class]="'flex flex-1 items-center justify-center gap-1.5 border-b-2 py-3 text-center transition ' + (tab() === 'promos' ? 'border-natural-accent bg-natural-bg text-natural-accent' : 'border-transparent text-stone-500 hover:text-stone-700')">
-              <svg lucideGift class="h-4 w-4"></svg><span>{{ i18n.isVi() ? 'Mã Giảm Giá & Deal Sốc' : 'Promos & Codes' }}</span>
+              <i class="bi bi-gift h-4 w-4"></i><span>{{ i18n.isVi() ? 'Mã Giảm Giá & Deal Sốc' : 'Promos & Codes' }}</span>
               <span class="rounded-full bg-natural-gold px-1.5 font-mono text-[9px] text-natural-text">NEW</span>
             </button>
           </div>
@@ -45,7 +45,7 @@
             @if (tab() === 'guide') {
               <div class="space-y-4 text-xs text-natural-text">
                 <div class="flex items-start gap-3 rounded-2xl border border-amber-100 bg-natural-cream p-4">
-                  <svg lucideAward class="mt-0.5 h-5 w-5 shrink-0 text-amber-500"></svg>
+                  <i class="bi bi-award mt-0.5 h-5 w-5 shrink-0 text-amber-500"></i>
                   <div>
                     <h4 class="font-serif text-sm font-bold text-natural-text">{{ i18n.isVi() ? 'Xin chào Lữ Khách Phương Xa!' : 'Welcome to VietCharm!' }}</h4>
                     <p class="mt-1 leading-relaxed text-natural-text/85">{{ i18n.isVi() ? 'VietCharm là nền tảng du lịch theo vùng, giúp gom điểm đến, dịch vụ và lịch trình vào một flow dễ theo dõi. Chỉ với vài thao tác nhỏ dưới đây, bạn đã có thể sở hữu lịch trình tiết kiệm mộc mạc nhất:' : 'VietCharm is a region-based travel platform that brings destinations, services, and itineraries into one clear flow. Follow these step-by-step instructions to navigate perfectly:' }}</p>
@@ -56,11 +56,11 @@
                     <div class="relative">
                       <span class="absolute -left-[27px] top-1.5 rounded-full border border-white bg-natural-accent p-1 text-white shadow-xs">
                         @switch (st.icon) {
-                          @case ('map') { <svg lucideMapPin class="h-3 w-3 text-white"></svg> }
-                          @case ('hotel') { <svg lucideHotel class="h-3 w-3 text-white"></svg> }
-                          @case ('bag') { <svg lucideShoppingBag class="h-3 w-3 text-white"></svg> }
-                          @case ('users') { <svg lucideUsers class="h-3 w-3 text-white"></svg> }
-                          @case ('check') { <svg lucideCheckSquare class="h-3 w-3 text-white"></svg> }
+                          @case ('map') { <i class="bi bi-geo-alt h-3 w-3 text-white"></i> }
+                          @case ('hotel') { <i class="bi bi-building h-3 w-3 text-white"></i> }
+                          @case ('bag') { <i class="bi bi-bag h-3 w-3 text-white"></i> }
+                          @case ('users') { <i class="bi bi-people h-3 w-3 text-white"></i> }
+                          @case ('check') { <i class="bi bi-check-square h-3 w-3 text-white"></i> }
                         }
                       </span>
                       <h5 class="font-serif text-sm font-bold text-stone-800">{{ st.title }}</h5>
@@ -73,13 +73,19 @@
                     <p class="text-[10px] font-black uppercase tracking-wider text-stone-400">{{ i18n.isVi() ? 'Đại lý & Bên thứ ba muốn đăng ký?' : 'Are you a local service provider?' }}</p>
                     <p class="text-[11px] text-stone-500">{{ i18n.isVi() ? 'Bạn có thể đăng ký dịch vụ lưu trú, cho thuê xe, hoạt động ngay tại VietCharm.' : 'Apply to host rooms, cars or tours on our verified network.' }}</p>
                   </div>
-                  <button type="button" class="whitespace-nowrap rounded-xl bg-natural-accent px-4 py-2 text-[11px] font-bold uppercase text-white shadow-md transition hover:bg-natural-olive" (click)="goPartnership()">{{ i18n.isVi() ? 'Đăng Ký Đối Tác →' : 'Apply Partner →' }}</button>
+                  <button type="button" class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-natural-accent px-4 py-2 text-[11px] font-bold uppercase text-white shadow-md transition hover:bg-natural-olive" (click)="goPartnership()">
+                    <span>{{ i18n.isVi() ? 'Đăng Ký Đối Tác' : 'Apply Partner' }}</span>
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                  </button>
                 </div>
               </div>
             } @else {
               <div class="space-y-4">
                 <div class="rounded-2xl border border-stone-200 bg-natural-cream p-4 text-center text-xs">
-                  <p class="font-serif text-sm font-black uppercase tracking-tight text-stone-800">{{ i18n.isVi() ? '🔥 KHO VOUCHER KHUYẾN MÃI ĐỘC QUYỀN VIETCHARM' : 'EXCLUSIVE TRAVEL BUNDLED DISCOUNTS' }}</p>
+                  <p class="inline-flex items-center justify-center gap-1.5 font-serif text-sm font-black uppercase tracking-tight text-stone-800">
+                    <i class="bi bi-fire text-rose-500" aria-hidden="true"></i>
+                    <span>{{ i18n.isVi() ? 'KHO VOUCHER KHUYẾN MÃI ĐỘC QUYỀN VIETCHARM' : 'EXCLUSIVE TRAVEL BUNDLED DISCOUNTS' }}</span>
+                  </p>
                   <p class="mt-1 text-stone-500">{{ i18n.isVi() ? 'Nhấp chọn mã giảm giá để sao chép trực tiếp, áp dụng ngay ở trang Thanh toán!' : 'Click any coupon code to copy it directly, and apply it on the Checkout page!' }}</p>
                 </div>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -95,16 +101,19 @@
                       <div class="mt-4 flex items-center justify-between gap-2 border-t border-stone-100 pt-3">
                         <span class="select-all rounded-lg border border-natural-border bg-natural-beige px-2.5 py-1 font-mono text-sm font-black text-natural-accent">{{ pr.code }}</span>
                         <button type="button" [class]="'rounded-xl p-2 transition-all ' + (copied() === pr.code ? 'bg-emerald-50 text-emerald-600' : 'bg-natural-accent text-white hover:bg-natural-olive')" (click)="copy(pr.code)">
-                          @if (copied() === pr.code) { <svg lucideCheck class="h-3.5 w-3.5"></svg> } @else { <svg lucideCopy class="h-3.5 w-3.5"></svg> }
+                          @if (copied() === pr.code) { <i class="bi bi-check h-3.5 w-3.5"></i> } @else { <i class="bi bi-copy h-3.5 w-3.5"></i> }
                         </button>
                       </div>
                     </div>
                   }
                 </div>
                 <div class="rounded-2xl border border-natural-accent/30 bg-natural-accent/10 p-4 text-xs text-natural-text">
-                  <h6 class="flex items-center gap-1 font-bold"><svg lucideHotel class="h-4 w-4 text-natural-accent"></svg>{{ i18n.isVi() ? 'Mẹo Nhận Khuyến Mãi Khách Sạn' : 'Hotel Saving Tip:' }}</h6>
+                  <h6 class="flex items-center gap-1 font-bold"><i class="bi bi-building h-4 w-4 text-natural-accent"></i>{{ i18n.isVi() ? 'Mẹo Nhận Khuyến Mãi Khách Sạn' : 'Hotel Saving Tip:' }}</h6>
                   <p class="mt-1 leading-relaxed text-stone-600">{{ i18n.isVi() ? 'Mã phòng đẹp giảm cực sâu khi được áp dụng cùng các lựa chọn khách sạn tiêu chuẩn di sản của VietCharm. Hãy cuộn xuống, bấm chọn phòng yêu thích và nhập mã giảm giá!' : 'Book beautiful properties with special rates. Choose any curated boutique hotel below and apply your coupon code during checkout!' }}</p>
-                  <button type="button" class="mt-2 block text-xs font-bold text-natural-accent underline" (click)="goHotels()">{{ i18n.isVi() ? 'Đến danh mục Khách sạn ngay →' : 'Navigate to Hotels list now →' }}</button>
+                  <button type="button" class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-natural-accent underline" (click)="goHotels()">
+                    <span>{{ i18n.isVi() ? 'Đến danh mục Khách sạn ngay' : 'Navigate to Hotels list now' }}</span>
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                  </button>
                 </div>
               </div>
             }
@@ -112,7 +121,10 @@
 
           <!-- Footer -->
           <div class="flex flex-wrap items-center justify-between gap-2 border-t border-natural-border bg-natural-cream p-4 text-center font-mono text-[10px] text-stone-400">
-            <button type="button" class="font-sans font-bold uppercase tracking-wide text-natural-accent underline underline-offset-2" (click)="goSupport()">{{ i18n.isVi() ? 'Xem chi tiết hỗ trợ →' : 'View full support details →' }}</button>
+            <button type="button" class="inline-flex items-center gap-1 font-sans font-bold uppercase tracking-wide text-natural-accent underline underline-offset-2" (click)="goSupport()">
+              <span>{{ i18n.isVi() ? 'Xem chi tiết hỗ trợ' : 'View full support details' }}</span>
+              <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
             <span>HOTLINE: 1900 5040</span>
           </div>
         </div>

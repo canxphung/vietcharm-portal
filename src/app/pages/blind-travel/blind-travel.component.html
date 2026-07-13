@@ -1,13 +1,13 @@
     <div class="relative w-full overflow-hidden border-y border-natural-border bg-natural-sand px-4 py-12 text-natural-text md:px-8">
       @if (alertMsg(); as msg) {
         <div class="fixed bottom-6 left-1/2 z-50 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-2 rounded-2xl border border-natural-border/20 bg-natural-text px-5 py-3 text-sm font-bold text-natural-sand shadow-2xl">
-          <svg lucideSparkles class="h-4 w-4 text-natural-gold"></svg><span>{{ msg }}</span>
+          <i class="bi bi-stars h-4 w-4 text-natural-gold"></i><span>{{ msg }}</span>
         </div>
       }
 
       <div class="mx-auto max-w-6xl space-y-10">
         <div class="mx-auto max-w-3xl space-y-3 text-center">
-          <div class="inline-flex items-center gap-1.5 rounded-full bg-natural-border-light px-3 py-1 text-[10px] font-black uppercase tracking-widest text-natural-accent"><svg lucideFlame class="h-3.5 w-3.5 text-amber-500"></svg><span>{{ isVi() ? 'HÀNH TRÌNH TRẢI NGHIỆM ẨN SỐ' : 'BLIND TRAVEL ESCAPADE' }}</span></div>
+          <div class="inline-flex items-center gap-1.5 rounded-full bg-natural-border-light px-3 py-1 text-[10px] font-black uppercase tracking-widest text-natural-accent"><i class="bi bi-fire h-3.5 w-3.5 text-amber-500"></i><span>{{ isVi() ? 'HÀNH TRÌNH TRẢI NGHIỆM ẨN SỐ' : 'BLIND TRAVEL ESCAPADE' }}</span></div>
           <h2 class="font-serif text-3xl font-black tracking-tight text-natural-text md:text-5xl">{{ isVi() ? 'Hành Trình Ẩn Số – Nhận Quà Từ Tương Lai' : 'Blind Travel – Unbox Your Surprise Escape' }}</h2>
           <p class="mx-auto max-w-2xl text-xs leading-relaxed text-natural-text/80 md:text-sm">{{ isVi() ? 'Thay vì tốn hàng chục tiếng so sánh giá phòng và đau đầu lên lịch trình, hãy nhập ngân sách, số ngày nghỉ và gu tận hưởng của bạn. VietCharm sẽ tự động sắp xếp xe riêng đưa đón khứ hồi cùng phòng Resort Heritage ẩn danh.' : 'Appealing to adventure-seekers and busy people tired of planning. Input your budget, length of stay, and preference guidelines. VietCharm reserves private roundtrip transfers and premium heritage secret stays.' }}</p>
         </div>
@@ -45,7 +45,7 @@
                   <label class="mb-1 block text-[11px] font-bold uppercase text-natural-accent">{{ isVi() ? 'Gu du lịch ưa thích (Vibe)' : 'Your Travel Vibe' }}</label>
                   <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     @for (opt of vibeOptions(); track opt.value) {
-                      <button type="button" [class]="'flex min-h-11 items-center gap-2 rounded-xl border px-3 text-left text-xs font-black transition ' + (vibe() === opt.value ? 'border-natural-accent bg-natural-accent text-white shadow-sm' : 'border-natural-border bg-natural-sand text-natural-text hover:bg-natural-beige')" (click)="vibe.set(opt.value)"><span aria-hidden="true">{{ opt.icon }}</span><span>{{ opt.label }}</span></button>
+                      <button type="button" [class]="'flex min-h-11 items-center gap-2 rounded-xl border px-3 text-left text-xs font-black transition ' + (vibe() === opt.value ? 'border-natural-accent bg-natural-accent text-white shadow-sm' : 'border-natural-border bg-natural-sand text-natural-text hover:bg-natural-beige')" (click)="vibe.set(opt.value)"><i [class]="'bi ' + opt.icon + ' shrink-0 text-base'" aria-hidden="true"></i><span>{{ opt.label }}</span></button>
                     }
                   </div>
                 </div>
@@ -57,10 +57,10 @@
                 </div>
               </div>
               <div class="pt-2">
-                <button type="submit" [disabled]="loading()" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-natural-accent py-4 font-serif font-black text-white shadow-xl transition duration-300 hover:bg-natural-olive disabled:opacity-50"><svg lucideSparkles class="h-4 w-4 text-amber-300"></svg><span>{{ isVi() ? 'LẬP TRÌNH CHUYẾN ĐI BẤT NGỜ' : 'COMPILE SURPRISE ORACLE' }}</span></button>
+                <button type="submit" [disabled]="loading()" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-natural-accent py-4 font-serif font-black text-white shadow-xl transition duration-300 hover:bg-natural-olive disabled:opacity-50"><i class="bi bi-stars h-4 w-4 text-amber-300"></i><span>{{ isVi() ? 'LẬP TRÌNH CHUYẾN ĐI BẤT NGỜ' : 'COMPILE SURPRISE ORACLE' }}</span></button>
               </div>
             </form>
-            <div class="mt-5 rounded-2xl border border-amber-200/40 bg-amber-50/50 p-3.5 text-[10px] leading-relaxed text-amber-900">💡 <strong>{{ isVi() ? 'Yếu tố lôi cuốn thế hệ trẻ:' : 'Why young explorers love this:' }}</strong> {{ isVi() ? 'Bạn sẽ không biết chính xác điểm đến của mình là đâu cho đến khi xe đón bạn khởi hành! Tuy nhiên, hệ thống sẽ gửi gợi ý chuẩn bị quần áo/trang phục trước 3 ngày để bạn chủ động chuẩn bị.' : 'You will remain blind to the exact destination until your pick-up time! Rest easy: a smart packaging guide arrives 3 days early to prepare your wardrobe perfectly.' }}</div>
+            <div class="mt-5 flex items-start gap-2 rounded-2xl border border-amber-200/40 bg-amber-50/50 p-3.5 text-[10px] leading-relaxed text-amber-900"><i class="bi bi-lightbulb shrink-0 text-sm" aria-hidden="true"></i><span><strong>{{ isVi() ? 'Yếu tố lôi cuốn thế hệ trẻ:' : 'Why young explorers love this:' }}</strong> {{ isVi() ? 'Bạn sẽ không biết chính xác điểm đến của mình là đâu cho đến khi xe đón bạn khởi hành! Tuy nhiên, hệ thống sẽ gửi gợi ý chuẩn bị quần áo/trang phục trước 3 ngày để bạn chủ động chuẩn bị.' : 'You will remain blind to the exact destination until your pick-up time! Rest easy: a smart packaging guide arrives 3 days early to prepare your wardrobe perfectly.' }}</span></div>
           </div>
 
           <!-- RIGHT -->
@@ -71,25 +71,25 @@
             @switch (stage()) {
               @case ('idle') {
                 <div class="max-w-sm space-y-4 text-center">
-                  <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-natural-border bg-natural-sand"><svg lucideGift class="h-10 w-10 animate-bounce text-natural-accent"></svg></div>
+                  <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-natural-border bg-natural-sand"><i class="bi bi-gift h-10 w-10 animate-bounce text-natural-accent"></i></div>
                   <h4 class="font-serif text-base font-black text-natural-text">{{ isVi() ? 'Hòm Quà Hành Trình Đang Chờ Đợi' : 'Mystery Escape Chest Awaiting' }}</h4>
                   <p class="text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Hãy điền ngân sách và sở thích ở khung bên trái. Hệ thống VietCharm sẽ gói gọn lộ trình di chuyển & nghỉ dưỡng hoàn mỹ trong hộp quà bí mật!' : 'Set your budget cap and preferred taste on the left. The compiler will seal your ride & luxury stay inside a glowing surprise envelope!' }}</p>
                 </div>
               }
               @case ('loading') {
                 <div class="max-w-md space-y-6 text-center">
-                  <div class="relative mx-auto h-16 w-16"><div class="absolute inset-0 rounded-full border-4 border-natural-accent/30"></div><div class="absolute inset-0 animate-spin rounded-full border-4 border-t-natural-accent"></div><svg lucideCompass class="absolute inset-0 m-auto h-6 w-6 animate-pulse text-natural-accent"></svg></div>
-                  <div class="space-y-2"><h4 class="animate-pulse font-serif text-xs font-black uppercase tracking-widest text-natural-accent">{{ isVi() ? 'Đang giữ chỗ và chuẩn bị gợi ý hành trình...' : 'Holding options and preparing your trip reveal...' }}</h4><p class="rounded-xl border border-natural-border bg-natural-sand px-4 py-2.5 font-mono text-[11px] text-natural-text/90">{{ loadingStep() }}</p></div>
+                  <div class="relative mx-auto h-16 w-16"><div class="absolute inset-0 rounded-full border-4 border-natural-accent/30"></div><div class="absolute inset-0 animate-spin rounded-full border-4 border-t-natural-accent"></div><i class="bi bi-compass absolute inset-0 m-auto h-6 w-6 animate-pulse text-natural-accent"></i></div>
+                  <div class="space-y-2"><h4 class="animate-pulse font-serif text-xs font-black uppercase tracking-widest text-natural-accent">{{ isVi() ? 'Đang giữ chỗ và chuẩn bị gợi ý hành trình...' : 'Holding options and preparing your trip reveal...' }}</h4><p class="flex items-center justify-center gap-2 rounded-xl border border-natural-border bg-natural-sand px-4 py-2.5 font-mono text-[11px] text-natural-text/90"><i [class]="'bi ' + loadingStepIcon() + ' shrink-0 text-natural-accent'" aria-hidden="true"></i><span>{{ loadingStep() }}</span></p></div>
                 </div>
               }
               @case ('sealed-box') {
                 <div class="max-w-sm space-y-6 text-center">
                   <div class="relative">
-                    <div class="mx-auto flex h-28 w-28 cursor-pointer items-center justify-center rounded-3xl bg-natural-accent text-white shadow-2xl transition hover:scale-105" (click)="openGift()"><svg lucideGift class="h-14 w-14 animate-pulse text-amber-300"></svg></div>
+                    <div class="mx-auto flex h-28 w-28 cursor-pointer items-center justify-center rounded-3xl bg-natural-accent text-white shadow-2xl transition hover:scale-105" (click)="openGift()"><i class="bi bi-gift h-14 w-14 animate-pulse text-amber-300"></i></div>
                     <div class="absolute -right-1 -top-1 animate-bounce rounded-full bg-amber-500 px-2 py-0.5 text-[9px] font-black uppercase text-white">Ready!</div>
                   </div>
-                  <div class="space-y-2"><h4 class="font-serif text-base font-black text-natural-text">{{ isVi() ? '🎁 Hộp Quà Ẩn Số Đã Khóa!' : '🎁 Your Secret Box is Sealed!' }}</h4><p class="text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Lá số chuyến đi bất ngờ đã được niêm phong an toàn. Hãy nhấp chuột vào chiếc hộp để mở bung và chiêm ngưỡng hành trình dành riêng cho bạn!' : 'The heritage algorithm has locked your special getaway. Click/Tap the unboxing envelope to tear open your golden surprise ticket!' }}</p></div>
-                  <button type="button" class="rounded-2xl bg-emerald-700 px-8 py-3.5 font-serif text-xs font-bold text-white shadow-md transition duration-300 hover:bg-emerald-800" (click)="openGift()">{{ isVi() ? '💥 MỞ TUNG QUÀ BẤT NGỜ' : '💥 TEAR OPEN SURPRISE GIFT' }}</button>
+                  <div class="space-y-2"><h4 class="flex items-center justify-center gap-2 font-serif text-base font-black text-natural-text"><i class="bi bi-gift text-natural-accent" aria-hidden="true"></i><span>{{ isVi() ? 'Hộp Quà Ẩn Số Đã Khóa!' : 'Your Secret Box is Sealed!' }}</span></h4><p class="text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Lá số chuyến đi bất ngờ đã được niêm phong an toàn. Hãy nhấp chuột vào chiếc hộp để mở bung và chiêm ngưỡng hành trình dành riêng cho bạn!' : 'The heritage algorithm has locked your special getaway. Click/Tap the unboxing envelope to tear open your golden surprise ticket!' }}</p></div>
+                  <button type="button" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-8 py-3.5 font-serif text-xs font-bold text-white shadow-md transition duration-300 hover:bg-emerald-800" (click)="openGift()"><i class="bi bi-stars" aria-hidden="true"></i><span>{{ isVi() ? 'MỞ TUNG QUÀ BẤT NGỜ' : 'TEAR OPEN SURPRISE GIFT' }}</span></button>
                 </div>
               }
               @case ('opened-gift') {
@@ -99,22 +99,22 @@
                       <div class="pointer-events-none absolute -right-4 -top-4 flex h-24 w-24 rotate-12 items-center justify-center rounded-full border-4 border-emerald-700/10"><span class="font-mono text-[10px] font-bold uppercase tracking-widest text-emerald-800/20">VietCharm Verified</span></div>
                       <div class="flex items-start justify-between gap-4">
                         <div>
-                          <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-800"><svg lucideCheckCircle class="h-3 w-3 text-emerald-700"></svg><span>{{ isVi() ? 'ĐÃ ĐỊNH VỊ THÀNH CÔNG!' : 'SECURED DESTINATION!' }}</span></span>
+                          <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-800"><i class="bi bi-check-circle h-3 w-3 text-emerald-700"></i><span>{{ isVi() ? 'ĐÃ ĐỊNH VỊ THÀNH CÔNG!' : 'SECURED DESTINATION!' }}</span></span>
                           <h4 class="mt-1.5 font-serif text-lg font-black leading-tight text-natural-text md:text-xl">{{ isVi() ? dest.regionVi : dest.regionEn }}</h4>
-                          <p class="mt-0.5 font-mono text-[10px] font-bold text-natural-accent">🚐 {{ isVi() ? dest.pickupVi : dest.pickupEn }}</p>
+                          <p class="mt-0.5 flex items-start gap-1.5 font-mono text-[10px] font-bold text-natural-accent"><i class="bi bi-car-front shrink-0" aria-hidden="true"></i><span>{{ isVi() ? dest.pickupVi : dest.pickupEn }}</span></p>
                         </div>
                         <div class="shrink-0 text-right"><span class="block text-[9px] font-black uppercase text-natural-accent">{{ isVi() ? 'TRỌN GÓI / KHÁCH' : 'NET BUNDLE PRICE' }}</span><span class="font-mono text-base font-black text-emerald-700">{{ budget() | number : '1.0-0' }}đ</span></div>
                       </div>
                       <div class="mt-4 grid grid-cols-1 gap-4 border-t border-natural-border pt-3 md:grid-cols-2">
-                        <div class="space-y-1"><span class="block text-[9px] font-black uppercase text-natural-accent">🏨 {{ isVi() ? 'Resort 5 Sao Ẩn Danh' : 'Luxury Stay Sealed' }}</span><p class="text-xs font-bold leading-relaxed text-natural-text/90">{{ isVi() ? dest.hotelVi : dest.hotelEn }}</p></div>
-                        <div class="space-y-1"><span class="block text-[9px] font-black uppercase text-amber-700">📆 {{ isVi() ? 'Lịch Khởi Hành' : 'Departure Slot' }}</span><p class="text-xs font-bold leading-relaxed text-natural-text/90">{{ days() }} {{ isVi() ? 'Ngày' : 'Days' }} • {{ departureDate() }} ({{ departureTime() }})</p></div>
+                        <div class="space-y-1"><span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-natural-accent"><i class="bi bi-building" aria-hidden="true"></i><span>{{ isVi() ? 'Resort 5 Sao Ẩn Danh' : 'Luxury Stay Sealed' }}</span></span><p class="text-xs font-bold leading-relaxed text-natural-text/90">{{ isVi() ? dest.hotelVi : dest.hotelEn }}</p></div>
+                        <div class="space-y-1"><span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-amber-700"><i class="bi bi-calendar3" aria-hidden="true"></i><span>{{ isVi() ? 'Lịch Khởi Hành' : 'Departure Slot' }}</span></span><p class="text-xs font-bold leading-relaxed text-natural-text/90">{{ days() }} {{ isVi() ? 'Ngày' : 'Days' }} • {{ departureDate() }} ({{ departureTime() }})</p></div>
                       </div>
                       <div class="mt-4 flex gap-3 rounded-2xl border border-natural-border bg-natural-border-light/50 p-3">
-                        <svg lucideShirt class="mt-0.5 h-5 w-5 shrink-0 text-natural-accent"></svg>
-                        <div><span class="block text-[9px] font-black uppercase text-natural-accent">👗 {{ isVi() ? 'Gợi Ý Chuẩn Bị Trang Phục (3 ngày trước khởi hành)' : 'Apparel Guidance (Sent 3 Days Early)' }}</span><p class="mt-0.5 text-[11px] leading-relaxed text-natural-text/80">{{ isVi() ? dest.packingVi : dest.packingEn }}</p></div>
+                        <i class="bi bi-person-standing mt-0.5 h-5 w-5 shrink-0 text-natural-accent"></i>
+                        <div><span class="block text-[9px] font-black uppercase text-natural-accent">{{ isVi() ? 'Gợi Ý Chuẩn Bị Trang Phục (3 ngày trước khởi hành)' : 'Apparel Guidance (Sent 3 Days Early)' }}</span><p class="mt-0.5 text-[11px] leading-relaxed text-natural-text/80">{{ isVi() ? dest.packingVi : dest.packingEn }}</p></div>
                       </div>
                       <div class="mt-4 space-y-2 border-t border-natural-border pt-3">
-                        <span class="block text-[9px] font-black uppercase text-natural-accent">🔮 {{ isVi() ? 'Lộ Trình Bất Ngờ Thiết Kế' : 'Surprise Itinerary Highlight Node' }}</span>
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase text-natural-accent"><i class="bi bi-stars" aria-hidden="true"></i><span>{{ isVi() ? 'Lộ Trình Bất Ngờ Thiết Kế' : 'Surprise Itinerary Highlight Node' }}</span></span>
                         <ul class="space-y-1.5 text-xs">
                           @for (day of (isVi() ? dest.itineraryVi : dest.itineraryEn); track day) {
                             <li class="flex items-start gap-2 text-natural-text/95"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-natural-accent"></span><span>{{ day }}</span></li>
@@ -123,9 +123,9 @@
                       </div>
                     </div>
                     <div class="flex flex-wrap justify-end gap-2">
-                      <button type="button" class="rounded-xl border border-natural-border bg-white px-5 py-3 text-xs font-bold text-natural-accent transition hover:bg-natural-sand" (click)="reset()">🔄 {{ isVi() ? 'Thiết lập lại' : 'Try Another' }}</button>
+                      <button type="button" class="inline-flex items-center gap-1.5 rounded-xl border border-natural-border bg-white px-5 py-3 text-xs font-bold text-natural-accent transition hover:bg-natural-sand" (click)="reset()"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i><span>{{ isVi() ? 'Thiết lập lại' : 'Try Another' }}</span></button>
                       <a routerLink="/" class="rounded-xl bg-slate-100 px-5 py-3 text-xs font-bold text-natural-text transition hover:bg-slate-200">{{ isVi() ? 'Quay lại' : 'Back Home' }}</a>
-                      <button type="button" class="flex items-center gap-1 rounded-xl bg-natural-accent px-6 py-3 font-serif text-xs font-black text-white shadow-md transition hover:bg-natural-olive" (click)="book()"><span>{{ isVi() ? 'Đặt Chuyến Đi Ngay' : 'Book Surprises Now' }}</span><svg lucideCar class="h-4 w-4 animate-pulse text-amber-300"></svg></button>
+                      <button type="button" class="flex items-center gap-1 rounded-xl bg-natural-accent px-6 py-3 font-serif text-xs font-black text-white shadow-md transition hover:bg-natural-olive" (click)="book()"><span>{{ isVi() ? 'Đặt Chuyến Đi Ngay' : 'Book Surprises Now' }}</span><i class="bi bi-car-front h-4 w-4 animate-pulse text-amber-300"></i></button>
                     </div>
                   </div>
                 }

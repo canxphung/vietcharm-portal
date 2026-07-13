@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { LucideCheckCircle2, LucideInfo, LucideX, LucideXCircle } from '@lucide/angular';
 import { ToastService, ToastType } from '@/services/toast.service';
 
 @Component({
   selector: 'app-toast-outlet',
   standalone: true,
-  imports: [NgClass, LucideCheckCircle2, LucideInfo, LucideX, LucideXCircle],
+  imports: [NgClass],
   templateUrl: './toast-outlet.component.html',
   styleUrl: './toast-outlet.component.css',
 })

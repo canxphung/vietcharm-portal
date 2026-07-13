@@ -6,8 +6,7 @@
           routerLink="/cart"
           class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-natural-accent transition hover:text-natural-olive"
         >
-          <svg lucideArrowLeft class="h-4 w-4"></svg
-          ><span>{{ isVi() ? 'Quay lại giỏ hàng' : 'Back to cart' }}</span>
+          <i class="bi bi-arrow-left h-4 w-4"></i><span>{{ isVi() ? 'Quay lại giỏ hàng' : 'Back to cart' }}</span>
         </a>
         <h1 class="text-3xl font-black tracking-tight text-natural-ink md:text-4xl">
           {{ isVi() ? 'Thanh toán' : 'Checkout' }}
@@ -20,7 +19,6 @@
           }}
         </p>
       </div>
-
       @if (paymentLoading()) {
         <div
           class="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-white/95 p-6 text-center backdrop-blur-xs"
@@ -29,10 +27,9 @@
             <div
               class="h-14 w-14 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"
             ></div>
-            <svg
-              lucideLock
-              class="absolute inset-0 m-auto h-5 w-5 animate-pulse text-emerald-500"
-            ></svg>
+            <i
+              class="bi bi-lock absolute inset-0 m-auto h-5 w-5 animate-pulse text-emerald-500"
+            ></i>
           </div>
           <h4 class="mt-6 text-sm font-black text-stone-900">
             {{ isVi() ? 'Đang xử lý thanh toán...' : 'Processing payment...' }}
@@ -44,7 +41,6 @@
           </p>
         </div>
       }
-
       <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         <!-- Order summary -->
         <section class="space-y-4">
@@ -54,7 +50,7 @@
             </h2>
             @if (items().length === 0) {
               <div class="space-y-3 py-8 text-center">
-                <svg lucideTicket class="mx-auto h-10 w-10 text-stone-300"></svg>
+                <i class="bi bi-ticket-perforated mx-auto h-10 w-10 text-stone-300"></i>
                 <p class="text-xs text-stone-500">
                   {{ isVi() ? 'Không có dịch vụ nào được chọn.' : 'No selected services.' }}
                 </p>
@@ -90,11 +86,10 @@
               </ul>
             }
           </div>
-
           <div
             class="flex gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-xs leading-relaxed text-emerald-800"
           >
-            <svg lucideCheckCircle2 class="h-5 w-5 shrink-0 text-emerald-600"></svg>
+            <i class="bi bi-check-circle h-5 w-5 shrink-0 text-emerald-600"></i>
             <p>
               {{
                 isVi()
@@ -104,14 +99,12 @@
             </p>
           </div>
         </section>
-
         <!-- Payment panel -->
         <aside
           class="h-fit space-y-4 rounded-2xl border border-natural-border bg-white p-5 shadow-xs lg:sticky lg:top-32"
         >
           <!-- Voucher -->
           <app-voucher-picker />
-
           <!-- Pricing summary -->
           <div
             class="space-y-1.5 rounded-2xl border border-amber-200/50 bg-amber-500/5 p-4 text-xs font-medium"
@@ -143,23 +136,18 @@
               >
             </div>
           </div>
-
           <!-- Gateway -->
           <div class="grid grid-cols-3 gap-2">
             <button type="button" [class]="gatewayClass('visa')" (click)="gateway.set('visa')">
-              <svg lucideCreditCard class="h-5 w-5 text-amber-700"></svg
-              ><span class="text-[10px] font-bold">Thẻ Quốc Tế</span>
+              <i class="bi bi-credit-card h-5 w-5 text-amber-700"></i><span class="text-[10px] font-bold">Thẻ Quốc Tế</span>
             </button>
             <button type="button" [class]="gatewayClass('vnpay')" (click)="gateway.set('vnpay')">
-              <svg lucideQrCode class="h-5 w-5 text-blue-700"></svg
-              ><span class="text-[10px] font-bold">VNPAY QR</span>
+              <i class="bi bi-qr-code h-5 w-5 text-blue-700"></i><span class="text-[10px] font-bold">VNPAY QR</span>
             </button>
             <button type="button" [class]="gatewayClass('momo')" (click)="gateway.set('momo')">
-              <svg lucideSmartphone class="h-5 w-5 text-pink-700"></svg
-              ><span class="text-[10px] font-bold">Ví MoMo</span>
+              <i class="bi bi-phone h-5 w-5 text-pink-700"></i><span class="text-[10px] font-bold">Ví MoMo</span>
             </button>
           </div>
-
           <form class="space-y-3" (ngSubmit)="submitPayment()">
             @if (gateway() === 'visa') {
               <div class="space-y-2.5">
@@ -221,10 +209,9 @@
               <div
                 class="space-y-2 rounded-xl border border-stone-150 bg-stone-50 py-4 text-center"
               >
-                <svg
-                  lucideSmartphone
-                  class="mx-auto h-8 w-8 animate-bounce text-natural-bronze"
-                ></svg>
+                <i
+                  class="bi bi-phone mx-auto h-8 w-8 animate-bounce text-natural-bronze"
+                ></i>
                 <h5 class="text-xs font-bold text-stone-900">
                   {{ isVi() ? 'Cổng quét QR chuyển khoản tức thì' : 'Instant Scan Code Dispatch' }}
                 </h5>
@@ -237,7 +224,6 @@
                 </p>
               </div>
             }
-
             @if (hasVehicleItem()) {
               <div class="space-y-1.5 rounded-xl border border-amber-200 bg-amber-50/50 p-3">
                 <label
@@ -268,7 +254,6 @@
                 }
               </div>
             }
-
             @if (paymentError()) {
               <p
                 class="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-[11px] font-bold leading-relaxed text-red-700"
@@ -277,14 +262,12 @@
                 {{ paymentError() }}
               </p>
             }
-
             <button
               type="submit"
               [disabled]="items().length === 0 || paymentLoading()"
               class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-center text-xs font-black text-white shadow-md transition hover:bg-emerald-600 disabled:opacity-50"
             >
-              <svg lucideLock class="h-4 w-4"></svg
-              ><span>{{
+              <i class="bi bi-lock h-4 w-4"></i><span>{{
                 (isVi() ? 'XÁC NHẬN THANH TOÁN ' : 'CONFIRM PAYMENT ') +
                   (payableAmount() | number: '1.0-0') +
                   ' đ'
@@ -294,13 +277,12 @@
         </aside>
       </div>
     }
-
     @if (step() === 'success') {
       <div class="mx-auto max-w-lg space-y-6 py-8 text-center">
         <div
           class="mx-auto flex h-16 w-16 animate-bounce items-center justify-center rounded-full border-2 border-emerald-300 bg-emerald-100 text-emerald-600 shadow-lg"
         >
-          <svg lucideCheckCircle2 class="h-10 w-10"></svg>
+          <i class="bi bi-check-circle h-10 w-10"></i>
         </div>
         <div>
           <h1 class="text-2xl font-black tracking-tight text-emerald-600 md:text-3xl">
@@ -310,7 +292,6 @@
             {{ isVi() ? 'Mã số đặt chỗ: ' + bookingRef() : 'Booking reference: ' + bookingRef() }}
           </p>
         </div>
-
         <div
           class="relative mx-auto max-w-sm rounded-2xl border-2 border-dashed border-amber-300 bg-[#FAF9F5] p-6 text-left shadow-md"
         >
@@ -323,7 +304,7 @@
                 isVi() ? 'Mạng đối tác VietCharm' : 'VietCharm partner network'
               }}</span>
             </div>
-            <svg lucideTicket class="h-5 w-5 text-amber-500"></svg>
+            <i class="bi bi-ticket-perforated h-5 w-5 text-amber-500"></i>
           </div>
           <div class="space-y-3.5 text-xs">
             <div>
@@ -333,7 +314,7 @@
               <div class="mt-1 space-y-1 text-[11px] font-medium text-stone-700">
                 @for (item of completedItems(); track item.cartKey || item.id) {
                   <div class="flex justify-between">
-                    <span class="line-clamp-1 max-w-[200px]">● {{ item.name }}</span
+                    <span class="line-clamp-1 flex max-w-[200px] items-center gap-1"><i class="bi bi-circle-fill h-2 w-2"></i>{{ item.name }}</span
                     ><span class="font-mono font-bold text-stone-900">x{{ item.quantity }}</span>
                   </div>
                 }
@@ -345,8 +326,7 @@
                   isVi() ? 'TRẠNG THÁI' : 'STATUS'
                 }}</span
                 ><span class="mt-0.5 flex items-center gap-0.5 font-black text-emerald-600"
-                  ><svg lucideLock class="h-3.5 w-3.5"></svg
-                  >{{ isVi() ? 'ĐÃ XÁC NHẬN' : 'CONFIRMED' }}</span
+                  ><i class="bi bi-lock h-3.5 w-3.5"></i>{{ isVi() ? 'ĐÃ XÁC NHẬN' : 'CONFIRMED' }}</span
                 >
               </div>
               <div>
@@ -360,7 +340,6 @@
             </div>
           </div>
         </div>
-
         <div class="mx-auto flex max-w-sm gap-4 pt-2">
           <button
             type="button"

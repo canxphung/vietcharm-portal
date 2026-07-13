@@ -1,21 +1,5 @@
 import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  LucideAward,
-  LucideBookOpen,
-  LucideCheck,
-  LucideCheckSquare,
-  LucideCompass,
-  LucideCopy,
-  LucideGift,
-  LucideHelpCircle,
-  LucideHotel,
-  LucideMapPin,
-  LucideShoppingBag,
-  LucideSparkles,
-  LucideUsers,
-  LucideX,
-} from '@lucide/angular';
 import { I18nService } from '@/services/i18n.service';
 import { UiStateService } from '@/services/ui-state.service';
 
@@ -23,20 +7,6 @@ import { UiStateService } from '@/services/ui-state.service';
   selector: 'app-help-promo',
   standalone: true,
   imports: [
-    LucideAward,
-    LucideBookOpen,
-    LucideCheck,
-    LucideCheckSquare,
-    LucideCompass,
-    LucideCopy,
-    LucideGift,
-    LucideHelpCircle,
-    LucideHotel,
-    LucideMapPin,
-    LucideShoppingBag,
-    LucideSparkles,
-    LucideUsers,
-    LucideX,
   ],
   templateUrl: './help-promo.component.html',
   styleUrl: './help-promo.component.css',

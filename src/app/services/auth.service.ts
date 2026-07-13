@@ -50,15 +50,18 @@ export class AuthService {
     this.usersRes.reload();
   }
 
-  async updatePasswordByEmail(email: string, password: string): Promise<boolean> {
-    const normalized = email.trim().toLowerCase();
-    const target = this.users().find((user) => user.email.toLowerCase() === normalized);
+  /** Reset password by Gmail OR phone number (the forgot-password flow accepts either). */
+  async updatePasswordByContact(contact: string, password: string): Promise<boolean> {
+    const normalized = contact.trim().toLowerCase();
+    const target = this.users().find(
+      (user) => user.email.toLowerCase() === normalized || user.phone === contact.trim(),
+    );
     if (!target) return false;
 
     await firstValueFrom(this.http.patch(`/api/users/${target.id}`, { password }));
     this.usersRes.reload();
     const current = this.currentUser();
-    if (current?.email.toLowerCase() === normalized) {
+    if (current?.id === target.id) {
       this.currentUser.set({ ...current, password });
     }
     return true;

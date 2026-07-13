@@ -7,7 +7,7 @@
 
       @if (submittedCode(); as code) {
         <div class="space-y-2 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50 p-5 text-center text-xs text-emerald-800">
-          <p class="text-sm font-bold">🎉 {{ i18n.isVi() ? 'Đăng ký đề xuất hợp tác thành công!' : 'Partnership Submission Success!' }}</p>
+          <p class="inline-flex items-center justify-center gap-1.5 text-sm font-bold"><i class="bi bi-check-circle-fill h-4 w-4" aria-hidden="true"></i>{{ i18n.isVi() ? 'Đăng ký đề xuất hợp tác thành công!' : 'Partnership Submission Success!' }}</p>
           <p>{{ i18n.isVi() ? 'Hồ sơ đã được gửi đến Bộ phận Quản trị VietCharm.' : 'Your request has been sent to the VietCharm review team.' }}</p>
           <p class="font-mono font-black text-stone-800">{{ i18n.isVi() ? 'Mã số hồ sơ theo dõi:' : 'Application Tracking Code:' }} {{ code }}</p>
           <p class="text-[10px] italic text-stone-500">{{ i18n.isVi() ? 'Bạn có thể xem trạng thái xét duyệt trực tiếp tại Hồ sơ cá nhân của mình hoặc liên hệ Hotline.' : 'Monitor application status live in your Profile.' }}</p>
@@ -16,7 +16,7 @@
 
       <div class="grid grid-cols-1 items-stretch gap-8 md:grid-cols-3">
         <form class="space-y-4 rounded-3xl border border-natural-border bg-white p-6 text-xs shadow-xs md:col-span-2" (ngSubmit)="submit()">
-          <h3 class="flex items-center gap-1.5 border-b border-natural-border pb-2 font-serif text-base font-bold uppercase text-stone-800"><svg lucideClipboardList class="h-5 w-5 text-amber-500"></svg><span>{{ i18n.isVi() ? 'Đơn Đăng Ký Đối Tác' : 'Partnership Form' }}</span></h3>
+          <h3 class="flex items-center gap-1.5 border-b border-natural-border pb-2 font-serif text-base font-bold uppercase text-stone-800"><i class="bi bi-clipboard2-data h-5 w-5 text-amber-500"></i><span>{{ i18n.isVi() ? 'Đơn Đăng Ký Đối Tác' : 'Partnership Form' }}</span></h3>
           <div class="grid grid-cols-2 gap-3">
             <div><label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Tên Đơn vị / Thương hiệu' : 'Brand/Company Name' }}</label><input type="text" class="pf-input" [ngModel]="brandName()" (ngModelChange)="brandName.set($event)" name="brand" placeholder="Ex: Đò gỗ Sông Hoài Lan" required /></div>
             <div><label class="mb-1 block font-bold uppercase text-stone-600">{{ i18n.isVi() ? 'Người đại diện liên hệ' : 'Contact Person' }}</label><input type="text" class="pf-input" [ngModel]="contactName()" (ngModelChange)="contactName.set($event)" name="contact" placeholder="Ex: Nguyễn Văn A" required /></div>
@@ -43,13 +43,13 @@
           <div class="space-y-4">
             <h4 class="border-b border-natural-border pb-2 font-serif text-sm font-bold uppercase text-natural-accent">{{ i18n.isVi() ? 'Đặc quyền đối tác VietCharm' : 'Merchant Alliance Benefits' }}</h4>
             <div class="space-y-3 leading-relaxed">
-              <div class="flex gap-2"><span class="font-black text-amber-500">✦</span><p><strong>{{ i18n.isVi() ? 'Quảng bá không biên giới:' : 'Global Visibility:' }}</strong> {{ i18n.isVi() ? 'Tiếp cận hàng chục ngàn lượt khách du lịch tìm lịch trình AI của VietCharm hàng tháng.' : 'Showcase your local catalog to tech-forward tourists.' }}</p></div>
-              <div class="flex gap-2"><span class="font-black text-amber-500">✦</span><p><strong>{{ i18n.isVi() ? 'Phí chiết khấu cực thấp:' : 'Low Commission:' }}</strong> {{ i18n.isVi() ? 'VietCharm duy trì mức phí sàn chỉ 5-8% hỗ trợ bà con và doanh nghiệp phát triển bền vững.' : 'We cap platform fees at only 5-8% to support regional communities.' }}</p></div>
-              <div class="flex gap-2"><span class="font-black text-amber-500">✦</span><p><strong>{{ i18n.isVi() ? 'Công cụ Quản trị thông minh:' : 'Sleek Dashboard:' }}</strong> {{ i18n.isVi() ? 'Hệ thống tự động đồng bộ đơn đặt chỗ, thông báo thẻ vé thời gian thực chuẩn xác.' : 'Get instant digital orders with direct verification screens.' }}</p></div>
+              <div class="flex gap-2"><i class="bi bi-stars h-3.5 w-3.5 shrink-0 text-amber-500" aria-hidden="true"></i><p><strong>{{ i18n.isVi() ? 'Quảng bá không biên giới:' : 'Global Visibility:' }}</strong> {{ i18n.isVi() ? 'Tiếp cận hàng chục ngàn lượt khách du lịch tìm lịch trình AI của VietCharm hàng tháng.' : 'Showcase your local catalog to tech-forward tourists.' }}</p></div>
+              <div class="flex gap-2"><i class="bi bi-stars h-3.5 w-3.5 shrink-0 text-amber-500" aria-hidden="true"></i><p><strong>{{ i18n.isVi() ? 'Phí chiết khấu cực thấp:' : 'Low Commission:' }}</strong> {{ i18n.isVi() ? 'VietCharm duy trì mức phí sàn chỉ 5-8% hỗ trợ bà con và doanh nghiệp phát triển bền vững.' : 'We cap platform fees at only 5-8% to support regional communities.' }}</p></div>
+              <div class="flex gap-2"><i class="bi bi-stars h-3.5 w-3.5 shrink-0 text-amber-500" aria-hidden="true"></i><p><strong>{{ i18n.isVi() ? 'Công cụ Quản trị thông minh:' : 'Sleek Dashboard:' }}</strong> {{ i18n.isVi() ? 'Hệ thống tự động đồng bộ đơn đặt chỗ, thông báo thẻ vé thời gian thực chuẩn xác.' : 'Get instant digital orders with direct verification screens.' }}</p></div>
             </div>
           </div>
           <div class="rounded-xl border border-amber-200 bg-amber-50/50 p-3">
-            <p class="flex items-center gap-1 font-semibold text-natural-accent"><svg lucideInfo class="h-3.5 w-3.5 text-amber-500"></svg>{{ i18n.isVi() ? 'Cam kết bảo mật:' : 'Data Privacy:' }}</p>
+            <p class="flex items-center gap-1 font-semibold text-natural-accent"><i class="bi bi-info-circle h-3.5 w-3.5 text-amber-500"></i>{{ i18n.isVi() ? 'Cam kết bảo mật:' : 'Data Privacy:' }}</p>
             <p class="mt-1 leading-snug text-stone-500">{{ i18n.isVi() ? 'Mọi thông tin liên hệ và giấy phép được VietCharm bảo mật tối mật theo quy định lữ hành.' : 'Your submission remains strictly confidential.' }}</p>
           </div>
         </div>
