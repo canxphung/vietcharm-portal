@@ -40,12 +40,13 @@ router.post('/:id/reviews', async (req, res) => {
     const place = await NearbyPlaceModel.findById(req.params.id);
     if (!place) return res.status(404).json({ message: 'Nearby place not found' });
 
+    const previousReviewCount = place.totalReviews;
+    const previousRatingTotal = place.rating * previousReviewCount;
     place.reviews.unshift(review);
+    place.totalReviews = previousReviewCount + 1;
     place.rating = Number(
-      (place.reviews.reduce((sum: number, item: { rating: number }) => sum + item.rating, 0) /
-        place.reviews.length).toFixed(1),
+      ((previousRatingTotal + Number(review.rating)) / place.totalReviews).toFixed(1),
     );
-    place.totalReviews = place.reviews.length;
     await place.save();
     res.status(201).json(place);
   } catch (error) {

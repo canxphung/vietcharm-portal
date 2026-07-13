@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.content-state {
+  min-height: 22rem;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #ded6c7;
+  border-radius: 1rem;
+  background: #fffdf8;
+  color: #8a8173;
+  font-size: 0.75rem;
+  font-weight: 700;
+}

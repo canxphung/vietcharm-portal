@@ -1,4 +1,4 @@
-import { Schema, model, models } from 'mongoose';
+import { Schema, model, models, type Model } from 'mongoose';
 import { idTransform } from '../toJsonId';
 
 export interface HandbookEntryDocument {
@@ -32,5 +32,6 @@ const handbookEntrySchema = new Schema<HandbookEntryDocument>(
   },
 );
 
-export const HandbookEntryModel =
-  models['HandbookEntry'] || model<HandbookEntryDocument>('HandbookEntry', handbookEntrySchema);
+export const HandbookEntryModel: Model<HandbookEntryDocument> =
+  (models['HandbookEntry'] as Model<HandbookEntryDocument> | undefined) ||
+  model<HandbookEntryDocument>('HandbookEntry', handbookEntrySchema);

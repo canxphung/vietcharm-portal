@@ -1,4 +1,4 @@
-import { Schema, model, models } from 'mongoose';
+import { Schema, model, models, type Model } from 'mongoose';
 import { idTransform } from '../toJsonId';
 
 const supportSectionSchema = new Schema(
@@ -21,7 +21,21 @@ const supportFaqSchema = new Schema(
   { _id: false },
 );
 
-const supportPageSchema = new Schema(
+export interface SupportPageDocument {
+  _id: string;
+  order: number;
+  group: 'support' | 'about';
+  groupVi: string;
+  groupEn: string;
+  titleVi: string;
+  titleEn: string;
+  introVi: string;
+  introEn: string;
+  sections: Array<{ headingVi: string; headingEn: string; bodyVi: string; bodyEn: string }>;
+  faqs: Array<{ qVi: string; qEn: string; aVi: string; aEn: string }>;
+}
+
+const supportPageSchema = new Schema<SupportPageDocument>(
   {
     _id: { type: String, required: true },
     order: { type: Number, required: true, min: 0 },
@@ -42,4 +56,6 @@ const supportPageSchema = new Schema(
   },
 );
 
-export const SupportPageModel = models['SupportPage'] || model('SupportPage', supportPageSchema);
+export const SupportPageModel: Model<SupportPageDocument> =
+  (models['SupportPage'] as Model<SupportPageDocument> | undefined) ||
+  model<SupportPageDocument>('SupportPage', supportPageSchema);

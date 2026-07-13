@@ -1,12 +1,7 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { HttpClient, httpResource } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import type {
-  HandbookEntry,
-  NearbyPlace,
-  NearbyPlaceReview,
-  SupportTopic,
-} from '@/types';
+import type { HandbookEntry, NearbyPlace, NearbyPlaceReview, SupportTopic } from '@/types';
 
 @Injectable({ providedIn: 'root' })
 export class ContentService {
@@ -24,9 +19,12 @@ export class ContentService {
   readonly nearbyPlaces = computed(() => this.nearbyPlacesResource.value());
   readonly nearbyPlacesLoading = computed(() => this.nearbyPlacesResource.isLoading());
 
-  private readonly supportTopicsResource = httpResource<SupportTopic[]>(() => '/api/support-pages', {
-    defaultValue: [],
-  });
+  private readonly supportTopicsResource = httpResource<SupportTopic[]>(
+    () => '/api/support-pages',
+    {
+      defaultValue: [],
+    },
+  );
   readonly supportTopics = computed(() => this.supportTopicsResource.value());
   readonly supportTopicsLoading = computed(() => this.supportTopicsResource.isLoading());
 

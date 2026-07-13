@@ -1,4 +1,4 @@
-import { Schema, model, models } from 'mongoose';
+import { Schema, model, models, type Model } from 'mongoose';
 import { idTransform } from '../toJsonId';
 
 const nearbyReviewSchema = new Schema(
@@ -13,7 +13,34 @@ const nearbyReviewSchema = new Schema(
   { _id: false },
 );
 
-const nearbyPlaceSchema = new Schema(
+export interface NearbyPlaceDocument {
+  _id: string;
+  order: number;
+  nameVi: string;
+  nameEn: string;
+  categoryVi: string;
+  categoryEn: string;
+  descriptionVi: string;
+  descriptionEn: string;
+  distance: string;
+  duration: string;
+  coordinates: { x: number; y: number };
+  images: string[];
+  reviews: Array<{
+    id: string;
+    author: string;
+    avatar: string;
+    rating: number;
+    date: string;
+    comment: string;
+  }>;
+  rating: number;
+  totalReviews: number;
+  historyVi: string;
+  historyEn: string;
+}
+
+const nearbyPlaceSchema = new Schema<NearbyPlaceDocument>(
   {
     _id: { type: String, required: true },
     order: { type: Number, required: true, min: 0 },
@@ -43,4 +70,6 @@ const nearbyPlaceSchema = new Schema(
   },
 );
 
-export const NearbyPlaceModel = models['NearbyPlace'] || model('NearbyPlace', nearbyPlaceSchema);
+export const NearbyPlaceModel: Model<NearbyPlaceDocument> =
+  (models['NearbyPlace'] as Model<NearbyPlaceDocument> | undefined) ||
+  model<NearbyPlaceDocument>('NearbyPlace', nearbyPlaceSchema);

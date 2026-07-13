@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ContentService } from '@/services/content.service';
 import { I18nService } from '@/services/i18n.service';
 
@@ -10,11 +10,13 @@ import { I18nService } from '@/services/i18n.service';
   styleUrl: './handbook.component.css',
 })
 export class HandbookComponent {
+  private readonly content = inject(ContentService);
   readonly activeTab = signal('history');
   readonly entries = this.content.handbookEntries;
   readonly loading = this.content.handbookLoading;
   readonly active = computed(
-    () => this.entries().find((entry) => entry.id === this.activeTab()) ?? this.entries()[0] ?? null,
+    () =>
+      this.entries().find((entry) => entry.id === this.activeTab()) ?? this.entries()[0] ?? null,
   );
   readonly tabs = computed(() =>
     this.entries().map((entry) => ({
@@ -23,8 +25,5 @@ export class HandbookComponent {
     })),
   );
 
-  constructor(
-    readonly i18n: I18nService,
-    private readonly content: ContentService,
-  ) {}
+  constructor(readonly i18n: I18nService) {}
 }
