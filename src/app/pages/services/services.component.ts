@@ -9,7 +9,6 @@ import {
   LucideArrowRight,
   LucideArrowUpDown,
   LucideCalendarDays,
-  LucideCheck,
   LucideChevronDown,
   LucideCompass,
   LucideHeart,
@@ -65,16 +64,6 @@ const CATEGORY_PATTERNS: Record<string, RegExp> = {
 
 const LIVE_PROVINCE_ID = 'quang-nam';
 
-type SortValue =
-  'default' | 'promotion' | 'price-asc' | 'price-desc' | 'rating-desc' | 'reviews-desc';
-
-interface SortOption {
-  value: SortValue;
-  label: string;
-  description: string;
-  mark: string;
-}
-
 @Component({
   selector: 'app-services-page',
   standalone: true,
@@ -86,7 +75,6 @@ interface SortOption {
     LucideArrowLeft,
     LucideArrowUpDown,
     LucideCalendarDays,
-    LucideCheck,
     LucideChevronDown,
     LucideHotel,
     LucideMapPin,
@@ -114,8 +102,9 @@ export class ServicesComponent {
   readonly tabs = SERVICE_TABS;
   readonly query = signal('');
   readonly province = signal('all');
-  readonly sortBy = signal<SortValue>('default');
-  readonly sortOpen = signal(false);
+  readonly sortBy = signal<
+    'default' | 'promotion' | 'price-asc' | 'price-desc' | 'rating-desc' | 'reviews-desc'
+  >('default');
   readonly category = signal('all');
   readonly minRating = signal(0);
   readonly priceMaxLimit = 50000000;
@@ -316,62 +305,6 @@ export class ServicesComponent {
       { value: 4.5, label: vi ? '4.5★ trở lên' : '4.5★ & up' },
       { value: 4.8, label: vi ? '4.8★ trở lên' : '4.8★ & up' },
     ];
-  }
-
-  sortOptions(): SortOption[] {
-    const vi = this.i18n.isVi();
-    const options: SortOption[] = [
-      {
-        value: 'default',
-        label: vi ? 'Mặc định phổ biến' : 'Popularity / Default',
-        description: vi ? 'Gợi ý cân bằng dành cho bạn' : 'A balanced recommendation for you',
-        mark: '↗',
-      },
-      {
-        value: 'promotion',
-        label: vi ? 'Khuyến mãi tốt nhất' : 'Best promotions',
-        description: vi ? 'Ưu tiên dịch vụ có mức giảm cao' : 'Prioritize the deepest discounts',
-        mark: '%',
-      },
-      {
-        value: 'price-asc',
-        label: vi ? 'Giá tiền: Thấp đến Cao' : 'Price: Low to High',
-        description: vi ? 'Xem lựa chọn tiết kiệm trước' : 'Show budget-friendly options first',
-        mark: '₫↑',
-      },
-      {
-        value: 'price-desc',
-        label: vi ? 'Giá tiền: Cao đến Thấp' : 'Price: High to Low',
-        description: vi ? 'Xem lựa chọn cao cấp trước' : 'Show premium options first',
-        mark: '₫↓',
-      },
-      {
-        value: 'rating-desc',
-        label: vi ? 'Đánh giá: Cao nhất' : 'Rating: Top Rated',
-        description: vi ? 'Điểm đánh giá cao xếp trước' : 'Highest customer ratings first',
-        mark: '★',
-      },
-      {
-        value: 'reviews-desc',
-        label: vi ? 'Phổ biến nhất (Nhiều đánh giá)' : 'Most Reviewed',
-        description: vi ? 'Dịch vụ được nhiều khách chọn' : 'Most trusted by other travelers',
-        mark: '♥',
-      },
-    ];
-
-    if (!this.promotionMode() && this.activeTab() === 'attractions') {
-      return options.filter(
-        (option) => option.value !== 'price-asc' && option.value !== 'price-desc',
-      );
-    }
-    return options;
-  }
-
-  selectedSortLabel(): string {
-    return (
-      this.sortOptions().find((option) => option.value === this.sortBy())?.label ??
-      (this.i18n.isVi() ? 'Mặc định phổ biến' : 'Popularity / Default')
-    );
   }
 
   activityCategories(): Array<{ id: string; label: string }> {
@@ -633,21 +566,15 @@ export class ServicesComponent {
   }
 
   setTab(tab: ServiceTab): void {
-    if (
-      tab === 'attractions' &&
-      (this.sortBy() === 'price-asc' || this.sortBy() === 'price-desc')
-    ) {
-      this.sortBy.set('default');
-    }
-    this.sortOpen.set(false);
     void this.router.navigate(['/services'], {
       queryParams: { tab, province: this.province(), promotion: null },
     });
   }
 
-  updateSort(value: SortValue): void {
+  updateSort(
+    value: 'default' | 'promotion' | 'price-asc' | 'price-desc' | 'rating-desc' | 'reviews-desc',
+  ): void {
     this.sortBy.set(value);
-    this.sortOpen.set(false);
   }
 
   clearPromotion(): void {

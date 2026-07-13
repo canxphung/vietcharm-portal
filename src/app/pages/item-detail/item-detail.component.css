@@ -17,6 +17,12 @@
   color: var(--color-natural-accent);
   border-color: var(--color-natural-accent);
 }
+.stepper:disabled {
+  cursor: not-allowed;
+  border-color: var(--color-natural-border);
+  color: rgb(168 162 158);
+  opacity: 0.45;
+}
 
 .gallery-lightbox {
   position: fixed;

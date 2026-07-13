@@ -517,6 +517,55 @@
                     />
                   </div>
                 </div>
+
+                @if (item.type === 'hotel') {
+                  <div
+                    class="flex items-center justify-between gap-4 rounded-2xl border border-natural-border bg-natural-cream p-3"
+                  >
+                    <div class="min-w-0">
+                      <span
+                        class="block text-[10px] font-black uppercase tracking-wider text-stone-600"
+                        >{{ isVi() ? 'Số lượng phòng' : 'Number of rooms' }}</span
+                      >
+                      <small class="mt-1 block text-[10px] leading-relaxed text-stone-400">
+                        {{
+                          isVi()
+                            ? 'Chọn từ 1 đến ' + maxRooms + ' phòng'
+                            : 'Choose between 1 and ' + maxRooms + ' rooms'
+                        }}
+                      </small>
+                    </div>
+                    <div
+                      class="flex flex-none items-center gap-2 rounded-xl border border-natural-border bg-white p-1.5"
+                      role="group"
+                      [attr.aria-label]="isVi() ? 'Chọn số lượng phòng' : 'Choose room quantity'"
+                    >
+                      <button
+                        type="button"
+                        class="stepper"
+                        [disabled]="roomsCount() <= 1"
+                        [attr.aria-label]="isVi() ? 'Giảm một phòng' : 'Remove one room'"
+                        (click)="adjustRooms(-1)"
+                      >
+                        −
+                      </button>
+                      <span
+                        class="min-w-12 text-center font-mono text-xs font-black text-natural-ink"
+                        aria-live="polite"
+                        >{{ roomsCount() }} {{ isVi() ? 'phòng' : 'room' }}</span
+                      >
+                      <button
+                        type="button"
+                        class="stepper"
+                        [disabled]="roomsCount() >= maxRooms"
+                        [attr.aria-label]="isVi() ? 'Thêm một phòng' : 'Add one room'"
+                        (click)="adjustRooms(1)"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                }
               } @else {
                 <div class="space-y-2">
                   <label

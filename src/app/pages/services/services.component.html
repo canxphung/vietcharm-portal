@@ -706,72 +706,38 @@
                 <span class="filter-count">{{ activeFilterCount() }}</span>
               }
             </button>
-            <div class="sort-menu-wrap" (keydown.escape)="sortOpen.set(false)">
-              <button
-                type="button"
-                class="sort-control"
-                [class.sort-control-open]="sortOpen()"
-                [attr.aria-expanded]="sortOpen()"
-                aria-haspopup="listbox"
-                (click)="sortOpen.set(!sortOpen())"
+            <label class="sort-control">
+              <span
+                class="hidden text-[10px] font-black uppercase tracking-wide text-stone-400 xl:inline"
+                >{{ i18n.isVi() ? 'Sắp xếp theo' : 'Sort by' }}</span
               >
-                <span class="sort-control-label">{{
-                  i18n.isVi() ? 'Sắp xếp theo' : 'Sort by'
-                }}</span>
-                <svg lucideArrowUpDown class="sort-control-icon h-3.5 w-3.5"></svg>
-                <strong>{{ selectedSortLabel() }}</strong>
-                <svg
-                  lucideChevronDown
-                  class="sort-control-chevron h-3.5 w-3.5"
-                  [class.rotate-180]="sortOpen()"
-                ></svg>
-              </button>
-
-              @if (sortOpen()) {
-                <button
-                  type="button"
-                  class="sort-menu-dismiss"
-                  tabindex="-1"
-                  aria-hidden="true"
-                  (click)="sortOpen.set(false)"
-                ></button>
-                <div
-                  class="sort-popover anim-pop"
-                  role="listbox"
-                  [attr.aria-label]="i18n.isVi() ? 'Chọn cách sắp xếp' : 'Choose sorting'"
-                >
-                  <div class="sort-popover-head">
-                    <span>{{ i18n.isVi() ? 'Sắp xếp kết quả' : 'Sort results' }}</span>
-                    <small>{{
-                      i18n.isVi() ? 'Chọn cách bạn muốn xem' : 'Choose how to browse'
-                    }}</small>
-                  </div>
-                  <div class="sort-popover-options">
-                    @for (option of sortOptions(); track option.value) {
-                      <button
-                        type="button"
-                        class="sort-popover-option"
-                        [class.sort-popover-option-active]="sortBy() === option.value"
-                        role="option"
-                        [attr.aria-selected]="sortBy() === option.value"
-                        (click)="updateSort(option.value)"
-                      >
-                        <span class="sort-option-mark">{{ option.mark }}</span>
-                        <span class="sort-option-copy">
-                          <strong>{{ option.label }}</strong>
-                          <small>{{ option.description }}</small>
-                        </span>
-                        @if (sortBy() === option.value) {
-                          <span class="sort-option-check"
-                            ><svg lucideCheck class="h-3.5 w-3.5"></svg
-                          ></span>
-                        }
-                      </button>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
+              <svg lucideArrowUpDown class="h-3.5 w-3.5"></svg>
+              <select
+                [ngModel]="sortBy()"
+                (ngModelChange)="updateSort($event)"
+                [attr.aria-label]="i18n.isVi() ? 'Sắp xếp theo' : 'Sort by'"
+              >
+                <option value="default">
+                  {{ i18n.isVi() ? 'Mặc định phổ biến' : 'Popularity / Default' }}
+                </option>
+                <option value="promotion">{{ i18n.isVi() ? 'Khuyến mãi' : 'Promotions' }}</option>
+                @if (promotionMode() || activeTab() !== 'attractions') {
+                  <option value="price-asc">
+                    {{ i18n.isVi() ? 'Giá tiền: Thấp đến Cao' : 'Price: Low to High' }}
+                  </option>
+                  <option value="price-desc">
+                    {{ i18n.isVi() ? 'Giá tiền: Cao đến Thấp' : 'Price: High to Low' }}
+                  </option>
+                }
+                <option value="rating-desc">
+                  {{ i18n.isVi() ? 'Đánh giá: Cao nhất' : 'Rating: Top Rated' }}
+                </option>
+                <option value="reviews-desc">
+                  {{ i18n.isVi() ? 'Phổ biến nhất (Nhiều đánh giá)' : 'Most Reviewed' }}
+                </option>
+              </select>
+              <svg lucideChevronDown class="h-3.5 w-3.5"></svg>
+            </label>
           </div>
         </div>
 

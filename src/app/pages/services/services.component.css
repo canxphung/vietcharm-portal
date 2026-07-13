@@ -270,6 +270,50 @@
   background: rgb(255 255 255 / 85%);
   box-shadow: 0 12px 35px -30px #000;
 }
+.sort-control {
+  display: flex;
+  min-height: 2.75rem;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0 0.65rem;
+  border: 1px solid var(--color-natural-border);
+  border-radius: 0.85rem;
+  color: #78716c;
+  background: white;
+  box-shadow: 0 8px 22px -20px rgb(30 29 21 / 38%);
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+}
+.sort-control:hover,
+.sort-control:focus-within {
+  border-color: #d9bd78;
+  box-shadow: 0 0 0 3px rgb(227 176 75 / 10%);
+}
+.sort-control select {
+  width: 16rem;
+  min-height: 2.15rem;
+  appearance: none;
+  border: 0;
+  padding: 0 0.2rem;
+  outline: 0;
+  color: var(--color-natural-ink);
+  background: transparent;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.sort-control select option {
+  color: var(--color-natural-ink);
+  background: white;
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+.sort-control > svg {
+  flex: 0 0 auto;
+}
 
 .active-filters {
   display: flex;
@@ -412,6 +456,18 @@
 @media (max-width: 520px) {
   .result-toolbar {
     align-items: flex-start;
+  }
+  .sort-control {
+    min-height: 2.55rem;
+    padding-inline: 0.5rem;
+  }
+  .sort-control > svg:first-child {
+    display: none;
+  }
+  .sort-control select {
+    width: 10.5rem;
+    min-height: 1.95rem;
+    font-size: 0.7rem;
   }
 }
 

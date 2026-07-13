@@ -164,6 +164,7 @@ export class ItemDetailComponent {
   readonly adultsCount = signal(1);
   readonly childrenCount = signal(0);
   readonly roomsCount = signal(1);
+  readonly maxRooms = 10;
   readonly successMsg = signal(false);
   readonly rentalLocations = this.catalogData.touristLocations;
   readonly pickupLocationId = signal('dad-airport');
@@ -472,6 +473,10 @@ export class ItemDetailComponent {
 
   setCheckOut(value: string): void {
     if (value > this.checkInDate()) this.checkOutDate.set(value);
+  }
+
+  adjustRooms(change: number): void {
+    this.roomsCount.update((current) => Math.max(1, Math.min(this.maxRooms, current + change)));
   }
 
   private addSelection(item: ViewableItem): void {

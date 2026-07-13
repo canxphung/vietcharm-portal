@@ -15,6 +15,7 @@ import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
 import { CatalogService } from '@/services/catalog.service';
 import { I18nService } from '@/services/i18n.service';
+import type { BookingCartItem } from '@/types';
 import { VoucherPickerComponent } from '@/components/voucher-picker/voucher-picker.component';
 
 type Gateway = 'vnpay' | 'momo' | 'visa';
@@ -51,8 +52,10 @@ export class CheckoutComponent {
   readonly cardHolder = signal('');
   readonly paymentLoading = signal(false);
   readonly loadingText = signal('');
+  readonly paymentError = signal('');
   readonly timestamp = new Date().toLocaleDateString('en-CA');
   readonly bookingRef = signal('');
+  readonly completedItems = signal<BookingCartItem[]>([]);
   readonly vehicleIdNumber = signal('');
   readonly vehicleIdError = signal('');
 
@@ -80,7 +83,9 @@ export class CheckoutComponent {
     const active = this.gateway() === g;
     return (
       'flex flex-col items-center justify-center gap-1.5 rounded-xl border p-3 transition ' +
-      (active ? 'border-natural-gold-deep bg-amber-500/5 text-stone-900' : 'border-stone-200 hover:bg-stone-50')
+      (active
+        ? 'border-natural-gold-deep bg-amber-500/5 text-stone-900'
+        : 'border-stone-200 hover:bg-stone-50')
     );
   }
 
@@ -94,10 +99,16 @@ export class CheckoutComponent {
   }
 
   submitPayment(): void {
+    if (this.paymentLoading()) return;
     if (this.hasVehicleItem() && this.vehicleIdNumber().trim().length < 9) {
-      this.vehicleIdError.set(this.isVi() ? 'Vui lòng nhập số CCCD/CMND hợp lệ để thuê xe.' : 'Please enter a valid ID card number to rent a vehicle.');
+      this.vehicleIdError.set(
+        this.isVi()
+          ? 'Vui lòng nhập số CCCD/CMND hợp lệ để thuê xe.'
+          : 'Please enter a valid ID card number to rent a vehicle.',
+      );
       return;
     }
+    this.paymentError.set('');
     this.paymentLoading.set(true);
     const steps = this.isVi()
       ? [
@@ -122,9 +133,18 @@ export class CheckoutComponent {
     }, 850);
     setTimeout(async () => {
       if (this.loadingTimer) clearInterval(this.loadingTimer);
-      this.paymentLoading.set(false);
-      await this.finalizeBooking();
-      this.step.set('success');
+      try {
+        await this.finalizeBooking();
+        this.step.set('success');
+      } catch {
+        this.paymentError.set(
+          this.isVi()
+            ? 'Chưa thể hoàn tất thanh toán. Giỏ hàng của bạn vẫn được giữ nguyên, vui lòng thử lại.'
+            : 'Payment could not be completed. Your cart is unchanged; please try again.',
+        );
+      } finally {
+        this.paymentLoading.set(false);
+      }
     }, 4500);
   }
 
@@ -132,20 +152,31 @@ export class CheckoutComponent {
     const user = this.auth.currentUser();
     const idLabel = this.isVi() ? 'CCCD thuê xe' : 'Rental ID';
     const idValue = this.vehicleIdNumber().trim();
-    const items = this.items().map((item) =>
+    const checkoutItems = this.items();
+    const subtotal = this.totalCost();
+    const discount = this.discountAmount() + this.voucherDiscount();
+    const finalTotal = this.payableAmount();
+    const items = checkoutItems.map((item) =>
       item.type === 'vehicle' && idValue
-        ? { ...item, details: item.details ? `${item.details} | ${idLabel}: ${idValue}` : `${idLabel}: ${idValue}` }
+        ? {
+            ...item,
+            details: item.details
+              ? `${item.details} | ${idLabel}: ${idValue}`
+              : `${idLabel}: ${idValue}`,
+          }
         : item,
     );
     const booking = await this.catalog.createBookingFromCart(
       user?.email ?? '',
       user?.fullName ?? '',
       items,
-      this.totalCost(),
-      this.discountAmount() + this.voucherDiscount(),
-      this.payableAmount(),
+      subtotal,
+      discount,
+      finalTotal,
     );
+    this.completedItems.set(items);
     this.bookingRef.set(booking.id);
+    this.cart.clearSelectedItems();
   }
 
   print(): void {
@@ -153,7 +184,6 @@ export class CheckoutComponent {
   }
 
   finish(): void {
-    this.cart.clearSelectedItems();
     void this.router.navigateByUrl('/profile');
   }
 }
