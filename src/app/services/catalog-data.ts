@@ -59,5 +59,6 @@ export function toVehicleItems(list: Vehicle[]): ViewableItem[] {
     description: item.specs,
     specs: item.specs,
     rating: item.rating,
+    vehicleType: item.type,
   }));
 }

@@ -149,36 +149,10 @@ export class AiExplorerComponent {
         ];
   }
 
-  private travelerLabel(): string {
-    const vi = this.isVi();
-    return this.travelers() === 'couple' ? (vi ? 'Cặp đôi' : 'Couple') : this.travelers() === 'family' ? (vi ? 'Gia đình' : 'Family') : vi ? 'Nhóm bạn' : 'Friends';
-  }
-
-  private moodLabel(): string {
-    const vi = this.isVi();
-    const m = this.travelMood();
-    if (m === 'heritage') return vi ? 'Di sản & chụp ảnh' : 'Heritage & photos';
-    if (m === 'beach') return vi ? 'Biển & nghỉ dưỡng' : 'Beach & stay';
-    if (m === 'food') return vi ? 'Ẩm thực địa phương' : 'Local food';
-    return vi ? 'Chậm, ít di chuyển' : 'Slow travel';
-  }
-
-  private paceLabel(): string {
-    const vi = this.isVi();
-    return this.pace() === 'easy' ? (vi ? 'Rảnh rang' : 'Easy') : this.pace() === 'balanced' ? (vi ? 'Vừa đủ' : 'Balanced') : vi ? 'Đi nhiều' : 'Packed';
-  }
-
   run(): void {
     this.loading.set(true);
     this.successMsg.set(false);
     const vi = this.isVi();
-    const quizPrompt = [
-      vi ? `Số ngày: ${this.daysCount()}` : `Days: ${this.daysCount()}`,
-      vi ? `Người đi: ${this.travelerLabel()}` : `Travelers: ${this.travelerLabel()}`,
-      vi ? `Gu du lịch: ${this.moodLabel()}` : `Travel mood: ${this.moodLabel()}`,
-      vi ? `Nhịp chuyến đi: ${this.paceLabel()}` : `Trip pace: ${this.paceLabel()}`,
-      this.customPrompt().trim(),
-    ].filter(Boolean).join('. ');
 
     const stages = vi
       ? ['Đang đọc gu chuyến đi của bạn...', 'Ghép khách sạn, xe và hoạt động theo ngân sách...', 'Sắp xếp tuyến đi để ít vòng lại nhất...', 'Tính các combo có thể tiết kiệm hơn...', 'Hoàn thiện timeline từng ngày...']
@@ -191,7 +165,16 @@ export class AiExplorerComponent {
     }, 900);
 
     this.http
-      .post<AIResponse>('/api/ai/itinerary', { prompt: quizPrompt, province: this.province(), budget: this.budget(), language: this.i18n.language() })
+      .post<AIResponse>('/api/itinerary', {
+        province: this.province(),
+        budget: this.budget(),
+        days: this.daysCount(),
+        travelers: this.travelers(),
+        mood: this.travelMood(),
+        pace: this.pace(),
+        keywords: this.customPrompt().trim(),
+        language: this.i18n.language(),
+      })
       .subscribe({
         next: (res) => this.itinerary.set(res.data ?? res.fallback ?? null),
         error: () => this.finishLoading(),

@@ -126,6 +126,7 @@ export interface ViewableItem {
   rating?: number;
   reviewsCount?: string;
   specs?: string;
+  vehicleType?: 'motorbike' | 'car';
   inclusions?: string[];
   duration?: string;
   distance?: string;

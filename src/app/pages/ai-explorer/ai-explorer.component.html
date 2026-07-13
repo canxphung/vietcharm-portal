@@ -1,7 +1,7 @@
     <div class="w-full border-y border-natural-border bg-[#1F261F] px-4 py-16 text-natural-text shadow-inner">
       <div class="mx-auto max-w-7xl">
         <div class="mb-8 max-w-3xl text-white">
-          <span class="text-[11px] font-black uppercase tracking-[0.24em] text-natural-gold">AI Trip Studio</span>
+          <span class="text-[11px] font-black uppercase tracking-[0.24em] text-natural-gold">{{ isVi() ? 'Hành trình số' : 'Trip Studio' }}</span>
           <h2 class="mt-2 font-serif text-3xl font-black tracking-tight md:text-5xl">{{ isVi() ? 'Trả lời vài câu, nhận lịch trình có thể đặt ngay.' : 'Answer a few prompts, get a bookable trip plan.' }}</h2>
           <p class="mt-3 text-sm leading-relaxed text-white/70">{{ isVi() ? 'Studio này ghép ngày đi, gu du lịch, ngân sách và dịch vụ có sẵn thành một timeline dễ hiểu.' : 'This studio turns dates, mood, budget, and available services into a clear day-by-day timeline.' }}</p>
         </div>
@@ -130,7 +130,7 @@
                   </div>
                   @if (plan.savingTips.length) {
                     <div class="mt-4 rounded-2xl border border-natural-border bg-natural-beige-light p-4">
-                      <h5 class="mb-2 flex items-center gap-1.5 font-serif text-[10px] font-bold uppercase tracking-wider text-natural-accent"><svg lucideHelpCircle class="h-3.5 w-3.5"></svg>{{ isVi() ? 'Khuyến nghị mộc mạc từ AI' : 'Expert Local Insights' }}</h5>
+                      <h5 class="mb-2 flex items-center gap-1.5 font-serif text-[10px] font-bold uppercase tracking-wider text-natural-accent"><svg lucideHelpCircle class="h-3.5 w-3.5"></svg>{{ isVi() ? 'Mẹo tiết kiệm cho chuyến đi' : 'Money-saving tips' }}</h5>
                       <ul class="list-disc space-y-1.5 pl-4 text-[11px] leading-relaxed text-natural-text/85">
                         @for (tip of plan.savingTips; track tip) { <li>{{ tip }}</li> }
                       </ul>

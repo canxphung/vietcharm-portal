@@ -43,6 +43,22 @@ function reviewsCountNumber(value: string | undefined): number {
   return parseFloat(trimmed) || 0;
 }
 
+// Theme filters match bilingual keywords against name+description (the data is Vietnamese, ids are English).
+const CATEGORY_PATTERNS: Record<string, RegExp> = {
+  heritage: /di sản|phố cổ|chùa|đền|lăng|tháp|bảo tàng|cố đô|thành|cung đình|văn hóa|heritage|ancient|temple|pagoda|museum|citadel/i,
+  culinary: /ẩm thực|món|đặc sản|chợ|nấu ăn|lớp học|quán|food|culinary|cooking|market|street/i,
+  nature: /sinh thái|làng|rừng|vườn|thiên nhiên|sông|núi|đồi|ruộng|eco|nature|village|garden|river|mountain/i,
+  adventure: /lặn|cano|san hô|phiêu lưu|trekking|leo|thuyền|đảo|biển|mạo hiểm|adventure|diving|snorkel|kayak|island|beach/i,
+};
+
+const PRICE_RANGES: Array<{ id: string; min: number; max: number }> = [
+  { id: 'all', min: 0, max: Infinity },
+  { id: 'lt300', min: 0, max: 300000 },
+  { id: '300-1000', min: 300000, max: 1000000 },
+  { id: '1000-2000', min: 1000000, max: 2000000 },
+  { id: 'gt2000', min: 2000000, max: Infinity },
+];
+
 @Component({
   selector: 'app-services-page',
   standalone: true,
@@ -64,6 +80,8 @@ export class ServicesComponent {
   readonly sortBy = signal<'default' | 'price-asc' | 'price-desc' | 'rating-desc' | 'reviews-desc'>('default');
   readonly category = signal('all');
   readonly minRating = signal(0);
+  readonly priceRange = signal('all');
+  readonly vehicleType = signal<'all' | 'motorbike' | 'car'>('all');
   readonly visibleCount = signal(9);
 
   readonly activeTab = computed<ServiceTab>(() => {
@@ -105,11 +123,19 @@ export class ServicesComponent {
 
   readonly filteredItems = computed(() => {
     const normalized = this.query().trim().toLowerCase();
+    const tab = this.activeTab();
     let list = this.items();
     if (normalized) list = list.filter((item) => `${item.name} ${item.description ?? ''}`.toLowerCase().includes(normalized));
-    if (this.activeTab() === 'activities' && this.category() !== 'all') {
-      const cat = this.category();
-      list = list.filter((item) => `${item.name} ${item.description ?? ''}`.toLowerCase().includes(cat));
+    if ((tab === 'activities' || tab === 'attractions') && this.category() !== 'all') {
+      const pattern = CATEGORY_PATTERNS[this.category()];
+      if (pattern) list = list.filter((item) => pattern.test(`${item.name} ${item.description ?? ''}`));
+    }
+    if (tab === 'vehicles' && this.vehicleType() !== 'all') {
+      list = list.filter((item) => item.vehicleType === this.vehicleType());
+    }
+    if (tab !== 'attractions' && this.priceRange() !== 'all') {
+      const range = PRICE_RANGES.find((r) => r.id === this.priceRange());
+      if (range) list = list.filter((item) => item.price >= range.min && item.price < range.max);
     }
     if (this.minRating() > 0) list = list.filter((item) => (item.rating ?? 0) >= this.minRating());
     const sort = this.sortBy();
@@ -137,9 +163,29 @@ export class ServicesComponent {
     return [
       { id: 'all', label: vi ? 'Tất cả' : 'All' },
       { id: 'heritage', label: vi ? 'Di sản & Văn hóa' : 'Heritage' },
-      { id: 'culinary', label: vi ? 'Lớp học Ẩm thực' : 'Culinary' },
+      { id: 'culinary', label: vi ? 'Ẩm thực & Chợ' : 'Culinary' },
       { id: 'nature', label: vi ? 'Sinh thái & Làng quê' : 'Eco-Nature' },
-      { id: 'adventure', label: vi ? 'Phiêu lưu & Lặn biển' : 'Adventure' },
+      { id: 'adventure', label: vi ? 'Phiêu lưu & Biển đảo' : 'Adventure' },
+    ];
+  }
+
+  priceOptions(): Array<{ id: string; label: string }> {
+    const vi = this.i18n.isVi();
+    return [
+      { id: 'all', label: vi ? 'Mọi mức giá' : 'Any price' },
+      { id: 'lt300', label: vi ? 'Dưới 300 nghìn' : 'Under 300K' },
+      { id: '300-1000', label: vi ? '300 nghìn – 1 triệu' : '300K – 1M' },
+      { id: '1000-2000', label: vi ? '1 – 2 triệu' : '1M – 2M' },
+      { id: 'gt2000', label: vi ? 'Trên 2 triệu' : 'Over 2M' },
+    ];
+  }
+
+  vehicleTypeOptions(): Array<{ id: 'all' | 'motorbike' | 'car'; label: string }> {
+    const vi = this.i18n.isVi();
+    return [
+      { id: 'all', label: vi ? 'Tất cả' : 'All' },
+      { id: 'motorbike', label: vi ? 'Xe máy' : 'Motorbike' },
+      { id: 'car', label: vi ? 'Ô tô' : 'Car' },
     ];
   }
 
@@ -159,6 +205,8 @@ export class ServicesComponent {
       this.sortBy();
       this.category();
       this.minRating();
+      this.priceRange();
+      this.vehicleType();
       this.visibleCount.set(9);
     });
   }
@@ -169,6 +217,8 @@ export class ServicesComponent {
     this.sortBy.set('default');
     this.category.set('all');
     this.minRating.set(0);
+    this.priceRange.set('all');
+    this.vehicleType.set('all');
   }
 
   setTab(tab: ServiceTab): void {
