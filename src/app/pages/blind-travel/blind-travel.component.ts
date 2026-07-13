@@ -22,7 +22,6 @@ import {
   LucideHelpCircle,
   LucideInfo,
   LucideLeaf,
-  LucidePlane,
   LucidePlus,
   LucideShare2,
   LucideShieldCheck,
@@ -73,7 +72,8 @@ interface AIResponse {
 interface MysteryDestination {
   regionVi: string;
   regionEn: string;
-  airportCode: string;
+  pickupVi: string;
+  pickupEn: string;
   hotelVi: string;
   hotelEn: string;
   packingVi: string;
@@ -85,7 +85,7 @@ interface MysteryDestination {
 @Component({
   selector: 'app-blind-travel-page',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, RouterLink, LucideCheckCircle, LucideCompass, LucideFlame, LucideGift, LucidePlane, LucideShirt, LucideSparkles],
+  imports: [FormsModule, DecimalPipe, RouterLink, LucideCar, LucideCheckCircle, LucideCompass, LucideFlame, LucideGift, LucideShirt, LucideSparkles],
   templateUrl: './blind-travel.component.html',
   styleUrl: './blind-travel.component.css',
 })
@@ -144,14 +144,7 @@ export class BlindTravelComponent {
       { value: 'Chiều Muộn (15:00 - 17:00)', label: '🌇 ' + (vi ? 'Chiều Muộn (15:00 - 17:00) - Tránh nắng' : 'Late Afternoon (15:00 - 17:00)') },
       { value: 'Hoàng Hôn (17:00 - 19:00)', label: '🌆 ' + (vi ? 'Hoàng Hôn (17:00 - 19:00) - Ngắm hoàng hôn' : 'Sunset Hours (17:00 - 19:00)') },
       { value: 'Tối (19:00 - 22:00)', label: '🌙 ' + (vi ? 'Tối (19:00 - 22:00) - Sau giờ tan làm' : 'Evening (19:00 - 22:00)') },
-      { value: 'Đêm Khuya (22:00 - 01:00)', label: '🦉 ' + (vi ? 'Đêm Khuya (22:00 - 01:00) - Bay tiết kiệm' : 'Late Night (22:00 - 01:00)') },
-      { value: 'Bay Đêm (01:00 - 05:00)', label: '✈️ ' + (vi ? 'Bay Đêm/Red-eye (01:00 - 05:00) - Ngủ trên máy bay' : 'Red-eye Flight (01:00 - 05:00)') },
-      { value: 'Chuyến bay sớm nhất', label: '🥇 ' + (vi ? 'Chuyến sớm nhất trong ngày' : 'Earliest Flight of Day') },
-      { value: 'Chuyến bay muộn nhất', label: '🏁 ' + (vi ? 'Chuyến muộn nhất trong ngày' : 'Latest Flight of Day') },
       { value: 'Tránh giờ cao điểm', label: '⚡ ' + (vi ? 'Tránh giờ cao điểm kẹt xe' : 'Avoid Rush Hours') },
-      { value: 'Giờ hoàng gia', label: '👑 ' + (vi ? 'Giờ hoàng gia thong thả' : 'Royal Premium Hours') },
-      { value: 'Tối ưu giá vé tốt nhất', label: '💎 ' + (vi ? 'Linh hoạt tối ưu giá rẻ nhất' : 'Cheapest Flexi Fare Option') },
-      { value: 'Tàu hỏa/Xe giường nằm đêm', label: '🚂 ' + (vi ? 'Xe giường nằm/Tàu hỏa đêm' : 'Overnight Sleeper Train/Bus') },
     ];
   }
 
@@ -184,18 +177,18 @@ export class BlindTravelComponent {
   private destinations(): MysteryDestination[] {
     return [
       {
-        regionVi: 'Phố Cổ Hội An & Đầm nước Rừng dừa dật', regionEn: 'Ancient Town Hoi An & Secret Coconut Marshes', airportCode: 'DAD (Sân bay Đà Nẵng)',
+        regionVi: 'Phố Cổ Hội An & Đầm nước Rừng dừa dật', regionEn: 'Ancient Town Hoi An & Secret Coconut Marshes', pickupVi: 'Xe riêng đón tận nơi trong khu vực Đà Nẵng - Quảng Nam', pickupEn: 'Private door-to-door pick-up within Da Nang - Quang Nam',
         hotelVi: 'Resort boutique Di sản 5 sao biệt lập bên sông Thu Bồn', hotelEn: 'Secluded 5-star Heritage Boutique Riverside Resort',
         packingVi: 'Chuẩn bị váy áo lụa tơ tằm bồng bềnh, dép xỏ ngón mộc, đồ bơi rực rỡ và máy ảnh lấy ngay. VietCharm tặng kèm một nón lá cao cấp thêu tên bạn đặt sẵn tại sảnh.', packingEn: 'Pack flowy silk dresses, rustic slide sandals, bright swimsuits, and an instant camera. A custom-embroidered conical hat will be waiting at the reception.',
-        itineraryVi: ['Ngày 1: Xe riêng đón sân bay & Thả hoa đăng cầu bình an sông Hoài dưới ngàn đèn lồng.', 'Ngày 2: Sáng sớm chèo thuyền thúng len lỏi rừng dừa nước, chiều học nấu mâm cơm di sản tại vườn rau hữu cơ.', 'Ngày 3: Thư giãn trị liệu thảo mộc truyền thống, ăn trưa ẩm thực Cao Lầu trứ danh & Tiễn bay.'],
-        itineraryEn: ['Day 1: Private airport transfer & Lantern-releasing boat trip on Hoai River beneath thousands of silk lanterns.', 'Day 2: Sunrise spinning basket boat ride through coconut forests; afternoon heritage cooking class in an organic farm.', 'Day 3: Signature herbal wellness spa session, farewell lunch featuring local Cao Lau noodles, and private airport drop-off.'],
+        itineraryVi: ['Ngày 1: Xe riêng đón tận nơi & Thả hoa đăng cầu bình an sông Hoài dưới ngàn đèn lồng.', 'Ngày 2: Sáng sớm chèo thuyền thúng len lỏi rừng dừa nước, chiều học nấu mâm cơm di sản tại vườn rau hữu cơ.', 'Ngày 3: Thư giãn trị liệu thảo mộc truyền thống, ăn trưa ẩm thực Cao Lầu trứ danh & Xe riêng đưa về tận nhà.'],
+        itineraryEn: ['Day 1: Private door-to-door pick-up & Lantern-releasing boat trip on Hoai River beneath thousands of silk lanterns.', 'Day 2: Sunrise spinning basket boat ride through coconut forests; afternoon heritage cooking class in an organic farm.', 'Day 3: Signature herbal wellness spa session, farewell lunch featuring local Cao Lau noodles, and a private ride home.'],
       },
       {
-        regionVi: 'Biển xanh Quy Nhơn & Tháp Chăm Di sản ngàn năm', regionEn: 'Emerald Quy Nhon Beach & Ancient Thousand-Year Cham Towers', airportCode: 'UIH (Sân bay Phù Cát)',
+        regionVi: 'Biển xanh Quy Nhơn & Tháp Chăm Di sản ngàn năm', regionEn: 'Emerald Quy Nhon Beach & Ancient Thousand-Year Cham Towers', pickupVi: 'Xe riêng đón tận nơi trong khu vực Quy Nhơn - Bình Định', pickupEn: 'Private door-to-door pick-up within Quy Nhon - Binh Dinh',
         hotelVi: 'Biệt thự hướng biển vách đá hoang sơ Kỳ Co', hotelEn: 'Private Cliffside Oceanfront Villa in Ky Co',
         packingVi: 'Chuẩn bị quần áo linen thoáng mát, mũ cói rộng vành, kem chống nắng thân thiện rạn san hô, kính râm sành điệu. Gợi ý mang thêm trang phục màu trắng/be cổ điển để check-in Tháp Bánh Ít.', packingEn: 'Bring breathable linen outfits, wide-brim straw hats, reef-safe sunscreen, and retro sunglasses. We suggest classic white or beige attire for the Banh It Cham towers.',
-        itineraryVi: ['Ngày 1: Đón rước về biệt thự vách đá, tối nghe nhạc jazz mộc mạc bên sóng biển vỗ rì rào.', 'Ngày 2: Cano riêng đi đảo Kỳ Co lặn ngắm san hô, chiều viếng quần thể Tháp Chăm linh thiêng rực nắng vàng.', 'Ngày 3: Đón bình minh tuyệt đỉnh Eo Gió, trưa thưởng thức lẩu cua huỳnh đế di sản & Tiễn sân bay.'],
-        itineraryEn: ['Day 1: Private ride to the cliffside villa, cozy candlelight evening listening to beachside jazz acoustic rhythms.', 'Day 2: Private boat trip to Ky Co marine sanctuary; afternoon sun-drenched exploration of sacred Cham towers.', 'Day 3: Magical sunrise viewing at Eo Gio bay, signature local Curlew Crab hotpot feast, and airport transfer.'],
+        itineraryVi: ['Ngày 1: Đón rước về biệt thự vách đá, tối nghe nhạc jazz mộc mạc bên sóng biển vỗ rì rào.', 'Ngày 2: Cano riêng đi đảo Kỳ Co lặn ngắm san hô, chiều viếng quần thể Tháp Chăm linh thiêng rực nắng vàng.', 'Ngày 3: Đón bình minh tuyệt đỉnh Eo Gió, trưa thưởng thức lẩu cua huỳnh đế di sản & Xe riêng đưa về tận nhà.'],
+        itineraryEn: ['Day 1: Private ride to the cliffside villa, cozy candlelight evening listening to beachside jazz acoustic rhythms.', 'Day 2: Private boat trip to Ky Co marine sanctuary; afternoon sun-drenched exploration of sacred Cham towers.', 'Day 3: Magical sunrise viewing at Eo Gio bay, signature local Curlew Crab hotpot feast, and a private ride home.'],
       },
     ];
   }
@@ -205,8 +198,8 @@ export class BlindTravelComponent {
     this.stage.set('loading');
     const vi = this.isVi();
     const steps = vi
-      ? ['🔮 Phân tích tâm lý & gu du lịch thế hệ mới...', '✈️ Đang thương lượng với các hãng hàng không chặng bay vàng...', '🏨 Gửi mã đặt chỗ kín tới hệ thống Resort Di sản 5 sao đối tác...', '🎁 Đóng gói phong thư bất ngờ chứa mã đặt chỗ độc bản...']
-      : ['🔮 Analyzing psychological desires & generational taste...', '✈️ Sourcing exclusive charter flight corridors...', '🏨 Securing hidden inventory at boutique heritage villas...', '🎁 Packing your mystery oracle card in the lockbox...'];
+      ? ['🔮 Phân tích tâm lý & gu du lịch thế hệ mới...', '🚐 Sắp xếp xe riêng đưa đón khứ hồi tận nơi...', '🏨 Gửi mã đặt chỗ kín tới hệ thống Resort Di sản 5 sao đối tác...', '🎁 Đóng gói phong thư bất ngờ chứa mã đặt chỗ độc bản...']
+      : ['🔮 Analyzing psychological desires & generational taste...', '🚐 Arranging private roundtrip door-to-door transfers...', '🏨 Securing hidden inventory at boutique heritage villas...', '🎁 Packing your mystery oracle card in the lockbox...'];
     let idx = 0;
     this.loadingStep.set(steps[0]);
     this.timer = setInterval(() => {
@@ -242,13 +235,13 @@ export class BlindTravelComponent {
     const item: BookingCartItem = {
       id: `blind-travel-mystery-${Date.now()}`,
       type: 'activity',
-      name: vi ? `[Hành trình Ẩn Số] Vé máy bay khứ hồi & Resort bí mật` : `[Mystery Escape] Roundtrip Flight & 5-Star Secret Stay`,
+      name: vi ? `[Hành trình Ẩn Số] Xe riêng đưa đón khứ hồi & Resort bí mật` : `[Mystery Escape] Private Roundtrip Transfers & 5-Star Secret Stay`,
       price: this.budget(),
       quantity: 1,
       image: v === 'sea' || v === 'glamping' || v === 'adventure' || v === 'fisherman' ? 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80' : 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=500&q=80',
       details: vi
-        ? `Thời gian: ${this.days()} ngày. Khởi hành ngày ${this.departureDate()} (${this.departureTime()}). Chi tiết điểm đến được niêm phong cho đến khi ra sân bay.`
-        : `Duration: ${this.days()} Days. Depart on ${this.departureDate()} (${this.departureTime()}). Exact itinerary sealed until airport arrival.`,
+        ? `Thời gian: ${this.days()} ngày. Khởi hành ngày ${this.departureDate()} (${this.departureTime()}). Chi tiết điểm đến được niêm phong cho đến khi xe đón bạn khởi hành.`
+        : `Duration: ${this.days()} Days. Depart on ${this.departureDate()} (${this.departureTime()}). Exact itinerary sealed until your pick-up time.`,
     };
     this.ui.requireAuth(() => {
       this.cart.addCombo([item]);

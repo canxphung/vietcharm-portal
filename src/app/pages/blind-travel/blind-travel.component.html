@@ -9,7 +9,7 @@
         <div class="mx-auto max-w-3xl space-y-3 text-center">
           <div class="inline-flex items-center gap-1.5 rounded-full bg-natural-border-light px-3 py-1 text-[10px] font-black uppercase tracking-widest text-natural-accent"><svg lucideFlame class="h-3.5 w-3.5 text-amber-500"></svg><span>{{ isVi() ? 'HÀNH TRÌNH TRẢI NGHIỆM ẨN SỐ' : 'BLIND TRAVEL ESCAPADE' }}</span></div>
           <h2 class="font-serif text-3xl font-black tracking-tight text-natural-text md:text-5xl">{{ isVi() ? 'Hành Trình Ẩn Số – Nhận Quà Từ Tương Lai' : 'Blind Travel – Unbox Your Surprise Escape' }}</h2>
-          <p class="mx-auto max-w-2xl text-xs leading-relaxed text-natural-text/80 md:text-sm">{{ isVi() ? 'Thay vì tốn hàng chục tiếng so sánh giá phòng và đau đầu lên lịch trình, hãy nhập ngân sách, số ngày nghỉ và gu tận hưởng của bạn. Trí tuệ nhân tạo của VietCharm sẽ tự động tối ưu hóa chuyến bay khứ hồi cùng phòng Resort Heritage ẩn danh.' : 'Appealing to adventure-seekers and busy people tired of planning. Input your budget, length of stay, and preference guidelines. Our AI reserves optimized roundtrip flights and premium heritage secret stays.' }}</p>
+          <p class="mx-auto max-w-2xl text-xs leading-relaxed text-natural-text/80 md:text-sm">{{ isVi() ? 'Thay vì tốn hàng chục tiếng so sánh giá phòng và đau đầu lên lịch trình, hãy nhập ngân sách, số ngày nghỉ và gu tận hưởng của bạn. VietCharm sẽ tự động sắp xếp xe riêng đưa đón khứ hồi cùng phòng Resort Heritage ẩn danh.' : 'Appealing to adventure-seekers and busy people tired of planning. Input your budget, length of stay, and preference guidelines. VietCharm reserves private roundtrip transfers and premium heritage secret stays.' }}</p>
         </div>
 
         <div class="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
@@ -35,7 +35,7 @@
                 </div>
               </div>
               <div>
-                <label class="mb-1 block text-[11px] font-bold uppercase text-natural-accent">{{ isVi() ? 'Thời gian cất cánh ưa thích' : 'Departure window' }}</label>
+                <label class="mb-1 block text-[11px] font-bold uppercase text-natural-accent">{{ isVi() ? 'Khung giờ khởi hành ưa thích' : 'Departure window' }}</label>
                 <select class="w-full rounded-xl border border-natural-border bg-natural-sand p-2.5 text-xs font-bold text-natural-text outline-none" [ngModel]="departureTime()" (ngModelChange)="departureTime.set($event)" name="window">
                   @for (w of windowOptions(); track w.value) { <option [value]="w.value">{{ w.label }}</option> }
                 </select>
@@ -60,7 +60,7 @@
                 <button type="submit" [disabled]="loading()" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-natural-accent py-4 font-serif font-black text-white shadow-xl transition duration-300 hover:bg-natural-olive disabled:opacity-50"><svg lucideSparkles class="h-4 w-4 text-amber-300"></svg><span>{{ isVi() ? 'LẬP TRÌNH CHUYẾN ĐI BẤT NGỜ' : 'COMPILE SURPRISE ORACLE' }}</span></button>
               </div>
             </form>
-            <div class="mt-5 rounded-2xl border border-amber-200/40 bg-amber-50/50 p-3.5 text-[10px] leading-relaxed text-amber-900">💡 <strong>{{ isVi() ? 'Yếu tố lôi cuốn thế hệ trẻ:' : 'Why young explorers love this:' }}</strong> {{ isVi() ? 'Bạn sẽ không biết chính xác điểm đến của mình là đâu cho đến khi ra sân bay! Tuy nhiên, hệ thống sẽ gửi gợi ý chuẩn bị quần áo/trang phục trước 3 ngày để bạn chủ động chuẩn bị.' : 'You will remain blind to the exact city and airport path until check-in time! Rest easy: a smart packaging guide arrives 3 days early to prepare your wardrobe perfectly.' }}</div>
+            <div class="mt-5 rounded-2xl border border-amber-200/40 bg-amber-50/50 p-3.5 text-[10px] leading-relaxed text-amber-900">💡 <strong>{{ isVi() ? 'Yếu tố lôi cuốn thế hệ trẻ:' : 'Why young explorers love this:' }}</strong> {{ isVi() ? 'Bạn sẽ không biết chính xác điểm đến của mình là đâu cho đến khi xe đón bạn khởi hành! Tuy nhiên, hệ thống sẽ gửi gợi ý chuẩn bị quần áo/trang phục trước 3 ngày để bạn chủ động chuẩn bị.' : 'You will remain blind to the exact destination until your pick-up time! Rest easy: a smart packaging guide arrives 3 days early to prepare your wardrobe perfectly.' }}</div>
           </div>
 
           <!-- RIGHT -->
@@ -73,7 +73,7 @@
                 <div class="max-w-sm space-y-4 text-center">
                   <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-natural-border bg-natural-sand"><svg lucideGift class="h-10 w-10 animate-bounce text-natural-accent"></svg></div>
                   <h4 class="font-serif text-base font-black text-natural-text">{{ isVi() ? 'Hòm Quà Hành Trình Đang Chờ Đợi' : 'Mystery Escape Chest Awaiting' }}</h4>
-                  <p class="text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Hãy điền ngân sách và sở thích ở khung bên trái. Hệ thống AI VietCharm sẽ gói gọn lộ trình bay & nghỉ dưỡng hoàn mỹ trong hộp quà bí mật!' : 'Set your budget cap and preferred taste on the left. The AI compiler will seal your flight & luxury stay inside a glowing surprise envelope!' }}</p>
+                  <p class="text-xs leading-relaxed text-natural-text/70">{{ isVi() ? 'Hãy điền ngân sách và sở thích ở khung bên trái. Hệ thống VietCharm sẽ gói gọn lộ trình di chuyển & nghỉ dưỡng hoàn mỹ trong hộp quà bí mật!' : 'Set your budget cap and preferred taste on the left. The compiler will seal your ride & luxury stay inside a glowing surprise envelope!' }}</p>
                 </div>
               }
               @case ('loading') {
@@ -101,17 +101,17 @@
                         <div>
                           <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-800"><svg lucideCheckCircle class="h-3 w-3 text-emerald-700"></svg><span>{{ isVi() ? 'ĐÃ ĐỊNH VỊ THÀNH CÔNG!' : 'SECURED DESTINATION!' }}</span></span>
                           <h4 class="mt-1.5 font-serif text-lg font-black leading-tight text-natural-text md:text-xl">{{ isVi() ? dest.regionVi : dest.regionEn }}</h4>
-                          <p class="mt-0.5 font-mono text-[10px] font-bold text-natural-accent">🛫 {{ isVi() ? 'Đường bay khứ hồi khép kín:' : 'Curated flights:' }} {{ dest.airportCode }}</p>
+                          <p class="mt-0.5 font-mono text-[10px] font-bold text-natural-accent">🚐 {{ isVi() ? dest.pickupVi : dest.pickupEn }}</p>
                         </div>
                         <div class="shrink-0 text-right"><span class="block text-[9px] font-black uppercase text-natural-accent">{{ isVi() ? 'TRỌN GÓI / KHÁCH' : 'NET BUNDLE PRICE' }}</span><span class="font-mono text-base font-black text-emerald-700">{{ budget() | number : '1.0-0' }}đ</span></div>
                       </div>
                       <div class="mt-4 grid grid-cols-1 gap-4 border-t border-natural-border pt-3 md:grid-cols-2">
                         <div class="space-y-1"><span class="block text-[9px] font-black uppercase text-natural-accent">🏨 {{ isVi() ? 'Resort 5 Sao Ẩn Danh' : 'Luxury Stay Sealed' }}</span><p class="text-xs font-bold leading-relaxed text-natural-text/90">{{ isVi() ? dest.hotelVi : dest.hotelEn }}</p></div>
-                        <div class="space-y-1"><span class="block text-[9px] font-black uppercase text-amber-700">📆 {{ isVi() ? 'Lịch Bay' : 'Time Slot' }}</span><p class="text-xs font-bold leading-relaxed text-natural-text/90">{{ days() }} {{ isVi() ? 'Ngày' : 'Days' }} • {{ departureDate() }} ({{ departureTime() }})</p></div>
+                        <div class="space-y-1"><span class="block text-[9px] font-black uppercase text-amber-700">📆 {{ isVi() ? 'Lịch Khởi Hành' : 'Departure Slot' }}</span><p class="text-xs font-bold leading-relaxed text-natural-text/90">{{ days() }} {{ isVi() ? 'Ngày' : 'Days' }} • {{ departureDate() }} ({{ departureTime() }})</p></div>
                       </div>
                       <div class="mt-4 flex gap-3 rounded-2xl border border-natural-border bg-natural-border-light/50 p-3">
                         <svg lucideShirt class="mt-0.5 h-5 w-5 shrink-0 text-natural-accent"></svg>
-                        <div><span class="block text-[9px] font-black uppercase text-natural-accent">👗 {{ isVi() ? 'Gợi Ý Chuẩn Bị Trang Phục (3 ngày trước bay)' : 'Apparel Guidance (Sent 3 Days Early)' }}</span><p class="mt-0.5 text-[11px] leading-relaxed text-natural-text/80">{{ isVi() ? dest.packingVi : dest.packingEn }}</p></div>
+                        <div><span class="block text-[9px] font-black uppercase text-natural-accent">👗 {{ isVi() ? 'Gợi Ý Chuẩn Bị Trang Phục (3 ngày trước khởi hành)' : 'Apparel Guidance (Sent 3 Days Early)' }}</span><p class="mt-0.5 text-[11px] leading-relaxed text-natural-text/80">{{ isVi() ? dest.packingVi : dest.packingEn }}</p></div>
                       </div>
                       <div class="mt-4 space-y-2 border-t border-natural-border pt-3">
                         <span class="block text-[9px] font-black uppercase text-natural-accent">🔮 {{ isVi() ? 'Lộ Trình Bất Ngờ Thiết Kế' : 'Surprise Itinerary Highlight Node' }}</span>
@@ -125,7 +125,7 @@
                     <div class="flex flex-wrap justify-end gap-2">
                       <button type="button" class="rounded-xl border border-natural-border bg-white px-5 py-3 text-xs font-bold text-natural-accent transition hover:bg-natural-sand" (click)="reset()">🔄 {{ isVi() ? 'Thiết lập lại' : 'Try Another' }}</button>
                       <a routerLink="/" class="rounded-xl bg-slate-100 px-5 py-3 text-xs font-bold text-natural-text transition hover:bg-slate-200">{{ isVi() ? 'Quay lại' : 'Back Home' }}</a>
-                      <button type="button" class="flex items-center gap-1 rounded-xl bg-natural-accent px-6 py-3 font-serif text-xs font-black text-white shadow-md transition hover:bg-natural-olive" (click)="book()"><span>{{ isVi() ? 'Gói Cất Cánh Ngay' : 'Book Surprises Now' }}</span><svg lucidePlane class="h-4 w-4 animate-pulse text-amber-300"></svg></button>
+                      <button type="button" class="flex items-center gap-1 rounded-xl bg-natural-accent px-6 py-3 font-serif text-xs font-black text-white shadow-md transition hover:bg-natural-olive" (click)="book()"><span>{{ isVi() ? 'Đặt Chuyến Đi Ngay' : 'Book Surprises Now' }}</span><svg lucideCar class="h-4 w-4 animate-pulse text-amber-300"></svg></button>
                     </div>
                   </div>
                 }
