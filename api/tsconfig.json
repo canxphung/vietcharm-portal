@@ -1,0 +1,19 @@
+/*
+ * Dedicated tsconfig for Vercel serverless functions.
+ * The root tsconfig uses "module": "preserve" (for Angular), which makes
+ * @vercel/node emit ESM `import` syntax into .js files that the Lambda
+ * runtime loads as CommonJS -> "Cannot use import statement outside a module".
+ * Compiling the api/ tree to CommonJS avoids that mismatch.
+ */
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  },
+  "include": ["**/*.ts"]
+}
