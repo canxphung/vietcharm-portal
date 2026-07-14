@@ -258,6 +258,8 @@
                 </div>
                 <p class="pl-8 text-xs italic leading-relaxed text-stone-600">"{{ r.comment }}"</p>
               </div>
+            } @empty {
+              <p class="rounded-2xl border border-dashed border-natural-border bg-natural-cream p-5 text-center text-xs italic text-stone-400">{{ isVi() ? 'Chưa có đánh giá nào cho dịch vụ này — hãy là người đầu tiên sau khi trải nghiệm!' : 'No reviews yet — be the first after your trip!' }}</p>
             }
           </div>
           @if (canReview()) {

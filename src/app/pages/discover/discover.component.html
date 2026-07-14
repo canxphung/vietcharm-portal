@@ -1,6 +1,6 @@
     <div class="min-h-screen w-full bg-natural-bg px-4 py-12">
       <div class="mx-auto max-w-7xl">
-        <!-- Top bar: back + breadcrumb + status -->
+        <!-- Top bar: back + breadcrumb -->
         <div class="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <a routerLink="/" class="flex items-center gap-2 rounded-full border border-natural-border bg-natural-beige px-4 py-2 font-serif text-xs font-bold text-natural-accent shadow-xs transition hover:text-natural-olive">
             <i class="bi bi-arrow-left h-3.5 w-3.5 text-natural-accent"></i>
@@ -13,10 +13,6 @@
             <span aria-hidden="true">/</span>
             <span class="text-natural-text" aria-current="page">{{ i18n.isVi() ? 'Điểm đến' : 'Destinations' }}</span>
           </nav>
-          <div class="flex items-center gap-1.5 font-mono text-xs text-stone-500">
-            <i class="bi bi-cursor h-3 w-3 text-natural-accent"></i>
-            <span>{{ i18n.isVi() ? 'Dữ liệu điểm đến đang có' : 'Available destination data' }}</span>
-          </div>
         </div>
 
         <!-- Section title -->

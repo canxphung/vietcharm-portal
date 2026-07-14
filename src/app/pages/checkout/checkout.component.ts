@@ -117,6 +117,7 @@ export class CheckoutComponent {
     }, 850);
     setTimeout(async () => {
       if (this.loadingTimer) clearInterval(this.loadingTimer);
+      const attemptAmount = this.payableAmount();
       try {
         await this.finalizeBooking();
         this.step.set('success');
@@ -126,6 +127,16 @@ export class CheckoutComponent {
             ? 'Chưa thể hoàn tất thanh toán. Giỏ hàng của bạn vẫn được giữ nguyên, vui lòng thử lại.'
             : 'Payment could not be completed. Your cart is unchanged; please try again.',
         );
+        // ERD "GiaoDich": failed attempts are recorded too (no order exists yet, so bookingId is empty).
+        void this.catalog
+          .recordTransaction({
+            bookingId: '',
+            method: this.gateway(),
+            status: 'failed',
+            amount: attemptAmount,
+            userEmail: this.auth.currentUser()?.email ?? '',
+          })
+          .catch(() => {});
       } finally {
         this.paymentLoading.set(false);
       }
@@ -160,6 +171,16 @@ export class CheckoutComponent {
     );
     this.completedItems.set(items);
     this.bookingRef.set(booking.id);
+    // ERD "GiaoDich": record the successful payment tied to the new order.
+    void this.catalog
+      .recordTransaction({
+        bookingId: booking.id,
+        method: this.gateway(),
+        status: 'success',
+        amount: finalTotal,
+        userEmail: user?.email ?? '',
+      })
+      .catch(() => {});
     this.cart.clearSelectedItems();
   }
 

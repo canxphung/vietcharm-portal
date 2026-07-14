@@ -31,36 +31,6 @@ interface UserReview {
 
 type PackageKey = 'standard' | 'premium' | 'luxury';
 
-const MOCK_REVIEWS: UserReview[] = [
-  {
-    id: '1',
-    author: 'Nguyễn Văn Hải',
-    avatar:
-      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-    rating: 5,
-    date: '2026-06-21',
-    comment: 'Dịch vụ vô cùng đẳng cấp và chuyên nghiệp. Nhân viên chu đáo, nhiệt tình.',
-  },
-  {
-    id: '2',
-    author: 'Trần Thị Mai',
-    avatar:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
-    rating: 5,
-    date: '2026-06-19',
-    comment: 'Trải nghiệm tuyệt vời vượt ngoài mong đợi! Rất xứng đáng số tiền bỏ ra.',
-  },
-  {
-    id: '3',
-    author: 'David Miller',
-    avatar:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-    rating: 4,
-    date: '2026-06-15',
-    comment: 'Excellent service and great attention to detail. Highly recommend to everyone!',
-  },
-];
-
 const GALLERY_FALLBACKS: Record<string, string[]> = {
   hotel: [
     'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80',
@@ -131,10 +101,11 @@ export class ItemDetailComponent {
   readonly lightboxIndex = signal(0);
 
   readonly isVi = computed(() => this.i18n.isVi());
+  // Only real customer reviews from Mongo (servicereviews) — no mock padding.
   readonly reviews = computed<UserReview[]>(() => {
     const item = this.ui.selectedItem();
-    if (!item) return [...MOCK_REVIEWS];
-    const submitted = this.catalog.reviewsForItem(item.id).map((r) => ({
+    if (!item) return [];
+    return this.catalog.reviewsForItem(item.id).map((r) => ({
       id: r.id,
       author: r.author,
       avatar: r.avatar,
@@ -142,7 +113,6 @@ export class ItemDetailComponent {
       date: r.date,
       comment: r.comment,
     }));
-    return [...submitted, ...MOCK_REVIEWS];
   });
   readonly canReview = computed(() => {
     const item = this.ui.selectedItem();

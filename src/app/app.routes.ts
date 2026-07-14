@@ -125,6 +125,12 @@ export const routes: Routes = [
       import('./pages/nearby-places/nearby-places.component').then((m) => m.NearbyPlacesComponent),
   },
   {
+    path: 'about',
+    loadComponent: () =>
+      import('./pages/about/about.component').then((m) => m.AboutComponent),
+  },
+  { path: 'about-us', redirectTo: 'about', pathMatch: 'full' },
+  {
     path: 'support/:topic',
     loadComponent: () =>
       import('./pages/support/support.component').then((m) => m.SupportComponent),

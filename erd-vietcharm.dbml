@@ -1,0 +1,584 @@
+// ═════════════════════════════════════════════════════════════════════════════
+// ERD VIETCHARM — MÔ HÌNH KHÁI NIỆM BÁM SÁT MONGODB
+// 19 collection gốc + 9 cấu trúc document nhúng/liên kết khái niệm
+// Dán toàn bộ file này vào dbdiagram.io để vẽ sơ đồ.
+// ═════════════════════════════════════════════════════════════════════════════
+
+Project VietCharm {
+  database_type: 'MongoDB'
+  Note: '''
+    Đây là ERD mức khái niệm/lý thuyết, không phải bản sao JSON vật lý.
+
+    Quy ước ánh xạ:
+    1. ID trong ERD ánh xạ tới _id kiểu String trong MongoDB.
+    2. date/datetime/decimal là kiểu miền nghiệp vụ. Hiện Mongoose lưu ngày dưới
+       dạng chuỗi ISO và số dưới dạng Number.
+    3. Bảng có nhãn [NHÚNG] là document con hoặc mảng nằm trong collection cha,
+       không phải collection độc lập.
+    4. Các Ref biểu diễn quan hệ logic. Schema Mongoose hiện lưu ID/email dạng
+       String và tầng ứng dụng chịu trách nhiệm kiểm tra toàn vẹn tham chiếu.
+    5. Giỏ hàng, phiên đăng nhập, lịch sử xem và yêu thích nằm ở localStorage.
+    6. Hành trình ẩn số dùng gói mẫu ở frontend; bộ lập lịch trình gọi
+       /api/itinerary. Hai loại dữ liệu này không có collection riêng; khi khách
+       thanh toán, lựa chọn cuối cùng được lưu trong DonDat.ChiTietDon.
+  '''
+}
+
+//////////////////////////////////////////////////////
+// ENUM
+//////////////////////////////////////////////////////
+
+Enum vai_tro {
+  user
+  admin
+}
+
+Enum loai_phuong_tien {
+  motorbike
+  car
+}
+
+Enum goi_thue {
+  standard
+  premium
+  luxury
+}
+
+Enum loai_item_don {
+  hotel
+  activity
+  vehicle
+}
+
+Enum trang_thai_don {
+  pending
+  confirmed
+  cancelled
+}
+
+Enum phuong_thuc_thanh_toan {
+  visa
+  vnpay
+  momo
+}
+
+Enum trang_thai_giao_dich {
+  success
+  failed
+}
+
+Enum loai_giam_gia {
+  percentage
+  fixed
+}
+
+Enum loai_doi_tac {
+  hotel
+  taxi
+  experience
+  artisan
+  guide
+  vehicle
+}
+
+Enum trang_thai_duyet {
+  pending
+  approved
+  rejected
+}
+
+Enum trang_thai_khieu_nai {
+  pending
+  reviewing
+  resolved
+}
+
+Enum trang_thai_thanh_vien {
+  paid
+  unpaid
+}
+
+Enum loai_phuong_an_vote {
+  hotel
+  activity
+  restaurant
+}
+
+Enum nhom_trang_ho_tro {
+  support
+  about
+}
+
+Enum ngon_ngu {
+  vi
+  en
+}
+
+//////////////////////////////////////////////////////
+// NGƯỜI DÙNG
+//////////////////////////////////////////////////////
+
+Table NguoiDung {
+  ID varchar [pk, not null, note: 'Ánh xạ users._id; VD: u-1']
+  Username varchar [not null, unique]
+  MatKhau varchar [note: 'Ánh xạ users.password; bản demo lưu chuỗi thuần, thiết kế chuẩn phải lưu giá trị băm (bcrypt)']
+  HoTen varchar [not null]
+  Email varchar [not null, unique, note: 'Khóa ứng viên đang được dùng để liên kết dữ liệu người dùng']
+  SoDienThoai varchar(10) [not null, note: 'Quy tắc nghiệp vụ: bắt đầu bằng 0 và đủ 10 chữ số']
+  GioiThieu text [not null, default: '']
+  VaiTro vai_tro [not null, default: 'user']
+  Avatar varchar [not null]
+  NgayTao datetime [not null, note: 'Mongo lưu chuỗi ISO trong createdAt']
+
+  Note: 'collection: users'
+}
+
+//////////////////////////////////////////////////////
+// ĐỊA ĐIỂM & DỊCH VỤ
+//////////////////////////////////////////////////////
+
+Table DiemDen {
+  ID varchar [pk, not null, note: 'Ánh xạ provinces._id; VD: quang-nam']
+  TenDiemDen varchar [not null]
+  LinkAnh varchar [not null]
+  MoTa text [not null]
+  Tagline varchar [not null]
+  DangHoatDong boolean [not null, default: false, note: 'Hiện chỉ Hội An/Quảng Nam mở bán đầy đủ']
+
+  Note: 'collection: provinces'
+}
+
+Table DiaDiemThamQuan {
+  ID varchar [pk, not null]
+  DiemDenID varchar [not null, ref: > DiemDen.ID]
+  Ten varchar [not null]
+  LinkAnh varchar [not null]
+  MoTa text [not null]
+  PhanTramGiam int [not null, default: 0, note: 'Miền giá trị 0-90']
+  Rating decimal(2,1) [not null, note: 'Miền giá trị 0-5']
+  SoDanhGia int [not null, note: 'Số đếm không âm; Mongo hiện dùng reviewsCount dạng chuỗi hiển thị và nên chuẩn hóa khi migrate']
+  Lat decimal(9,6) [not null]
+  Lng decimal(9,6) [not null]
+
+  Note: 'collection: attractions; địa điểm tham quan không có trường giá bán'
+}
+
+Table KhachSan {
+  ID varchar [pk, not null]
+  DiemDenID varchar [not null, ref: > DiemDen.ID]
+  Ten varchar [not null]
+  LinkAnh varchar [not null]
+  MoTa text [not null]
+  GiaMoiDem decimal(15,0) [not null, note: 'Đơn vị VND; không âm']
+  PhanTramGiam int [not null, default: 0, note: 'Miền giá trị 0-90']
+  Rating decimal(2,1) [not null, note: 'Miền giá trị 0-5']
+  SoDanhGia int [not null, note: 'Số đếm không âm; Mongo hiện lưu chuỗi hiển thị']
+  Lat decimal(9,6) [not null]
+  Lng decimal(9,6) [not null]
+
+  Note: 'collection: hotels'
+}
+
+Table HoatDongTraiNghiem {
+  ID varchar [pk, not null]
+  DiemDenID varchar [not null, ref: > DiemDen.ID]
+  Ten varchar [not null]
+  LinkAnh varchar [not null]
+  MoTa text [not null]
+  Gia decimal(15,0) [not null, note: 'Đơn vị VND; không âm']
+  PhanTramGiam int [not null, default: 0, note: 'Miền giá trị 0-90']
+  Rating decimal(2,1) [not null, note: 'Miền giá trị 0-5']
+  SoDanhGia int [not null, note: 'Số đếm không âm; Mongo hiện lưu chuỗi hiển thị']
+  Lat decimal(9,6) [not null]
+  Lng decimal(9,6) [not null]
+
+  Note: 'collection: activities'
+}
+
+Table XeThue {
+  ID varchar [pk, not null]
+  Ten varchar [not null]
+  PhanLoai loai_phuong_tien [not null]
+  GiaMoiNgay decimal(15,0) [not null, note: 'Đơn vị VND; không âm']
+  PhanTramGiam int [not null, default: 0, note: 'Miền giá trị 0-90']
+  LinkAnh varchar [not null]
+  BoSuuTapAnh text [not null, note: 'Mảng URL gallery; mặc định []']
+  ThongSo varchar [not null]
+  Rating decimal(2,1) [not null, note: 'Miền giá trị 0-5']
+
+  Note: 'collection: vehicles; xe hiện dùng chung toàn hệ thống và không có DiemDenID'
+}
+
+Table GoiThueXe {
+  XeThueID varchar [not null, ref: > XeThue.ID]
+  Goi goi_thue [not null]
+  HeSoGia decimal(3,2) [not null, note: 'Tối thiểu 1; chuẩn 1, cao cấp 1.3, sang trọng 1.6']
+  TenVi varchar [not null]
+  TenEn varchar [not null]
+  MoTaVi text [not null]
+  MoTaEn text [not null]
+
+  indexes {
+    (XeThueID, Goi) [pk, name: 'PK_GoiThueXe']
+  }
+
+  Note: '[NHÚNG] mảng rentalPackages trong vehicles; một xe có tối đa một gói cho mỗi loại Goi'
+}
+
+Table DiemDonTaxi {
+  ID varchar [pk, not null]
+  Ten varchar [not null]
+  Lat decimal(9,6) [not null]
+  Lng decimal(9,6) [not null]
+
+  Note: 'collection: touristlocations; danh mục điểm đón/trả dùng để tính quãng đường taxi'
+}
+
+Table ComboTour {
+  ID varchar [pk, not null]
+  Ten varchar [not null]
+  LinkAnh varchar [not null]
+  SoNgay varchar [not null, note: 'VD: 3N2Đ']
+  Gia decimal(15,0) [not null, note: 'Đơn vị VND; không âm']
+  GiaGoc decimal(15,0) [not null, note: 'Đơn vị VND; không nhỏ hơn Gia']
+  BaoGom text [not null, note: 'Mảng chuỗi includes']
+  Rating decimal(2,1) [not null, note: 'Miền giá trị 0-5']
+  Tag varchar [not null]
+
+  Note: 'collection: tourcombos; BaoGom là nội dung mô tả, không phải FK tới dịch vụ'
+}
+
+//////////////////////////////////////////////////////
+// KHUYẾN MÃI
+//////////////////////////////////////////////////////
+
+Table Voucher {
+  Code varchar [pk, not null, note: 'Mongo lưu _id bằng Code và đồng thời có trường code unique']
+  MoTa varchar [not null]
+  LoaiGiam loai_giam_gia [not null]
+  GiaTri decimal(15,0) [not null, note: 'Nếu percentage: 0-100; nếu fixed: số tiền VND không âm']
+  DonToiThieu decimal(15,0) [not null, note: 'Đơn vị VND; không âm']
+  DangHoatDong boolean [not null, default: true]
+
+  Note: 'collection: promovouchers'
+}
+
+//////////////////////////////////////////////////////
+// ĐẶT DỊCH VỤ & THANH TOÁN
+//////////////////////////////////////////////////////
+
+Table DonDat {
+  ID varchar [pk, not null, note: 'Ánh xạ systembookings._id; VD: VC-BK-...']
+  EmailNguoiDung varchar [not null, ref: > NguoiDung.Email]
+  TenNguoiDung varchar [not null, note: 'Snapshot tên tại thời điểm đặt']
+  MaVoucher varchar [ref: > Voucher.Code, note: '[KHÁI NIỆM] Mongo hiện mới lưu tổng tiền giảm, chưa lưu mã voucher']
+  TongTien decimal(15,0) [not null, note: 'Tổng trước giảm, đơn vị VND; không âm']
+  GiamGia decimal(15,0) [not null, default: 0, note: 'Tổng giảm combo và voucher, đơn vị VND; không âm']
+  ThanhTien decimal(15,0) [not null, note: 'max(0, TongTien - GiamGia), đơn vị VND']
+  TrangThai trang_thai_don [not null]
+  NgayDat date [not null, note: 'Mongo lưu chuỗi ISO YYYY-MM-DD trong date']
+
+  Note: 'collection: systembookings; một đơn sở hữu một hoặc nhiều ChiTietDon nhúng'
+}
+
+Table ChiTietDon {
+  DonID varchar [not null, ref: > DonDat.ID]
+  KhoaDong varchar [not null, note: 'Khóa logic của lựa chọn; ánh xạ cartKey, nếu thiếu dùng DichVuID']
+  DichVuID varchar [not null, note: 'Tham chiếu đa hình theo Loai tới KhachSan, HoatDongTraiNghiem hoặc XeThue; taxi cũng dùng Loai=vehicle']
+  Loai loai_item_don [not null]
+  TenDichVu varchar [not null, note: 'Snapshot tên']
+  GiaChot decimal(15,0) [not null, note: 'Snapshot giá VND tại thời điểm đặt; không âm']
+  SoLuong int [not null, note: 'Lớn hơn 0']
+  LinkAnh varchar [not null, default: '']
+  GhiChu varchar
+  NgaySuDung date [note: 'Ngày nhận phòng, nhận xe hoặc tham gia hoạt động']
+  GoiDaChon goi_thue
+  GiaCoBan decimal(15,0) [note: 'Ánh xạ basePrice, đơn vị VND; dùng khi đổi cấp gói']
+  DaNhanDichVu boolean [default: false, note: 'Khách xác nhận đã nhận dịch vụ trước khi đánh giá']
+
+  indexes {
+    (DonID, KhoaDong) [pk, name: 'PK_ChiTietDon']
+  }
+
+  Note: '[NHÚNG] mảng items trong systembookings; Loai + DichVuID là liên kết đa hình logic'
+}
+
+Table ChiTietChuyenTaxi {
+  DonID varchar [not null]
+  KhoaDong varchar [not null]
+  DiemDonID varchar [not null, ref: > DiemDonTaxi.ID]
+  DiemTraID varchar [not null, ref: > DiemDonTaxi.ID]
+  ThoiGianDon datetime [not null]
+  LoaiXe varchar [not null, note: 'VD: vios-4, xpander-7, sirius-moto']
+  SoDienThoaiLienHe varchar(10) [not null]
+  QuangDuongKm decimal(7,2) [not null, note: 'Lớn hơn 0']
+
+  indexes {
+    (DonID, KhoaDong) [pk, name: 'PK_ChiTietChuyenTaxi']
+  }
+
+  Note: '[NHÚNG KHÁI NIỆM] quan hệ 1-1 với một ChiTietDon loại vehicle/taxi; Mongo hiện đóng gói các thuộc tính này trong details'
+}
+
+Ref FK_ChiTietChuyenTaxi_ChiTietDon: ChiTietChuyenTaxi.(DonID, KhoaDong) - ChiTietDon.(DonID, KhoaDong)
+
+Table GiaoDich {
+  ID varchar [pk, not null, note: 'Ánh xạ transactions._id; VD: VC-TX-...']
+  DonID varchar [ref: > DonDat.ID, note: 'Có thể null/rỗng nếu thanh toán thất bại trước khi tạo đơn']
+  MaGiaoDich varchar [not null, unique, note: 'Mã đối soát nghiệp vụ; Mongo nên có unique index']
+  PhuongThuc phuong_thuc_thanh_toan [not null]
+  TrangThai trang_thai_giao_dich [not null]
+  SoTien decimal(15,0) [not null, note: 'Đơn vị VND; không âm']
+  EmailNguoiDung varchar [ref: > NguoiDung.Email, note: 'Có thể trống ở lần thử không xác định được người dùng']
+  ThoiGian datetime [not null, note: 'Mongo lưu chuỗi ISO trong date']
+
+  Note: 'collection: transactions; một đơn có thể có nhiều lần thử thanh toán'
+}
+
+//////////////////////////////////////////////////////
+// TRIP ROOM
+//////////////////////////////////////////////////////
+
+Table TripRoom {
+  ID varchar [pk, not null, note: 'Ánh xạ triprooms._id; VD: VC-DEMO01']
+  TenPhong varchar [not null]
+  MoTa text [not null, default: '']
+  NgayBatDau date [note: 'Có thể để trống khi nhóm chưa chốt']
+  NgayKetThuc date [note: 'Phải không trước NgayBatDau khi cả hai có giá trị']
+  SoThanhVienToiDa int [not null, default: 4, note: 'Quy tắc nghiệp vụ: 2-20']
+  MaMoi varchar(10) [not null, unique, note: 'Mongo nên dùng unique index; code hiện mới có index thường']
+  EmailTruongNhom varchar [not null, ref: > NguoiDung.Email]
+  DangHoatDong boolean [not null, default: true]
+  NgayTao datetime [not null]
+
+  Note: 'collection: triprooms; trưởng nhóm phải xuất hiện trong ThanhVienPhong của cùng phòng'
+}
+
+Table ThanhVienPhong {
+  PhongID varchar [not null, ref: > TripRoom.ID]
+  MaThanhVien varchar [not null, note: 'Khóa cục bộ trong phòng; VD: m-ngan']
+  EmailNguoiDung varchar [ref: > NguoiDung.Email, note: 'Có thể null với người được mời nhưng chưa có tài khoản']
+  Ten varchar [not null]
+  Avatar varchar [not null, default: '']
+  NganSach decimal(15,0) [not null, default: 0, note: 'Đơn vị VND; không âm']
+  ThoiGianRanh varchar [not null, default: '']
+  SoThich text [not null, note: 'Mảng chuỗi preferences; mặc định []']
+  DieuTranh varchar [not null, default: '']
+  TrangThai trang_thai_thanh_vien [not null, default: 'unpaid']
+
+  indexes {
+    (PhongID, MaThanhVien) [pk, name: 'PK_ThanhVienPhong']
+    (PhongID, EmailNguoiDung) [unique, name: 'UQ_ThanhVienPhong_Email']
+  }
+
+  Note: '[NHÚNG] mảng members trong triprooms; tiền chia đều là giá trị tính toán, không lưu'
+}
+
+Table PhuongAnVote {
+  PhongID varchar [not null, ref: > TripRoom.ID]
+  MaPhuongAn varchar [not null]
+  TenVi varchar [not null]
+  TenEn varchar [not null]
+  Loai loai_phuong_an_vote [not null]
+  LinkAnh varchar [not null, default: '']
+  Gia decimal(15,0) [not null, default: 0, note: 'Đơn vị VND; không âm']
+  Rating decimal(2,1) [not null, default: 0, note: 'Miền giá trị 0-5']
+  DiaDiemVi varchar [not null, default: '']
+  DiaDiemEn varchar [not null, default: '']
+
+  indexes {
+    (PhongID, MaPhuongAn) [pk, name: 'PK_PhuongAnVote']
+  }
+
+  Note: '[NHÚNG] mảng votingItems trong triprooms; số phiếu được tính từ ChiTietVote'
+}
+
+Table ChiTietVote {
+  PhongID varchar [not null]
+  MaPhuongAn varchar [not null]
+  MaThanhVien varchar [not null]
+
+  indexes {
+    (PhongID, MaPhuongAn, MaThanhVien) [pk, name: 'PK_ChiTietVote']
+  }
+
+  Note: '[LIÊN KẾT KHÁI NIỆM] quan hệ N-N giữa ThanhVienPhong và PhuongAnVote; Mongo lưu MaThanhVien trong votingItems.votes[]'
+}
+
+Ref FK_ChiTietVote_PhuongAn: ChiTietVote.(PhongID, MaPhuongAn) > PhuongAnVote.(PhongID, MaPhuongAn)
+Ref FK_ChiTietVote_ThanhVien: ChiTietVote.(PhongID, MaThanhVien) > ThanhVienPhong.(PhongID, MaThanhVien)
+
+//////////////////////////////////////////////////////
+// ĐÁNH GIÁ & KHIẾU NẠI
+//////////////////////////////////////////////////////
+
+Table DanhGiaDichVu {
+  ID varchar [pk, not null]
+  DonID varchar [not null, note: '[KHÁI NIỆM] xác định đơn đã mua; Mongo hiện kiểm tra qua tầng dịch vụ']
+  KhoaDong varchar [not null, note: '[KHÁI NIỆM] xác định đúng ChiTietDon đã sử dụng']
+  DichVuID varchar [not null, note: 'Bản sao itemId để truy vấn nhanh']
+  TenDichVu varchar [not null]
+  AnhDichVu varchar [not null, note: 'Ánh xạ itemImage']
+  EmailNguoiDung varchar [not null, ref: > NguoiDung.Email]
+  TacGia varchar [not null]
+  Avatar varchar [not null]
+  SoSao int [not null, note: 'Số nguyên từ 1 đến 5']
+  NgayDanhGia date [not null]
+  BinhLuan text [not null]
+
+  indexes {
+    (DonID, KhoaDong, EmailNguoiDung) [unique, name: 'UQ_DanhGia_ChiTietDon_NguoiDung']
+  }
+
+  Note: 'collection: servicereviews; chỉ đánh giá đơn confirmed, đã nhận dịch vụ và còn trong hạn 30 ngày'
+}
+
+Ref FK_DanhGia_ChiTietDon: DanhGiaDichVu.(DonID, KhoaDong) > ChiTietDon.(DonID, KhoaDong)
+
+Table KhieuNai {
+  ID varchar [pk, not null]
+  DonID varchar [not null, ref: > DonDat.ID]
+  KhoaDong varchar [not null, note: '[KHÁI NIỆM] xác định ChiTietDon; Mongo hiện mới lưu itemId']
+  DichVuID varchar [not null]
+  TenDichVu varchar [not null]
+  EmailNguoiDung varchar [not null, ref: > NguoiDung.Email]
+  TenNguoiDung varchar [not null]
+  LyDo varchar [not null]
+  NoiDung text [not null]
+  TrangThai trang_thai_khieu_nai [not null, default: 'pending']
+  Ngay date [not null]
+
+  Note: 'collection: servicecomplaints'
+}
+
+Ref FK_KhieuNai_ChiTietDon: KhieuNai.(DonID, KhoaDong) > ChiTietDon.(DonID, KhoaDong)
+
+Table DanhGiaTrangChu {
+  ID varchar [pk, not null]
+  TacGia varchar [not null]
+  Avatar varchar [not null]
+  SoSao int [not null, note: 'Số nguyên từ 1 đến 5']
+  Ngay date [not null]
+  BinhLuan text [not null]
+  NgonNgu ngon_ngu [not null]
+
+  Note: 'collection: reviews; nội dung chứng thực/đánh giá hiển thị trên trang chủ'
+}
+
+//////////////////////////////////////////////////////
+// ĐỐI TÁC
+//////////////////////////////////////////////////////
+
+Table DonDangKyDoiTac {
+  ID varchar [pk, not null]
+  TenThuongHieu varchar [not null]
+  NguoiLienHe varchar [not null]
+  LoaiHinh loai_doi_tac [not null]
+  SoDienThoai varchar [not null]
+  Email varchar [not null]
+  MoTa text [not null]
+  TrangThai trang_thai_duyet [not null, default: 'pending']
+  Ngay date [not null]
+
+  Note: 'collection: partnershipapplications; đây là đơn đăng ký, chưa phải thực thể đối tác đã duyệt'
+}
+
+//////////////////////////////////////////////////////
+// NỘI DUNG TĨNH SONG NGỮ
+//////////////////////////////////////////////////////
+
+Table CamNang {
+  ID varchar [pk, not null]
+  ThuTu int [not null, note: 'Không âm']
+  NhanVi varchar [not null]
+  NhanEn varchar [not null]
+  TieuDeVi varchar [not null]
+  TieuDeEn varchar [not null]
+  LinkAnh varchar [not null]
+  DoanVanVi text [not null, note: 'Mảng paragraphsVi']
+  DoanVanEn text [not null, note: 'Mảng paragraphsEn']
+
+  Note: 'collection: handbook_entries'
+}
+
+Table DiaDiemLanCan {
+  ID varchar [pk, not null]
+  ThuTu int [not null, note: 'Không âm']
+  TenVi varchar [not null]
+  TenEn varchar [not null]
+  PhanLoaiVi varchar [not null]
+  PhanLoaiEn varchar [not null]
+  MoTaVi text [not null]
+  MoTaEn text [not null]
+  KhoangCach varchar [not null]
+  ThoiGianDiChuyen varchar [not null]
+  ToaDoX int [not null, note: 'Ánh xạ coordinates.x']
+  ToaDoY int [not null, note: 'Ánh xạ coordinates.y']
+  DanhSachAnh text [not null, note: 'Mảng URL images']
+  Rating decimal(2,1) [not null, note: 'Miền giá trị 0-5']
+  TongDanhGia int [not null, note: 'Không âm']
+  LichSuVi text [not null]
+  LichSuEn text [not null]
+
+  Note: 'collection: nearby_places; coordinates là value object nhúng, không phải thực thể độc lập'
+}
+
+Table DanhGiaLanCan {
+  DiaDiemID varchar [not null, ref: > DiaDiemLanCan.ID]
+  MaDanhGia varchar [not null]
+  TacGia varchar [not null]
+  Avatar varchar [not null]
+  SoSao int [not null, note: 'Số nguyên từ 1 đến 5']
+  Ngay date [not null]
+  BinhLuan text [not null]
+
+  indexes {
+    (DiaDiemID, MaDanhGia) [pk, name: 'PK_DanhGiaLanCan']
+  }
+
+  Note: '[NHÚNG] mảng reviews trong nearby_places'
+}
+
+Table TrangHoTro {
+  ID varchar [pk, not null, note: 'VD: help, faq, refund, terms, privacy']
+  ThuTu int [not null, note: 'Không âm']
+  Nhom nhom_trang_ho_tro [not null]
+  NhomVi varchar [not null]
+  NhomEn varchar [not null]
+  TieuDeVi varchar [not null]
+  TieuDeEn varchar [not null]
+  GioiThieuVi text [not null]
+  GioiThieuEn text [not null]
+
+  Note: 'collection: support_pages'
+}
+
+Table MucNoiDungHoTro {
+  TrangID varchar [not null, ref: > TrangHoTro.ID]
+  ThuTu int [not null, note: 'Vị trí trong mảng sections; Mongo dùng thứ tự mảng']
+  TieuDeVi varchar [not null]
+  TieuDeEn varchar [not null]
+  NoiDungVi text [not null]
+  NoiDungEn text [not null]
+
+  indexes {
+    (TrangID, ThuTu) [pk, name: 'PK_MucNoiDungHoTro']
+  }
+
+  Note: '[NHÚNG] mảng sections trong support_pages'
+}
+
+Table CauHoiFAQ {
+  TrangID varchar [not null, ref: > TrangHoTro.ID]
+  ThuTu int [not null, note: 'Vị trí trong mảng faqs; Mongo dùng thứ tự mảng']
+  CauHoiVi varchar [not null]
+  CauHoiEn varchar [not null]
+  TraLoiVi text [not null]
+  TraLoiEn text [not null]
+
+  indexes {
+    (TrangID, ThuTu) [pk, name: 'PK_CauHoiFAQ']
+  }
+
+  Note: '[NHÚNG] mảng faqs trong support_pages'
+}

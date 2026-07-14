@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { getProvinceHero } from '@/constants/provinceHero';
-import type { Activity, Attraction, Hotel, Vehicle, ViewableItem } from '@/types';
+import type { Activity, Attraction, Hotel, Review, Vehicle, ViewableItem } from '@/types';
 import { AuthService } from '@/services/auth.service';
 import { CartService } from '@/services/cart.service';
 import { CatalogDataService } from '@/services/catalog-data';
@@ -27,12 +27,6 @@ interface DetailReview {
   date: string;
   comment: string;
 }
-
-const SEED_REVIEWS: DetailReview[] = [
-  { id: 'rv1', author: 'Ngọc Anh', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80', rating: 5, date: '2026-06-21', comment: 'Dịch vụ chuẩn chỉnh, khách sạn view sông tuyệt đẹp, sẽ quay lại VietCharm lần nữa!' },
-  { id: 'rv2', author: 'Minh Đức', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80', rating: 5, date: '2026-06-17', comment: 'Đặt combo tiết kiệm hơn hẳn, xe giao tận nơi đúng giờ, hoạt động rất đáng trải nghiệm.' },
-  { id: 'rv3', author: 'Sarah L.', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80', rating: 4, date: '2026-06-11', comment: 'Smooth booking flow and lovely heritage stays. The lantern night tour was magical!' },
-];
 
 @Component({
   selector: 'app-province-detail-page',
@@ -110,6 +104,8 @@ export class ProvinceDetailComponent {
   readonly activities = computed(() => this.activitiesRes.value());
 
   readonly provinceReviewId = computed(() => `province-${this.provinceId()}`);
+  /** Site-wide testimonials from Mongo (collection `reviews`) — no hardcoded seed data. */
+  private readonly siteReviewsRes = httpResource<Review[]>(() => '/api/reviews', { defaultValue: [] });
   readonly reviews = computed<DetailReview[]>(() => {
     const submitted = this.catalog.reviewsForItem(this.provinceReviewId()).map((r) => ({
       id: r.id,
@@ -119,7 +115,15 @@ export class ProvinceDetailComponent {
       date: r.date,
       comment: r.comment,
     }));
-    return [...submitted, ...SEED_REVIEWS];
+    const testimonials = this.siteReviewsRes.value().map((r) => ({
+      id: r.id,
+      author: r.author,
+      avatar: r.avatar,
+      rating: r.rating,
+      date: r.date,
+      comment: r.comment,
+    }));
+    return [...submitted, ...testimonials];
   });
   readonly canReview = computed(() => {
     const user = this.auth.currentUser();

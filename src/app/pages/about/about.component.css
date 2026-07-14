@@ -1,0 +1,15 @@
+/* Marquee strip under the hero film reel */
+.marquee { overflow: hidden; }
+.marquee-track { display: flex; width: max-content; animation: about-marquee 28s linear infinite; }
+.marquee-item { display: inline-flex; align-items: center; gap: .55rem; padding: 0 1.4rem; color: rgb(255 255 255 / 78%); font-size: .62rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; }
+@keyframes about-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Story chapter selector */
+.chapter-btn { display: flex; width: 100%; align-items: flex-start; gap: .8rem; padding: 1rem 1.1rem; border: 1px solid var(--color-natural-border); border-radius: 1.1rem; background: white; text-align: left; transition: all .2s ease; }
+.chapter-btn:hover { border-color: var(--color-natural-gold); transform: translateX(3px); }
+.chapter-btn-active { border-color: var(--color-natural-gold-dark); background: #fffbef; box-shadow: 0 10px 26px -20px rgb(30 29 21 / 55%); border-left-width: 4px; }
+.chapter-icon { display: grid; flex: 0 0 auto; place-items: center; width: 2.4rem; height: 2.4rem; border: 1px solid var(--color-natural-border); border-radius: .8rem; color: var(--color-natural-accent); background: var(--color-natural-beige); font-size: 1rem; }
+.chapter-btn-active .chapter-icon { border-color: var(--color-natural-gold-dark); color: #684a13; background: #fff3d1; }
