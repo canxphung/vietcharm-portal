@@ -10,6 +10,7 @@ export const STORAGE_KEYS = {
   vouchers: 'vc_vouchers',
   bookings: 'vc_bookings',
   currentUser: 'vc_current_user',
+  cart: 'vc_cart',
   recentlyViewed: 'vc_recently_viewed',
   favorites: 'vc_favorites',
   serviceReviews: 'vc_service_reviews',

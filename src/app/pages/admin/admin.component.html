@@ -4,10 +4,11 @@
           <p class="text-xs font-black uppercase tracking-[0.25em] text-natural-accent">Admin</p>
           <h1 class="font-serif text-4xl font-black text-natural-ink">{{ i18n.isVi() ? 'Bảng điều khiển VietCharm' : 'VietCharm dashboard' }}</h1>
         </div>
-        <div class="grid gap-5 md:grid-cols-4">
+        <div class="grid gap-5 md:grid-cols-5">
           <div class="stat"><span>{{ auth.users().length }}</span>{{ i18n.isVi() ? 'Người dùng' : 'Users' }}</div>
           <div class="stat"><span>{{ catalog.applications().length }}</span>{{ i18n.isVi() ? 'Đối tác' : 'Partners' }}</div>
           <div class="stat"><span>{{ catalog.bookings().length }}</span>{{ i18n.isVi() ? 'Booking' : 'Bookings' }}</div>
+          <div class="stat"><span>{{ catalog.transactions().length }}</span>{{ i18n.isVi() ? 'Giao dịch' : 'Transactions' }}</div>
           <div class="stat"><span>{{ catalog.complaints().length }}</span>{{ i18n.isVi() ? 'Khiếu nại' : 'Reports' }}</div>
         </div>
         <div class="mt-8 grid gap-6 lg:grid-cols-2">

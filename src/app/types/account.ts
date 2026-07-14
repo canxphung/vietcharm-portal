@@ -52,6 +52,18 @@ export interface SystemBooking {
   date: string;
 }
 
+/** Payment attempt record (one row per gateway call, success or failure). */
+export interface PaymentTransaction {
+  id: string;
+  bookingId: string;
+  code: string;
+  method: 'visa' | 'vnpay' | 'momo';
+  status: 'success' | 'failed';
+  amount: number;
+  userEmail: string;
+  date: string;
+}
+
 /** A customer review tied to a specific bookable service and its author. */
 export interface ServiceReview {
   id: string;

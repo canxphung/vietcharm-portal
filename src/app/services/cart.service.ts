@@ -1,7 +1,9 @@
 import { computed, Injectable, signal } from '@angular/core';
+import { STORAGE_KEYS } from '@/constants/storageKeys';
 import type { BookingCartItem } from '@/types';
 import { CatalogService } from './catalog.service';
 import { I18nService } from './i18n.service';
+import { storedSignal } from './storage';
 import { ToastService } from './toast.service';
 
 function cartKey(item: BookingCartItem): string {
@@ -17,7 +19,8 @@ const PACKAGE_MODIFIERS: Record<NonNullable<BookingCartItem['packageKey']>, numb
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly deselectedKeys = signal<string[]>([]);
-  readonly items = signal<BookingCartItem[]>([]);
+  /** Persisted per-browser (like the login session) so a refresh never wipes the cart. */
+  readonly items = storedSignal<BookingCartItem[]>(STORAGE_KEYS.cart, []);
   readonly cartCount = computed(() => this.items().reduce((sum, item) => sum + item.quantity, 0));
   readonly selectedItems = computed(() => this.items().filter((item) => !this.deselectedKeys().includes(cartKey(item))));
   readonly selectedCount = computed(() => this.selectedItems().reduce((sum, item) => sum + item.quantity, 0));

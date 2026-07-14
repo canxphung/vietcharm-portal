@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import type {
   BookingCartItem,
   PartnershipApplication,
+  PaymentTransaction,
   PromoVoucher,
   ServiceComplaint,
   ServiceReview,
@@ -34,6 +35,9 @@ export class CatalogService {
   private readonly bookingsRes = httpResource<SystemBooking[]>(() => '/api/bookings', { defaultValue: [] });
   readonly bookings = computed(() => this.bookingsRes.value());
 
+  private readonly transactionsRes = httpResource<PaymentTransaction[]>(() => '/api/transactions', { defaultValue: [] });
+  readonly transactions = computed(() => this.transactionsRes.value());
+
   private readonly serviceReviewsRes = httpResource<ServiceReview[]>(() => '/api/service-reviews', {
     defaultValue: [],
   });
@@ -51,6 +55,20 @@ export class CatalogService {
   async setApplicationStatus(id: string, status: PartnershipApplication['status']): Promise<void> {
     await firstValueFrom(this.http.patch(`/api/partnerships/${id}`, { status }));
     this.applicationsRes.reload();
+  }
+
+  /** ERD "GiaoDich": persist every payment attempt, both successes and failures. */
+  async recordTransaction(tx: Omit<PaymentTransaction, 'id' | 'code' | 'date'>): Promise<void> {
+    const id = `VC-TX-${Date.now()}`;
+    const transaction: PaymentTransaction = {
+      ...tx,
+      id,
+      code: `TX-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+      date: new Date().toISOString(),
+    };
+    const { id: txId, ...rest } = transaction;
+    await firstValueFrom(this.http.post('/api/transactions', { id: txId, ...rest }));
+    this.transactionsRes.reload();
   }
 
   async setBookingStatus(id: string, status: SystemBooking['status']): Promise<void> {
