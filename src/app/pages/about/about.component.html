@@ -1,0 +1,122 @@
+    <main class="bg-natural-bg">
+      <!-- ═══ Hero: heritage film reel ═══ -->
+      <section class="relative overflow-hidden bg-[#12100c] text-white">
+        @for (img of heroImages; track img; let i = $index) {
+          <img [src]="img" alt="" class="absolute inset-0 h-full w-full object-cover transition-opacity duration-1000" [class.opacity-40]="heroIndex() === i" [class.opacity-0]="heroIndex() !== i" [style.filter]="'grayscale(35%) sepia(12%)'" />
+        }
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(10,9,6,0.85)_100%)]"></div>
+
+        <div class="relative mx-auto flex min-h-[480px] max-w-4xl flex-col items-center justify-center px-4 py-20 text-center">
+          <span class="inline-flex items-center gap-2 rounded-full border border-natural-gold/40 bg-black/40 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-natural-gold backdrop-blur"><i class="bi bi-film"></i>{{ isVi() ? 'Viện phim di sản lữ hành' : 'Heritage travel film house' }}</span>
+          <h1 class="mt-5 font-serif text-4xl font-black uppercase leading-tight tracking-tight md:text-6xl">{{ isVi() ? 'Hành trình chạm vào' : 'A journey that touches' }}<br /><span class="text-natural-gold">{{ isVi() ? 'ký ức di sản' : 'heritage memories' }}</span></h1>
+          <p class="mt-5 max-w-xl text-sm leading-7 text-white/75">{{ isVi() ? 'Khám phá câu chuyện đằng sau những mảnh ngói cổ rêu phong, đôi bàn tay gầy gộc của các cụ nghệ nhân già thầm lặng thắp lửa đèn lồng rực rỡ sông Hoài.' : 'Discover the story behind mossy ancient tiles and the weathered hands of old artisans quietly lighting the radiant lanterns of the Hoai River.' }}</p>
+        </div>
+
+        <!-- Marquee strip -->
+        <div class="relative border-t border-natural-gold/25 bg-black/60 py-2.5 backdrop-blur">
+          <div class="marquee">
+            <div class="marquee-track">
+              @for (pass of [0, 1]; track pass) {
+                @for (item of marqueeItems(); track $index) {
+                  <span class="marquee-item"><i class="bi bi-asterisk text-natural-gold"></i>{{ item }}</span>
+                }
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ Brand story chapters ═══ -->
+      <section class="mx-auto max-w-7xl px-4 py-16">
+        <div class="mx-auto max-w-2xl text-center">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-natural-border bg-white px-3.5 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-natural-accent"><i class="bi bi-book"></i>{{ isVi() ? 'Câu chuyện thương hiệu' : 'Brand story' }}</span>
+          <h2 class="mt-4 font-serif text-3xl font-black uppercase tracking-tight text-natural-ink md:text-4xl">{{ isVi() ? 'Hành trình hoài cổ qua từng chương sách' : 'A nostalgic journey, chapter by chapter' }}</h2>
+          <p class="mt-3 text-sm leading-relaxed text-stone-500">{{ isVi() ? 'Lật mở từng chương câu chuyện phát triển bền vững của VietCharm, từ xưởng gỗ nhỏ bên Chùa Cầu đến hoài bão bảo tồn di sản thế giới thông qua sức mạnh công nghệ lữ hành.' : 'Turn each chapter of VietCharm’s sustainable growth — from a tiny wood shop beside the Covered Bridge to a mission of preserving world heritage through travel technology.' }}</p>
+        </div>
+
+        <div class="mt-10 grid items-start gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
+          <!-- Chapter list -->
+          <div class="space-y-3">
+            @for (c of chapters(); track c.id) {
+              <button type="button" class="chapter-btn" [class.chapter-btn-active]="activeChapter() === c.id" (click)="activeChapter.set(c.id)">
+                <span class="chapter-icon"><i [class]="'bi ' + c.icon"></i></span>
+                <span class="min-w-0">
+                  <span class="block text-[9px] font-black uppercase tracking-[0.2em] text-stone-400">{{ isVi() ? c.phaseVi : c.phaseEn }}</span>
+                  <span class="mt-0.5 block font-serif text-sm font-bold leading-snug text-natural-ink">{{ isVi() ? c.titleVi : c.titleEn }}</span>
+                </span>
+              </button>
+            }
+            <a routerLink="/discover" class="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-natural-accent px-5 py-3.5 text-xs font-black uppercase tracking-wide text-white transition hover:bg-natural-olive">{{ isVi() ? 'Quay về trang khám phá di sản' : 'Back to heritage discovery' }}<i class="bi bi-arrow-right"></i></a>
+          </div>
+
+          <!-- Chapter content -->
+          <article class="overflow-hidden rounded-3xl border border-natural-border bg-white shadow-lg">
+            <div class="relative h-72 overflow-hidden md:h-80">
+              <img [src]="chapter().image" [alt]="isVi() ? chapter().titleVi : chapter().titleEn" class="h-full w-full object-cover" />
+              <span class="absolute bottom-3 left-3 rounded-lg bg-natural-gold px-3 py-1 text-[10px] font-black uppercase tracking-wide text-natural-ink shadow">{{ isVi() ? chapter().captionVi : chapter().captionEn }}</span>
+            </div>
+            <div class="space-y-4 p-6 md:p-8">
+              <h3 class="font-serif text-xl font-black tracking-tight text-natural-ink md:text-2xl">{{ isVi() ? chapter().titleVi : chapter().titleEn }}</h3>
+              @for (p of (isVi() ? chapter().paragraphsVi : chapter().paragraphsEn); track p) {
+                <p class="text-sm leading-7 text-stone-600 first-letter:float-left first-letter:mr-1.5 first-letter:font-serif first-letter:text-4xl first-letter:font-black first-letter:leading-none first-letter:text-natural-accent">{{ p }}</p>
+              }
+              <div class="flex items-start gap-3 rounded-2xl border border-natural-gold/30 bg-natural-gold/10 p-4">
+                <i class="bi bi-patch-check-fill mt-0.5 shrink-0 text-natural-gold-dark"></i>
+                <div>
+                  <span class="block text-[9px] font-black uppercase tracking-[0.2em] text-natural-bronze">{{ isVi() ? 'Dấu ấn chứng thực bản địa' : 'Local hallmark' }}</span>
+                  <p class="mt-1 text-xs font-bold leading-relaxed text-natural-ink">{{ isVi() ? chapter().markVi : chapter().markEn }}</p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ═══ Team ═══ -->
+      <section class="border-y border-natural-border bg-natural-cream py-16">
+        <div class="mx-auto max-w-7xl px-4">
+          <div class="mx-auto max-w-2xl text-center">
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-natural-border bg-white px-3.5 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-natural-accent"><i class="bi bi-people"></i>{{ isVi() ? 'Đội ngũ sáng tạo' : 'Creative team' }}</span>
+            <h2 class="mt-4 font-serif text-3xl font-black uppercase tracking-tight text-natural-ink md:text-4xl">{{ isVi() ? 'Đội ngũ sáng tạo VietCharm' : 'The VietCharm creative team' }}</h2>
+            <p class="mt-3 text-sm leading-relaxed text-stone-500">{{ isVi() ? 'Những con người cùng chung niềm đam mê sâu sắc với văn hóa, lịch sử và lữ hành, mang sứ mệnh thổi làn gió công nghệ số vào hồn cốt của di sản ngàn năm văn hiến.' : 'People who share a deep passion for culture, history and travel, on a mission to breathe digital life into the soul of a thousand-year heritage.' }}</p>
+          </div>
+
+          <div class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            @for (m of team(); track m.email; let i = $index) {
+              <div class="flex flex-col overflow-hidden rounded-2xl border border-natural-border bg-white shadow-xs transition duration-300 hover:-translate-y-1.5 hover:shadow-lg">
+                <div class="relative h-52 overflow-hidden bg-stone-900">
+                  <img [src]="m.image" [alt]="m.name" class="h-full w-full object-cover" loading="lazy" />
+                  <span class="absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1 rounded-md bg-black/65 px-2 py-1 font-mono text-[9px] text-white backdrop-blur-sm"><i class="bi bi-envelope shrink-0"></i><span class="truncate">{{ m.email }}</span></span>
+                </div>
+                <div class="flex flex-1 flex-col p-4">
+                  <h3 class="font-serif text-base font-black text-natural-ink">{{ m.name }}</h3>
+                  <span class="mt-1.5 inline-block rounded-lg border border-natural-gold/40 bg-natural-gold/10 px-2 py-1 text-[9px] font-black uppercase leading-relaxed tracking-wide text-natural-bronze">{{ isVi() ? m.roleVi : m.roleEn }}</span>
+                  <p class="mt-2.5 flex-1 text-[11px] leading-relaxed text-stone-600">{{ isVi() ? m.bioVi : m.bioEn }}</p>
+                  <div class="mt-3 flex items-center justify-between border-t border-dashed border-natural-border pt-2.5 font-mono text-[9px] font-bold uppercase tracking-widest text-stone-400"><span>VietCharm Member</span><span>N° {{ (i + 1).toString().padStart(3, '0') }}</span></div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ Core values ═══ -->
+      <section class="bg-[#1F261F] py-16 text-white">
+        <div class="mx-auto max-w-7xl px-4">
+          <div class="mx-auto max-w-2xl text-center">
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-natural-gold"><i class="bi bi-gem"></i>{{ isVi() ? 'Giá trị cốt lõi' : 'Core values' }}</span>
+            <h2 class="mt-4 font-serif text-3xl font-black uppercase tracking-tight md:text-4xl">{{ isVi() ? 'Bốn trụ cột sáng tạo' : 'Four creative pillars' }}</h2>
+            <p class="mt-3 text-sm leading-relaxed text-white/60">{{ isVi() ? 'Những chuẩn mực nghiêm ngặt nhất định hướng cho từng bước đi, từng dòng code và dịch vụ lữ hành của VietCharm.' : 'The strictest standards guiding every step, every line of code and every travel service at VietCharm.' }}</p>
+          </div>
+          <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            @for (v of values(); track v.icon) {
+              <div class="rounded-2xl border border-white/12 bg-white/[0.06] p-5 transition duration-300 hover:border-natural-gold/40 hover:bg-white/10">
+                <span class="flex h-11 w-11 items-center justify-center rounded-xl border border-natural-gold/35 bg-natural-gold/15 text-lg text-natural-gold"><i [class]="'bi ' + v.icon"></i></span>
+                <h3 class="mt-4 font-serif text-base font-black">{{ isVi() ? v.titleVi : v.titleEn }}</h3>
+                <p class="mt-2 text-xs leading-relaxed text-white/60">{{ isVi() ? v.bodyVi : v.bodyEn }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+    </main>
