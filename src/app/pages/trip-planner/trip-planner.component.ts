@@ -1,9 +1,11 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, httpResource } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import type { BookingCartItem } from '@/types';
+import type { Activity, Hotel } from '@/types';
+import { buildComboItems } from '@/utils/combo-builder';
 import { CartService } from '@/services/cart.service';
+import { CatalogDataService } from '@/services/catalog-data';
 import { I18nService } from '@/services/i18n.service';
 
 interface TripActivity {
@@ -57,6 +59,11 @@ export class TripPlannerComponent {
   readonly loadingStep = signal('');
   readonly itinerary = signal<TripPlan | null>(null);
   readonly successMsg = signal(false);
+
+  // Real catalog data for the suggested combo — refetches when the selected province changes.
+  private readonly catalogData = inject(CatalogDataService);
+  private readonly comboHotelsRes = httpResource<Hotel[]>(() => `/api/hotels?provinceId=${this.province()}`, { defaultValue: [] });
+  private readonly comboActivitiesRes = httpResource<Activity[]>(() => `/api/activities?provinceId=${this.province()}`, { defaultValue: [] });
 
   private loadingTimer?: ReturnType<typeof setInterval>;
 
@@ -138,20 +145,15 @@ export class TripPlannerComponent {
     this.loading.set(false);
   }
 
+  /** Suggested combo built from REAL top-rated services in Mongo for the selected province. */
   applyCombo(): void {
-    const p = this.province();
-    const vi = this.isVi();
-    const hotelName = p === 'quang-nam' ? 'La Siesta Hoi An Resort (Combo tiết kiệm)' : p === 'da-nang' ? 'Tiamo Sea View Hotel (Combo tiết kiệm)' : p === 'thua-thien-hue' ? 'Silk Path Grand Hue (Combo chọn lọc)' : p === 'binh-dinh' ? 'Anya Premier Hotel Quy Nhơn (Combo tiết kiệm)' : 'Crown Plaza Nha Trang (Combo tiết kiệm)';
-    const hotelPrice = p === 'quang-nam' ? 1800000 : p === 'da-nang' ? 850000 : p === 'thua-thien-hue' ? 1300000 : p === 'binh-dinh' ? 1200000 : 1500000;
-    const vehName = p === 'quang-nam' ? 'Honda Vision 110cc (Gói tiết kiệm)' : p === 'da-nang' ? 'Toyota Vios Private Car (Gói tiết kiệm)' : p === 'thua-thien-hue' ? 'Honda AirBlade 125cc (Gói tiết kiệm)' : p === 'binh-dinh' ? 'Yamaha Exciter 150cc (Gói tiết kiệm)' : 'Mitsubishi Xpander Self-drive (Gói tiết kiệm)';
-    const vehPrice = p === 'quang-nam' ? 130000 : p === 'da-nang' ? 800000 : p === 'thua-thien-hue' ? 150000 : p === 'binh-dinh' ? 140000 : 900000;
-    const actName = p === 'quang-nam' ? 'Lặn Ngắm San Hô Cù Lao Chàm (Giá combo)' : p === 'da-nang' ? 'Vé Cáp Treo Bà Nà (Giá combo)' : p === 'thua-thien-hue' ? 'Food Tour Xích Lô Huế Về Đêm (Giá combo)' : p === 'binh-dinh' ? 'Tour Cano Kỳ Co Ngắm San Hô (Giá combo)' : 'Tour Cano 3 Đảo VIP Vịnh Nha Trang (Giá combo)';
-    const actPrice = p === 'quang-nam' ? 550000 : p === 'da-nang' ? 850000 : p === 'thua-thien-hue' ? 450000 : p === 'binh-dinh' ? 690000 : 750000;
-    const items: BookingCartItem[] = [
-      { id: `plan-hotel-${p}`, type: 'hotel', name: hotelName, price: hotelPrice, quantity: 1, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80', details: vi ? 'Lưu trú được ghép theo ngân sách và lựa chọn của bạn' : 'Stay matched to your selected budget and preferences' },
-      { id: `plan-vehicle-${p}`, type: 'vehicle', name: vehName, price: vehPrice, quantity: 1, image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=400&q=80', details: vi ? 'Phương tiện phù hợp với tuyến và nhóm khách đã chọn' : 'Transport matched to the selected route and group size' },
-      { id: `plan-activity-${p}`, type: 'activity', name: actName, price: actPrice, quantity: 2, image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80', details: vi ? 'Hoạt động có sẵn trong gói lịch trình mẫu' : 'Available activity included in the sample trip plan' },
-    ];
+    const items = buildComboItems(
+      this.comboHotelsRes.value(),
+      this.catalogData.vehicles(),
+      this.comboActivitiesRes.value(),
+      this.isVi(),
+    );
+    if (!items) return; // catalog still loading — the button can simply be pressed again
     this.cart.addCombo(items);
     this.successMsg.set(true);
     setTimeout(() => this.successMsg.set(false), 4000);
